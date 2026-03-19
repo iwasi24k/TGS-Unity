@@ -2,69 +2,82 @@ using UnityEngine;
 
 public class CS_Camera : MonoBehaviour
 {
-    [Header("Target")]
-    [SerializeField] private Transform target;
+    // Follow Target（追従対象）
+    [Header("Follow Target (Player)")]
+    [Tooltip("通常時にカメラが追従する対象（プレイヤー）")]
+    [SerializeField] private Transform followTarget;
 
+    // Look Target（注視対象）
+    [Header("Look Target (Lock-On)")]
+    [Tooltip("攻撃モード時に注視する対象（敵など）")]
+    private Transform lookAtTarget;
+
+    // Rotation Settings（回転設定）
+    private float yaw = 0f;   // 横回転
+    private float pitch = 0f; // 縦回転
+    [Tooltip("視線入力の感度")]
+    [SerializeField] private float sensitivity = 120f;
+
+    // Offset Settings（カメラ位置）
     [Header("Offsets")]
-    // 通常視点
-    // プレイヤー中心から「上 + 後ろ」に配置することで
-    [SerializeField] private  Vector3 normalOffset = new Vector3(0, 3, -6);
 
-    // 肩越し視点
-    // プレイヤーの右肩側に寄せることで
-    [SerializeField] private Vector3 shoulderOffset = new Vector3(1.5f, 1.8f, -3);
+    // 現在のオフセット（モードに応じて補間で変化）
+    private Vector3 currentOffset;
 
+    [Tooltip("通常視点のオフセット（上 + 後ろ）")]
+    [SerializeField] private Vector3 normalOffset = new Vector3(0, 3, -6);
+
+    [Tooltip("肩越し視点のオフセット（右肩側）")]
+    [SerializeField] private Vector3 attackOffset = new Vector3(1.5f, 1.8f, -3);
+
+
+    // Camera Settings
     [Header("Settings")]
-    // カメラの追従スピード
-    // 値が大きいほど素早く追従、小さいほど滑らか
+    [Tooltip("offset補間の滑らかさ")]
     [SerializeField] private float smoothSpeed = 10f;
 
-    //外部制御用
-    // 現在のカメラモード
-    // true  : 肩越し視点
-    // false : 通常視点
-    // 外部（Playerなど）から SetShoulderMode() で切り替える
-    private bool isShoulder = false;
 
-    //シェイク
-    // シェイクが有効かどうか
+    // Camera State
+    private bool isAttackMode = false;   // 攻撃（ロックオン）モード
+
+    // Shake Settings（カメラシェイク）
     private bool enableShake = false;
-
-    // シェイクの残り時間
     private float shakeTimer = 0f;
-
-    // シェイクの総時間（開始時に設定）
     private float shakeDuration = 0f;
-
-    // シェイクの強さ（振れ幅）
     private float shakePower = 0f;
 
-    // =========================
-    // 外部から設定する関数
-    // =========================
 
-    // カメラの追従対象を設定する関数
-    // 主にプレイヤーや注視したいオブジェクトを指定する
-    // 例：cam.SetTarget(player.transform);
-    public void SetTarget(Transform newTarget)
+    // 外部制御API
+
+    /// <summary>
+    /// カメラの追従対象を設定する（通常はプレイヤー）
+    /// </summary>
+    public void SetFollowTarget(Transform target)
     {
-        target = newTarget;
+        followTarget = target;
     }
 
-    // カメラのモードを切り替える関数
-    // true  : 肩越し視点（戦闘・エイム用）
-    // false : 通常視点（探索用）
-    // 外部（Playerなど）から入力に応じて切り替える
-    // 例：cam.SetShoulderMode(true);
-    public void SetShoulderMode(bool enable)
+    /// <summary>
+    /// 攻撃（ロックオン）モードのON/OFF
+    /// </summary>
+    public void SetAttackMode(bool enable)
     {
-        isShoulder = enable;
+        isAttackMode = enable;
     }
 
-    // カメラシェイク（揺れ）を開始する関数
-    // duration : 揺れる時間（秒）
-    // power    : 揺れの強さ（値が大きいほど激しい）
-    // 例：cam.StartShake(0.2f, 0.3f);
+    /// <summary>
+    /// 注視対象（ロックオン対象）を設定
+    /// </summary>
+    public void SetLookAtTarget(Transform target)
+    {
+        lookAtTarget = target;
+    }
+
+    /// <summary>
+    /// カメラシェイクを開始する
+    /// </summary>
+    /// <param name="duration">揺れる時間（秒）</param>
+    /// <param name="power">揺れの強さ</param>
     public void StartShake(float duration, float power)
     {
         enableShake = true;
@@ -73,38 +86,97 @@ public class CS_Camera : MonoBehaviour
         shakeTimer = duration;
     }
 
-    // =========================
-    // カメラ更新
-    // =========================
 
-    void LateUpdate()
+    /// <summary>
+    /// カメラの視線入力を追加する
+    /// </summary>
+    /// <param name="input">スティックの移動量</param>
+    public void AddLookInput(Vector2 input)
     {
-        if (!target) return;
+        yaw += input.x * sensitivity * Time.deltaTime;
+        pitch += input.y * sensitivity * Time.deltaTime;
 
-        Vector3 offset = isShoulder ? shoulderOffset : normalOffset;
-
-        Vector3 desiredPosition = target.position + target.rotation * offset;
-
-        Vector3 finalPos = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * smoothSpeed);
-
-        //シェイク
-        if (enableShake && shakeTimer > 0f)
-        {
-            float t = shakeTimer / shakeDuration;
-            float currentPower = shakePower * t;
-
-            finalPos += Random.insideUnitSphere * currentPower;
-
-            shakeTimer -= Time.deltaTime;
-            if (shakeTimer <= 0f)
-                enableShake = false;
-        }
-
-        transform.position = finalPos;
-
-        Vector3 lookTarget = target.position + Vector3.up * 1.5f;
-        transform.LookAt(lookTarget);
+        pitch = Mathf.Clamp(pitch, -30f, 0f);
     }
 
+    // 初期化
+    void Start()
+    {
+        currentOffset = normalOffset;
+    }
 
+    // メイン更新
+    void LateUpdate()
+    {
+        if (!followTarget) return;
+
+        UpdateOffset();
+        UpdatePosition();
+        UpdateShake();
+        UpdateRotation();
+    }
+
+    // 位置更新
+    private void UpdatePosition()
+    {
+        Quaternion cameraRot = Quaternion.Euler(pitch, yaw, 0f);
+
+        if (isAttackMode)
+        {
+            // 肩越し・攻撃中：プレイヤー基準の位置
+            Vector3 desiredPos = followTarget.position + followTarget.rotation * currentOffset;
+            transform.position = desiredPos;
+        }
+        else
+        {
+            // Normal：yaw/pitchでカメラ位置を回す
+            Vector3 rotatedOffset = cameraRot * currentOffset;
+            Vector3 desiredPos = followTarget.position + rotatedOffset;
+            transform.position = desiredPos;
+        }
+    }
+
+    // 現在のモードに応じたオフセットを取得
+    private Vector3 GetCurrentOffset()
+    {
+        return isAttackMode ? attackOffset : normalOffset;
+    }
+
+    // オフセットを滑らかに更新
+    private void UpdateOffset()
+    {
+        Vector3 targetOffset = GetCurrentOffset();
+        currentOffset = Vector3.Lerp(currentOffset, targetOffset, Time.deltaTime * smoothSpeed);
+    }
+
+    // 回転更新（視線）
+    private void UpdateRotation()
+    {
+        if (isAttackMode && lookAtTarget)
+        {
+            transform.LookAt(lookAtTarget.position);
+        }
+        else
+        {
+            // 通常：プレイヤーを見る
+            Vector3 lookPos = followTarget.position + Vector3.up * 1.5f;
+            transform.LookAt(lookPos);
+        }
+    }
+
+    // シェイク処理
+    private void UpdateShake()
+    {
+        if (!enableShake || shakeTimer <= 0f) return;
+
+        float t = shakeTimer / shakeDuration;
+        float power = shakePower * t;
+
+        transform.position += Random.insideUnitSphere * power;
+
+        shakeTimer -= Time.deltaTime;
+
+        if (shakeTimer <= 0f)
+            enableShake = false;
+    }
 }

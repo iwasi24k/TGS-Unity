@@ -386,8 +386,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1782247074}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405687762
@@ -529,6 +528,7 @@ GameObject:
   - component: {fileID: 1782247073}
   - component: {fileID: 1782247072}
   - component: {fileID: 1782247071}
+  - component: {fileID: 1782247075}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -647,17 +647,35 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1782247070}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 25, z: -15}
+  m_LocalRotation: {x: 0.5, y: -0, z: -0, w: 0.8660254}
+  m_LocalPosition: {x: 0, y: 26.4, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 680670826}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
+--- !u!114 &1782247075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782247070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c0a5acf091fda43941be09f28428b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CS_Camera
+  followTarget: {fileID: 680670826}
+  sensitivity: 120
+  normalOffset: {x: 0, y: 20, z: -10}
+  attackOffset: {x: 1.5, y: 1.8, z: -3}
+  smoothSpeed: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1405687765}
   - {fileID: 122223854}
+  - {fileID: 1782247074}
   - {fileID: 680670826}
