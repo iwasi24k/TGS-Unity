@@ -96,7 +96,7 @@ public class CS_Camera : MonoBehaviour
         yaw += input.x * sensitivity * Time.deltaTime;
         pitch += input.y * sensitivity * Time.deltaTime;
 
-        pitch = Mathf.Clamp(pitch, -30f, 0f);
+        pitch = Mathf.Clamp(pitch, 0.0f, 0.0f);
     }
 
     // ‰Šú‰»
