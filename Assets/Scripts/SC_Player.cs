@@ -66,6 +66,9 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private Key weakAttackKey = Key.J;
     [SerializeField] private Key strongAttackKey = Key.K;
 
+    [Header("Animator")]
+    [SerializeField] private Animator animator;
+
     private Vector3 moveInputDir;
     private Vector3 verticalVelocity;
     private Vector3 lastMoveDirection = Vector3.forward;
@@ -108,6 +111,9 @@ public class SC_Player : MonoBehaviour
     {
         if (cController == null)
             cController = GetComponent<CharacterController>();
+
+        if(animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         keyUp = SanitizeKey(keyUp, Key.W);
         keyDown = SanitizeKey(keyDown, Key.S);
@@ -214,7 +220,14 @@ public class SC_Player : MonoBehaviour
             moveInputDir.Normalize();
 
         if (moveInputDir.sqrMagnitude > 0.0001f)
+        {
             lastMoveDirection = moveInputDir.normalized;
+            animator.SetBool("bWalk", true);
+        }
+        else
+        {
+            animator.SetBool("bWalk", false);
+        }
     }
 
     private void HandleAttackInput()
@@ -224,6 +237,7 @@ public class SC_Player : MonoBehaviour
 
         if (GetKeyDownSafe(weakAttackKey) && weakAttackCooldownTimer <= 0f)
         {
+            animator.SetTrigger("tWeakAttack");
             StartCoroutine(WeakAttackRoutine());
             return;
         }
@@ -233,6 +247,7 @@ public class SC_Player : MonoBehaviour
             if (!CanUseStrongAttack())
                 return;
 
+            animator.SetTrigger("tStrongAttack");
             StartCoroutine(StrongAttackRoutine());
         }
     }
@@ -399,6 +414,11 @@ public class SC_Player : MonoBehaviour
 
         bool isBoostMoving = GetKeySafe(boostMoveKey);
         float currentSpeed = isBoostMoving ? boostMoveSpeed : moveSpeed;
+
+        if(isBoostMoving)
+            animator.SetBool("bRun", true);
+        else
+            animator.SetBool("bRun", false);
 
         Vector3 horizontalVelocity = moveInputDir * currentSpeed;
 
