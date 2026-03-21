@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class SC_Player : MonoBehaviour
 {
+    [Header("Camera")]
+    [SerializeField] private GameObject Camera;
+    [SerializeField] private CS_Camera cameraScript;
+
     [Header("References")]
     [SerializeField] private CharacterController cController;
     [SerializeField] private Transform modelRoot;
@@ -115,6 +119,12 @@ public class SC_Player : MonoBehaviour
         if(animator == null)
             animator = GetComponentInChildren<Animator>();
 
+        if (Camera == null)
+            Camera = GameObject.FindWithTag("MainCamera");
+
+        if (cameraScript == null)
+            cameraScript = Camera.GetComponent<CS_Camera>();
+
         keyUp = SanitizeKey(keyUp, Key.W);
         keyDown = SanitizeKey(keyDown, Key.S);
         keyLeft = SanitizeKey(keyLeft, Key.A);
@@ -160,6 +170,8 @@ public class SC_Player : MonoBehaviour
         slideHitHeightOffset = Mathf.Max(0f, slideHitHeightOffset);
         chainSlideDistance = Mathf.Max(0f, chainSlideDistance);
         chainSlideDuration = Mathf.Max(0.01f, chainSlideDuration);
+
+        cameraScript.SetFollowTarget(this.transform);
     }
 
     private void Awake()
@@ -538,6 +550,7 @@ public class SC_Player : MonoBehaviour
 
             Vector3 knockDir = GetKnockDirection(enemy.transform.position, attackDir);
 
+            cameraScript.StartShake(0.12f, 0.20f);
             bool dead = ApplyDamageToEnemy(enemy, weakDamage);
             if (dead)
                 continue;
@@ -576,6 +589,7 @@ public class SC_Player : MonoBehaviour
 
             Vector3 slideDir = GetKnockDirection(enemy.transform.position, attackDir);
 
+            cameraScript.StartShake(0.20f, 1.00f);
             bool dead = ApplyDamageToEnemy(enemy, strongDamage);
             if (dead)
                 continue;
