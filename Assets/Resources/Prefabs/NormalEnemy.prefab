@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 2772859519992004066}
   - component: {fileID: 3873150485594401731}
   m_Layer: 0
-  m_Name: NormalEnemy 1
+  m_Name: NormalEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,6 +224,8 @@ MonoBehaviour:
   moveSpeed: 2
   moveDuration: 1.5
   waitTime: 1
+  maxHP: 100
+  hpSlider: {fileID: 1248379708458104429}
 --- !u!1 &4065806679368641807
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +424,7 @@ GameObject:
   - component: {fileID: 7680110282652744078}
   - component: {fileID: 807814041156981887}
   - component: {fileID: 7257131678058355934}
+  - component: {fileID: 5126066281167519056}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -512,3 +515,15 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5126066281167519056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8687467165054088774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd838ee855458f0419395d6150d14e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Billboard
