@@ -81,6 +81,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7632144862496971028}
+    - targetCorrespondingSourceObject: {fileID: 100094, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7702887817904351031}
   m_SourcePrefab: {fileID: 100100000, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
 --- !u!1 &9066085203353394400 stripped
 GameObject:
@@ -122,6 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba93485cea3df644ac115b1c4d85bad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_Player
+  Camera: {fileID: 0}
+  cameraScript: {fileID: 0}
   cController: {fileID: 7632144862496971028}
   modelRoot: {fileID: 0}
   heatSlider: {fileID: 0}
@@ -189,6 +194,26 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.93, z: 0}
+--- !u!1 &9066085203353394402 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100094, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
+  m_PrefabInstance: {fileID: 9066085203353295388}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7702887817904351031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9066085203353394402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190c4c22e90cab44c9013efacef91899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHP: 10
+  hpBarPrefab: {fileID: 1076395152602592020, guid: f39b412de92076841b41229d1f3632d1, type: 3}
+  hpBarParent: {fileID: 0}
 --- !u!95 &9066085203362754428 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}

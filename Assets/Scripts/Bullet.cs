@@ -2,23 +2,36 @@
 
 public class Bullet : MonoBehaviour
 {
-    public float lifeTime = 3f; // ← 何秒で消えるか
+    public float lifeTime = 3f;
+
+    // すでにヒットしたかどうか
+    private bool hasHit = false;
 
     void Start()
     {
-        // 一定時間後に自動で削除
         Destroy(gameObject, lifeTime);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        // プレイヤーならヒット
+        // すでに当たっていたら何もしない
+        if (hasHit) return;
+
+        // プレイヤーに当たった場合
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("プレイヤーにヒット！");
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(1);
+            }
         }
 
-        // 当たったら消える
+        // ヒット済みにする（これが重要）
+        hasHit = true;
+
+        // 弾を削除
         Destroy(gameObject);
     }
 }
