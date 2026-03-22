@@ -5,3 +5,7 @@
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
+
+*.unity text eol=lf
+*.prefab text eol=lf
+*.cs text eol=lf
