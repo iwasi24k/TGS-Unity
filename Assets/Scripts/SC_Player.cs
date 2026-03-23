@@ -792,7 +792,10 @@ public class SC_Player : MonoBehaviour
 
             bool dead = ApplyDamageToEnemy(enemy, strongDamage);
             if (dead)
-                enemy.BlowAway(transform);
+            { 
+
+            }
+            enemy.BlowAway(transform);
 
             if (!hitStopTriggered)
             {
