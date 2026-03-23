@@ -1,9 +1,19 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
+    enum State
+    {
+        Shooting,
+        Moving,
+        Waiting,
+        Dying,
+        Dead
+    }
+
+    private State state;
+
     [Header("ターゲット")]
     private Transform player;
 
@@ -12,16 +22,15 @@ public class EnemyController : MonoBehaviour
     public float bulletSpeed = 10f;
     public float shotInterval = 1.0f;
     public int maxShotCount = 5;
-
-    // 攻撃箇所のオフセット
-    public Vector3 shotOffset = new Vector3(0f, 0f, 0f);
+    public Vector3 shotOffset = Vector3.zero;
 
     [Header("移動")]
     public float moveSpeed = 2f;
     public float moveDuration = 1.5f;
     public float waitTime = 1.0f;
-
     public float rotationSpeed = 5f;
+
+    private Vector3 moveDir;
 
     [Header("HP")]
     public float maxHP = 100f;
@@ -30,147 +39,235 @@ public class EnemyController : MonoBehaviour
     public bool IsAlive => currentHP > 0;
 
     [Header("エフェクト")]
-    public GameObject hitEffect;     // 被弾エフェクト
-    public GameObject lowHpEffect;   // 低HPエフェクト
-    public GameObject deathEffect;   // 死亡エフェクト
+    public GameObject hitEffect;
+    public GameObject lowHpEffect;
+    public GameObject deathEffect;
 
     private bool isLowHpEffectPlayed = false;
 
-    [Header("死亡時の吹き飛び")]
-    // 吹き飛ぶ力の強さ
+    [Header("吹き飛び")]
     public float knockbackForce = 10f;
-
-    // 敵を検知する範囲
     public float searchRadius = 10f;
-
-    // 消えるまでの時間
-    public float destroyDelay = 1.5f;
-
-    // 速度判定用（この速度以下なら死亡処理を実行）
-    public float deathVelocityThreshold = 0.5f;
-
-    // 速度が閾値以下になるのを待つ最大時間（秒）
-    public float maxWaitForLowVelocity = 3f;
-
-    // 一度死亡処理を開始したら重複させないフラグ
-    private bool isDying = false;
 
     [Header("Animator")]
     public Animator animator;
 
+    // ===== ステート制御 =====
+    private float timer;
+    private int shotCount;
+    private int shotFired;
+
+    // ===== ノックバック =====
+    private bool isKnockback = false;
+    private float knockbackTimer = 0f;
+    private float knockbackDuration = 0.3f;
+    private Vector3 knockbackDir;
+
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-
         if (playerObj != null)
-        {
             player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogError("Playerタグが見つかりません！");
-        }
 
         currentHP = maxHP;
         UpdateHPBar();
-        StartCoroutine(EnemyRoutine());
 
         animator = GetComponent<Animator>();
+
+        ChangeState(State.Shooting);
     }
 
-    IEnumerator EnemyRoutine()
+    void Update()
     {
-        while (IsAlive)
+        // ★ノックバック最優先
+        if (isKnockback)
         {
-            if (player != null)
-            {
-                Vector3 lookPos = player.position;
-                lookPos.y = transform.position.y;
-                transform.LookAt(lookPos);
-            }
+            UpdateKnockback();
+            return;
+        }
 
-            int shotCount = Random.Range(1, maxShotCount + 1);
+        if (state == State.Dead) return;
 
-            for (int i = 0; i < shotCount; i++)
-            {
-                Shoot();
-                yield return new WaitForSeconds(shotInterval);
-            }
+        if (state == State.Dying)
+        {
+            UpdateDying();
+            return;
+        }
 
-            Vector3 randomDir = new Vector3(
-                Random.Range(-1f, 1f),
-                0f,
-                Random.Range(-1f, 1f)
-            ).normalized;
+        LookAtPlayer();
 
-            float timer = 0;
-            if(timer == 0) animator.SetBool("bMove", true);
-            else if(timer >= moveDuration) animator.SetBool("bMove", false);
+        switch (state)
+        {
+            case State.Shooting:
+                UpdateShooting();
+                break;
 
-            while (timer < moveDuration)
-            {
-                // 移動方向が有効ならその方向へ向く（スムーズ回転）
-                if (randomDir != Vector3.zero)
-                {
-                    Quaternion targetRot = Quaternion.LookRotation(randomDir);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
-                }
+            case State.Moving:
+                UpdateMoving();
+                break;
 
-                transform.Translate(randomDir * moveSpeed * Time.deltaTime, Space.World);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(waitTime);
+            case State.Waiting:
+                UpdateWaiting();
+                break;
         }
     }
 
+    // =========================
+    // ステート制御
+    // =========================
+
+    void ChangeState(State newState)
+    {
+        state = newState;
+        timer = 0f;
+
+        switch (state)
+        {
+            case State.Shooting:
+                shotCount = Random.Range(1, maxShotCount + 1);
+                shotFired = 0;
+                break;
+
+            case State.Moving:
+                moveDir = new Vector3(
+                    Random.Range(-1f, 1f),
+                    0f,
+                    Random.Range(-1f, 1f)
+                ).normalized;
+
+                if (animator != null)
+                    animator.SetBool("bMove", true);
+                break;
+
+            case State.Waiting:
+                if (animator != null)
+                    animator.SetBool("bMove", false);
+                break;
+
+            case State.Dying:
+                if (deathEffect != null)
+                    Instantiate(deathEffect, transform.position, Quaternion.identity);
+                break;
+
+            case State.Dead:
+                Destroy(gameObject);
+                break;
+        }
+    }
+
+    // =========================
+    // 各状態処理
+    // =========================
+
+    void UpdateShooting()
+    {
+        timer += Time.deltaTime;
+
+        if (timer >= shotInterval)
+        {
+            Shoot();
+            shotFired++;
+            timer = 0f;
+
+            if (shotFired >= shotCount)
+                ChangeState(State.Moving);
+        }
+    }
+
+    void UpdateMoving()
+    {
+        timer += Time.deltaTime;
+
+        if (moveDir != Vector3.zero)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRot,
+                rotationSpeed * Time.deltaTime
+            );
+        }
+
+        transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+
+        if (timer >= moveDuration)
+            ChangeState(State.Waiting);
+    }
+
+    void UpdateWaiting()
+    {
+        timer += Time.deltaTime;
+
+        if (timer >= waitTime)
+            ChangeState(State.Shooting);
+    }
+
+    void UpdateDying()
+    {
+        timer += Time.deltaTime;
+
+        if (timer >= 1.0f)
+            ChangeState(State.Dead);
+    }
+
+    void LookAtPlayer()
+    {
+        if (player == null) return;
+
+        Vector3 lookPos = player.position;
+        lookPos.y = transform.position.y;
+        transform.LookAt(lookPos);
+    }
+
+    // =========================
+    // 攻撃
+    // =========================
+
     void Shoot()
     {
-        animator.SetTrigger("tAttack");
+        if (animator != null)
+            animator.SetTrigger("tAttack");
+
         if (bulletPrefab == null) return;
 
         GameObject bullet = Instantiate(
             bulletPrefab,
-            transform.position + (transform.forward) + shotOffset,
+            transform.position + transform.forward + shotOffset,
             Quaternion.identity
         );
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
         if (rb != null)
-        {
             rb.linearVelocity = transform.forward * bulletSpeed;
-        }
     }
+
+    // =========================
+    // ダメージ
+    // =========================
 
     public bool TakeDamage(float damage)
     {
+        if (state == State.Dead || state == State.Dying)
+            return false;
+
         currentHP -= damage;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         UpdateHPBar();
-        Debug.Log("TakeDamage呼ばれた HP:" + currentHP);
 
-        //被弾エフェクト
         if (hitEffect != null)
-        {
-            Debug.Log("エフェクト発動！");
             Instantiate(hitEffect, transform.position, Quaternion.identity);
-        }
-        //lowエフェクト
+
         if (!isLowHpEffectPlayed && currentHP <= maxHP * 0.4f)
         {
-            Debug.Log("エフェクト発動！");
             if (lowHpEffect != null)
-            {
                 Instantiate(lowHpEffect, transform.position, Quaternion.identity, transform);
-            }
+
             isLowHpEffectPlayed = true;
         }
 
         if (currentHP <= 0)
         {
-            Die();
+            BlowAway(this.transform);
             return true;
         }
 
@@ -180,170 +277,116 @@ public class EnemyController : MonoBehaviour
     void UpdateHPBar()
     {
         if (hpSlider != null)
-        {
             hpSlider.value = currentHP / maxHP;
-        }
     }
 
-    void Die()
+    // =========================
+    // 吹き飛び（45°判定）
+    // =========================
+    public void BlowAway(Transform CurrentTransform)
     {
-        if (isDying) return;
+        if (isKnockback) return;
 
-        // Rigidbody を取得して速度判定する（無ければ即死）
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            ExecuteDeath();
-            return;
-        }
+        isKnockback = true;
 
-        // 既に速度が閾値以下なら即死亡処理
-        if (rb.linearVelocity.magnitude <= deathVelocityThreshold)
+        // CharacterController無効化
+        CharacterController cc = GetComponent<CharacterController>();
+        if (cc != null)
+            cc.enabled = false;
+
+        // ★後ろ45°の敵を探す
+        Transform target = FindEnemyInBack45(CurrentTransform);
+
+        if (target != null)
         {
-            ExecuteDeath();
+            knockbackDir = (target.position - transform.position);
         }
         else
         {
-            // 閾値以下になるのを待つコルーチンを開始
-            StartCoroutine(WaitForLowVelocityAndDie(rb));
+            knockbackDir = -transform.forward;
         }
+
+        knockbackDir.y = 0f;
+        knockbackDir.Normalize();
+
+        knockbackTimer = 0f;
     }
 
-    // 速度が閾値以下になるのを待つ（もしくはタイムアウト）して死亡処理を実行
-    IEnumerator WaitForLowVelocityAndDie(Rigidbody rb)
+    void UpdateKnockback()
     {
-        if (isDying) yield break;
-        isDying = true;
+        knockbackTimer += Time.deltaTime;
 
-        float timer = 0f;
-        while (timer < maxWaitForLowVelocity)
+        float speed = knockbackForce * 5f;
+
+        // ★強制移動
+        transform.position += knockbackDir * speed * Time.deltaTime;
+
+        // 減速
+        knockbackForce = Mathf.Lerp(knockbackForce, 0f, Time.deltaTime * 5f);
+
+        if (knockbackTimer >= knockbackDuration)
         {
-            if (rb == null || rb.linearVelocity.magnitude <= deathVelocityThreshold)
-            {
-                break;
-            }
-            timer += Time.deltaTime;
-            yield return null;
+            isKnockback = false;
+            ChangeState(State.Dying);
         }
-
-        ExecuteDeath();
     }
 
-    // 実際の死亡処理（エフェクト、行動停止、消去コルーチン開始）
-    void ExecuteDeath()
-    {
-        if (isDying) return;
-        isDying = true;
+    // =========================
+    // 後ろ45°の敵検索
+    // =========================
 
-        //死亡エフェクト
-        if (deathEffect != null)
-        {
-            Debug.Log("エフェクト発動！");
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
-        }
-
-        // 行動停止
-        StopAllCoroutines();
-
-        Destroy(gameObject);
-    }
-
-    // 周囲の敵の中から一番近いものを探す
-    Transform FindNearestEnemy()
+    Transform FindEnemyInBack45(Transform CuurentTransform)
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, searchRadius);
 
-        Transform nearest = null;
-        float minDistance = Mathf.Infinity;
+        Transform best = null;
+        float minDist = Mathf.Infinity;
 
-        foreach (Collider col in colliders)
+        Vector3 back = this.transform.position - CuurentTransform.position;
+        back.y = 0f;
+
+        foreach (var col in colliders)
         {
-            // 自分自身は除外
             if (col.gameObject == gameObject) continue;
+            if (!col.CompareTag("Enemy")) continue;
 
-            // Enemyタグのみ対象
-            if (col.CompareTag("Enemy"))
+            Vector3 to = col.transform.position - transform.position;
+            to.y = 0f;
+
+            if (to.sqrMagnitude < 0.0001f) continue;
+
+            float angle = Vector3.Angle(back, to);
+
+            if (angle <= 45f)
             {
-                float distance = Vector3.Distance(transform.position, col.transform.position);
-
-                if (distance < minDistance)
+                float dist = to.magnitude;
+                if (dist < minDist)
                 {
-                    minDistance = distance;
-                    nearest = col.transform;
+                    minDist = dist;
+                    best = col.transform;
                 }
             }
         }
 
-        return nearest;
+        return best;
     }
 
-    public void BlowAway(Transform CurrentTransform)
-    {
-        Vector3 BlowDir = this.transform.position - CurrentTransform.position;
-
-        Transform nearest = FindNearestEnemy();
-        if (nearest == null)
-        {
-            Debug.Log("BlowAway: ターゲットが見つかりません。正面方向へ吹き飛ばします。");
-            Rigidbody rbNoTarget = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
-            rbNoTarget.isKinematic = false;
-            rbNoTarget.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
-            return;
-        }
-
-        Vector3 TargetPosition = nearest.position;
-
-        // 水平面（y軸）で角度を計算するため、y成分を取り除く
-        Vector3 flatBlow = Vector3.ProjectOnPlane(BlowDir, Vector3.up);
-        Vector3 flatToTarget = Vector3.ProjectOnPlane(TargetPosition - transform.position, Vector3.up);
-
-        if (flatBlow.sqrMagnitude < 0.0001f || flatToTarget.sqrMagnitude < 0.0001f)
-        {
-            Debug.Log("BlowAway: 方向ベクトルが小さすぎます。");
-            Rigidbody rbSmall = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
-            rbSmall.isKinematic = false;
-            rbSmall.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
-            return;
-        }
-
-        flatBlow.Normalize();
-        flatToTarget.Normalize();
-
-        // 2つのベクトル間の角度（度単位）
-        float angle = Vector3.Angle(flatBlow, flatToTarget);
-
-        // 45°以内か確認
-        bool isWithin45 = angle <= 45f;
-        Debug.Log($"BlowAway: 角度 = {angle}°, 45°以内 = {isWithin45}");
-
-        // Rigidbody取得（無ければ追加）して実際に吹き飛ばす
-        Rigidbody rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
-        rb.isKinematic = false;
-
-        if (isWithin45)
-        {
-            // ターゲット方向へ少し持ち上げて吹き飛ばす
-            Vector3 forceDir = flatToTarget;
-            forceDir.y = 0.5f;
-            rb.AddForce(forceDir.normalized * knockbackForce, ForceMode.Impulse);
-        }
-        else
-        {
-            // 45°を超えるなら正面方向へ吹き飛ばす（例）
-            rb.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
-        }
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy"))
+
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            //CollisionEnemyのRigitbodyがkineticならば、BlowAwayを呼び出す
-            Rigidbody collisionRb = collision.gameObject.GetComponent<Rigidbody>();
-            if (collisionRb != null && !collisionRb.isKinematic)
+            Debug.Log("aaaa");
+
+            EnemyController EC = collision.gameObject.GetComponent<EnemyController>();
+            if (EC != null || EC.isKnockback)
             {
                 BlowAway(collision.transform);
             }
+
         }
+
     }
+
 }
