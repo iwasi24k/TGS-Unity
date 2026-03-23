@@ -136,16 +136,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f148ca42d7988d46a271f78dc36ebf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  Rock:
-  - {fileID: 379983726875934338, guid: 6379c62484f81d34d94187f4e8adb3de, type: 3}
-  - {fileID: 2563799641086708329, guid: cba39274a22d83e4eba798e7aa754970, type: 3}
-  - {fileID: 1520525181220828679, guid: a751815ecbf458a4489aef4dfed7b410, type: 3}
-  - {fileID: 9068434980991561673, guid: 5c6db046e63c1224ea71e1182745239b, type: 3}
-  minDistance: 10
-  scaleMultiplier: 0.5
-  rockNumPerStage: 0a0000000700000004000000
+  stages:
+  - rocks:
+    - prefab: {fileID: 379983726875934338, guid: 6379c62484f81d34d94187f4e8adb3de, type: 3}
+      position: {x: 10, y: 0, z: 0}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 2563799641086708329, guid: cba39274a22d83e4eba798e7aa754970, type: 3}
+      position: {x: 0, y: 0, z: 10}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 1520525181220828679, guid: a751815ecbf458a4489aef4dfed7b410, type: 3}
+      position: {x: 5, y: 0, z: 15}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 9068434980991561673, guid: 5c6db046e63c1224ea71e1182745239b, type: 3}
+      position: {x: 15, y: 0, z: 24}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 379983726875934338, guid: 6379c62484f81d34d94187f4e8adb3de, type: 3}
+      position: {x: -4, y: 0, z: 0}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+  - rocks:
+    - prefab: {fileID: 379983726875934338, guid: 6379c62484f81d34d94187f4e8adb3de, type: 3}
+      position: {x: -20, y: 0, z: 0}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 2563799641086708329, guid: cba39274a22d83e4eba798e7aa754970, type: 3}
+      position: {x: 0, y: 0, z: -15}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 1520525181220828679, guid: a751815ecbf458a4489aef4dfed7b410, type: 3}
+      position: {x: -9, y: 0, z: 0}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 9068434980991561673, guid: 5c6db046e63c1224ea71e1182745239b, type: 3}
+      position: {x: -24, y: 0, z: -8}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+  - rocks:
+    - prefab: {fileID: 379983726875934338, guid: 6379c62484f81d34d94187f4e8adb3de, type: 3}
+      position: {x: 20, y: 0, z: 0}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 2563799641086708329, guid: cba39274a22d83e4eba798e7aa754970, type: 3}
+      position: {x: -12, y: 0, z: 14}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
+    - prefab: {fileID: 9068434980991561673, guid: 5c6db046e63c1224ea71e1182745239b, type: 3}
+      position: {x: 24, y: 0, z: 7}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
+      rotation: {x: 1, y: 1, z: 1}
   currentStage: 0
-  fieldSize: {x: 62, y: 0, z: 44}
 --- !u!4 &502074519 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9066085203353157826, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
