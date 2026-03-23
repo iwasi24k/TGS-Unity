@@ -49,8 +49,6 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private float weakAttackHeightOffset = 0.8f;
     [SerializeField] private float weakAttackStartup = 0.04f;
     [SerializeField] private float weakAttackCooldown = 0.15f;
-    [SerializeField] private float weakKnockbackDistance = 0.55f;
-    [SerializeField] private float weakKnockbackDuration = 0.10f;
 
     [Header("Strong Attack")]
     [SerializeField] private int strongDamage = 20;
@@ -71,16 +69,11 @@ public class SC_Player : MonoBehaviour
     [SerializeField, Range(0.01f, 1f)] private float strongAttackHitStopTimeScale = 0.01f;
     [SerializeField] private float strongAttackHitStopDurationRealtime = 0.20f;
 
-    [Header("Strong Slide Knockback")]
-    [SerializeField] private float strongSlideDistance = 4.2f;
-    [SerializeField] private float strongSlideDuration = 0.55f;
-
-    [Header("Billiard Hit While Sliding")]
-    [SerializeField] private int slideHitDamage = 10;
-    [SerializeField] private float slideHitRadius = 0.65f;
-    [SerializeField] private float slideHitHeightOffset = 0.5f;
-    [SerializeField] private float chainSlideDistance = 1.0f;
-    [SerializeField] private float chainSlideDuration = 0.16f;
+    [Header("Strong Attack Camera Return")]
+    [SerializeField] private float strongAttackCameraWatchMinRealtime = 0.18f;
+    [SerializeField] private float strongAttackCameraWatchDistance = 1.6f;
+    [SerializeField] private float strongAttackCameraWatchMaxRealtime = 0.90f;
+    [SerializeField] private float strongAttackCameraReturnDelayRealtime = 0.06f;
 
     [Header("Target")]
     [SerializeField] private float targetSearchRadius = 10f;
@@ -100,22 +93,20 @@ public class SC_Player : MonoBehaviour
     private bool isAttacking;
     private bool isDodging;
     private bool isStrongAttackCharging;
+    private bool isStrongAttackSequenceActive;
     private bool evadeBoostPressActive;
     private float evadeBoostPressedTime = -999f;
 
     private EnemyController currentTarget;
 
     private readonly Collider[] overlapResults = new Collider[64];
-    private readonly Dictionary<EnemyController, Coroutine> enemySlideRoutineTable = new Dictionary<EnemyController, Coroutine>();
-    private readonly Dictionary<EnemyController, float> enemyMoveSpeedBackupTable = new Dictionary<EnemyController, float>();
 
     private float baseFixedDeltaTime;
 
     private bool strongAttackSlowActive;
-    private EnemyController strongAttackSlowTrackedEnemy;
-
     private bool strongAttackHitStopActive;
     private Coroutine strongAttackHitStopRoutine;
+    private Coroutine strongAttackCameraReturnRoutine;
 
     public float CurrentHeat => currentHeat;
     public float MaxHeat => maxHeat;
@@ -148,8 +139,6 @@ public class SC_Player : MonoBehaviour
         weakAttackHeightOffset = Mathf.Max(0f, weakAttackHeightOffset);
         weakAttackStartup = Mathf.Max(0f, weakAttackStartup);
         weakAttackCooldown = Mathf.Max(0f, weakAttackCooldown);
-        weakKnockbackDistance = Mathf.Max(0f, weakKnockbackDistance);
-        weakKnockbackDuration = Mathf.Max(0.01f, weakKnockbackDuration);
 
         strongDamage = Mathf.Max(1, strongDamage);
         strongAttackRadius = Mathf.Max(0.1f, strongAttackRadius);
@@ -166,14 +155,10 @@ public class SC_Player : MonoBehaviour
         strongAttackHitStopTimeScale = Mathf.Clamp(strongAttackHitStopTimeScale, 0.01f, 1f);
         strongAttackHitStopDurationRealtime = Mathf.Max(0.01f, strongAttackHitStopDurationRealtime);
 
-        strongSlideDistance = Mathf.Max(0.1f, strongSlideDistance);
-        strongSlideDuration = Mathf.Max(0.01f, strongSlideDuration);
-
-        slideHitDamage = Mathf.Max(0, slideHitDamage);
-        slideHitRadius = Mathf.Max(0.1f, slideHitRadius);
-        slideHitHeightOffset = Mathf.Max(0f, slideHitHeightOffset);
-        chainSlideDistance = Mathf.Max(0f, chainSlideDistance);
-        chainSlideDuration = Mathf.Max(0.01f, chainSlideDuration);
+        strongAttackCameraWatchMinRealtime = Mathf.Max(0f, strongAttackCameraWatchMinRealtime);
+        strongAttackCameraWatchDistance = Mathf.Max(0f, strongAttackCameraWatchDistance);
+        strongAttackCameraWatchMaxRealtime = Mathf.Max(strongAttackCameraWatchMinRealtime, strongAttackCameraWatchMaxRealtime);
+        strongAttackCameraReturnDelayRealtime = Mathf.Max(0f, strongAttackCameraReturnDelayRealtime);
 
         targetSearchRadius = Mathf.Max(0.1f, targetSearchRadius);
         targetKeepDistance = Mathf.Max(targetSearchRadius, targetKeepDistance);
@@ -217,7 +202,7 @@ public class SC_Player : MonoBehaviour
 
         evadeBoostPressActive = false;
         isStrongAttackCharging = false;
-        RestoreAllEnemyMoveSpeeds();
+        isStrongAttackSequenceActive = false;
         RestoreAllTimeScaleEffects();
     }
 
@@ -240,7 +225,6 @@ public class SC_Player : MonoBehaviour
         MovePlayer();
         RotateModel();
         UpdateCameraTargetState();
-        CleanupDeadEnemyEntries();
         RefreshHeatUI();
     }
 
@@ -250,7 +234,7 @@ public class SC_Player : MonoBehaviour
             cController = GetComponent<CharacterController>();
 
         if (animator == null)
-            animator = GetComponentInChildren<Animator>();
+            animator = GetComponentInChildren<Animator>(true);
 
         if (cameraScript == null && Camera.main != null)
             cameraScript = Camera.main.GetComponent<CS_Camera>();
@@ -283,6 +267,16 @@ public class SC_Player : MonoBehaviour
 
     private void ReadMoveInput()
     {
+        if (IsStrongAttackInputLocked())
+        {
+            moveInputDir = Vector3.zero;
+
+            if (animator != null)
+                animator.SetBool("bWalk", false);
+
+            return;
+        }
+
         Vector2 input2D = ReadMoveValue();
         moveInputDir = new Vector3(input2D.x, 0f, input2D.y);
 
@@ -300,6 +294,9 @@ public class SC_Player : MonoBehaviour
 
     private void HandleTargetInput()
     {
+        if (IsStrongAttackInputLocked())
+            return;
+
         if (!WasPressedThisFrame(targetAction))
             return;
 
@@ -316,6 +313,12 @@ public class SC_Player : MonoBehaviour
 
     private void HandleEvadeBoostInput()
     {
+        if (IsStrongAttackInputLocked())
+        {
+            evadeBoostPressActive = false;
+            return;
+        }
+
         if (WasPressedThisFrame(evadeBoostAction))
         {
             evadeBoostPressActive = true;
@@ -343,7 +346,7 @@ public class SC_Player : MonoBehaviour
 
     private void HandleAttackInput()
     {
-        if (isAttacking || isDodging || isStrongAttackCharging)
+        if (isAttacking || isDodging || isStrongAttackCharging || isStrongAttackSequenceActive)
             return;
 
         if (WasPressedThisFrame(weakAttackAction) && weakAttackCooldownTimer <= 0f)
@@ -367,7 +370,7 @@ public class SC_Player : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (isDodging || isStrongAttackCharging)
+        if (isDodging || isStrongAttackCharging || IsStrongAttackInputLocked())
         {
             if (animator != null)
             {
@@ -401,6 +404,9 @@ public class SC_Player : MonoBehaviour
 
     private void RotateModel()
     {
+        if (IsStrongAttackInputLocked())
+            return;
+
         Vector3 faceDir = Vector3.zero;
 
         if (IsLockOnActive() && TryGetTargetDirection(out Vector3 targetDir))
@@ -527,22 +533,44 @@ public class SC_Player : MonoBehaviour
         isStrongAttackCharging = false;
 
         Vector3 attackDir = GetAttackDirection(strongAttackAimAssist);
-        DoStrongAttack(attackDir);
+        StrongAttackResult result = DoStrongAttack(attackDir);
 
-        if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == null)
+        EndStrongAttackChargeSlow();
+
+        if (result.anyHit)
+        {
+            StartStrongAttackCameraReturnWatch(result.presentationEnemy, result.presentationEnemyStartPos);
+        }
+        else
         {
             if (strongAttackMissRestoreDelayRealtime > 0f)
                 yield return new WaitForSecondsRealtime(strongAttackMissRestoreDelayRealtime);
 
-            EndStrongAttackPresentation();
+            EndStrongAttackCameraPresentation();
         }
 
         isAttacking = false;
+        isStrongAttackSequenceActive = false;
     }
 
     private void BeginStrongAttackPresentation()
     {
-        strongAttackSlowTrackedEnemy = null;
+        if (strongAttackCameraReturnRoutine != null)
+        {
+            StopCoroutine(strongAttackCameraReturnRoutine);
+            strongAttackCameraReturnRoutine = null;
+        }
+
+        isStrongAttackSequenceActive = true;
+        moveInputDir = Vector3.zero;
+        evadeBoostPressActive = false;
+
+        if (animator != null)
+        {
+            animator.SetBool("bWalk", false);
+            animator.SetBool("bRun", false);
+        }
+
         strongAttackSlowActive = true;
         ApplyCombinedTimeScale();
 
@@ -550,14 +578,67 @@ public class SC_Player : MonoBehaviour
             cameraScript.StartStrongAttackCutIn();
     }
 
-    private void EndStrongAttackPresentation()
+    private void EndStrongAttackChargeSlow()
     {
         strongAttackSlowActive = false;
-        strongAttackSlowTrackedEnemy = null;
         ApplyCombinedTimeScale();
+    }
 
+    private void EndStrongAttackCameraPresentation()
+    {
         if (cameraScript != null)
             cameraScript.EndStrongAttackCutIn();
+    }
+
+    private void StartStrongAttackCameraReturnWatch(EnemyController enemy, Vector3 enemyStartPos)
+    {
+        if (strongAttackCameraReturnRoutine != null)
+        {
+            StopCoroutine(strongAttackCameraReturnRoutine);
+            strongAttackCameraReturnRoutine = null;
+        }
+
+        strongAttackCameraReturnRoutine = StartCoroutine(
+            StrongAttackCameraReturnWatchRoutine(enemy, enemyStartPos)
+        );
+    }
+
+    private IEnumerator StrongAttackCameraReturnWatchRoutine(EnemyController enemy, Vector3 enemyStartPos)
+    {
+        while (strongAttackHitStopActive)
+            yield return null;
+
+        float timer = 0f;
+
+        while (timer < strongAttackCameraWatchMaxRealtime)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            bool minTimeReached = timer >= strongAttackCameraWatchMinRealtime;
+            bool movedEnough = false;
+
+            if (enemy != null && enemy.transform != null)
+            {
+                Vector3 currentPos = enemy.transform.position;
+                currentPos.y = enemyStartPos.y;
+                movedEnough = Vector3.Distance(enemyStartPos, currentPos) >= strongAttackCameraWatchDistance;
+            }
+            else
+            {
+                movedEnough = true;
+            }
+
+            if (minTimeReached && movedEnough)
+                break;
+
+            yield return null;
+        }
+
+        if (strongAttackCameraReturnDelayRealtime > 0f)
+            yield return new WaitForSecondsRealtime(strongAttackCameraReturnDelayRealtime);
+
+        EndStrongAttackCameraPresentation();
+        strongAttackCameraReturnRoutine = null;
     }
 
     private void StartStrongAttackHitStop()
@@ -587,14 +668,20 @@ public class SC_Player : MonoBehaviour
     private void RestoreAllTimeScaleEffects()
     {
         strongAttackSlowActive = false;
-        strongAttackSlowTrackedEnemy = null;
         strongAttackHitStopActive = false;
         isStrongAttackCharging = false;
+        isStrongAttackSequenceActive = false;
 
         if (strongAttackHitStopRoutine != null)
         {
             StopCoroutine(strongAttackHitStopRoutine);
             strongAttackHitStopRoutine = null;
+        }
+
+        if (strongAttackCameraReturnRoutine != null)
+        {
+            StopCoroutine(strongAttackCameraReturnRoutine);
+            strongAttackCameraReturnRoutine = null;
         }
 
         if (cameraScript != null)
@@ -648,24 +735,27 @@ public class SC_Player : MonoBehaviour
                 targetAssignedThisAttack = true;
             }
 
-            Vector3 knockDir = GetKnockDirection(enemy.transform.position, attackDir);
-
             if (cameraScript != null)
                 cameraScript.StartShake(0.12f, 0.20f);
 
             bool dead = ApplyDamageToEnemy(enemy, weakDamage);
             if (dead)
-                continue;
-
-            StartOrReplaceSlide(enemy, knockDir, weakKnockbackDistance, weakKnockbackDuration, 0, 0f, 0.01f);
+                enemy.BlowAway(transform);
         }
 
         if (validHitCount > 0)
             GainHeat(weakHitHeatGain * validHitCount);
     }
 
-    private void DoStrongAttack(Vector3 attackDir)
+    private StrongAttackResult DoStrongAttack(Vector3 attackDir)
     {
+        StrongAttackResult result = new StrongAttackResult
+        {
+            anyHit = false,
+            presentationEnemy = null,
+            presentationEnemyStartPos = Vector3.zero
+        };
+
         Vector3 center = BuildAttackCenter(attackDir, strongAttackHeightOffset, strongAttackForwardOffset);
 
         int hitCount = Physics.OverlapSphereNonAlloc(
@@ -678,9 +768,7 @@ public class SC_Player : MonoBehaviour
 
         HashSet<EnemyController> hitEnemies = new HashSet<EnemyController>();
         bool targetAssignedThisAttack = false;
-        bool slowTargetAssigned = false;
         bool hitStopTriggered = false;
-        bool anyHit = false;
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -688,7 +776,7 @@ public class SC_Player : MonoBehaviour
             if (enemy == null || !hitEnemies.Add(enemy))
                 continue;
 
-            anyHit = true;
+            result.anyHit = true;
 
             if (!targetAssignedThisAttack)
             {
@@ -696,39 +784,24 @@ public class SC_Player : MonoBehaviour
                 targetAssignedThisAttack = true;
             }
 
-            Vector3 slideDir = GetKnockDirection(enemy.transform.position, attackDir);
-            bool dead = ApplyDamageToEnemy(enemy, strongDamage);
-
-            if (!slowTargetAssigned && enemy != null && enemy.IsAlive)
+            if (result.presentationEnemy == null)
             {
-                strongAttackSlowTrackedEnemy = enemy;
-                slowTargetAssigned = true;
+                result.presentationEnemy = enemy;
+                result.presentationEnemyStartPos = enemy.transform.position;
             }
+
+            bool dead = ApplyDamageToEnemy(enemy, strongDamage);
+            if (dead)
+                enemy.BlowAway(transform);
 
             if (!hitStopTriggered)
             {
                 StartStrongAttackHitStop();
                 hitStopTriggered = true;
             }
-
-            if (dead)
-                continue;
-
-            StartOrReplaceSlide(
-                enemy,
-                slideDir,
-                strongSlideDistance,
-                strongSlideDuration,
-                slideHitDamage,
-                chainSlideDistance,
-                chainSlideDuration
-            );
         }
 
-        if (!anyHit)
-        {
-            // miss: StrongAttackRoutine ‘¤‚Å­‚µ‘Ò‚Á‚Ä‚©‚ç–ß‚·
-        }
+        return result;
     }
 
     private Vector3 GetAttackDirection(float assistWeight)
@@ -868,22 +941,6 @@ public class SC_Player : MonoBehaviour
         return true;
     }
 
-    private Vector3 GetKnockDirection(Vector3 targetPos, Vector3 fallbackDir)
-    {
-        Vector3 dir = targetPos - transform.position;
-        dir.y = 0f;
-
-        if (dir.sqrMagnitude <= 0.0001f)
-            dir = fallbackDir;
-
-        dir.y = 0f;
-
-        if (dir.sqrMagnitude <= 0.0001f)
-            dir = Vector3.forward;
-
-        return dir.normalized;
-    }
-
     private Vector3 GetEvadeDirection()
     {
         Vector3 dir = moveInputDir;
@@ -949,7 +1006,7 @@ public class SC_Player : MonoBehaviour
 
     private bool IsBoostMoveActive()
     {
-        if (isDodging || isStrongAttackCharging)
+        if (isDodging || isStrongAttackCharging || IsStrongAttackInputLocked())
             return false;
 
         if (!IsPressed(evadeBoostAction))
@@ -964,6 +1021,11 @@ public class SC_Player : MonoBehaviour
     private bool IsLockOnActive()
     {
         return currentTarget != null && IsEnemyTargetable(currentTarget);
+    }
+
+    private bool IsStrongAttackInputLocked()
+    {
+        return isStrongAttackSequenceActive;
     }
 
     private bool IsEnemyTargetable(EnemyController enemy)
@@ -1002,238 +1064,6 @@ public class SC_Player : MonoBehaviour
     private void ClearTarget()
     {
         currentTarget = null;
-    }
-
-    private void StartOrReplaceSlide(
-        EnemyController enemy,
-        Vector3 dir,
-        float distance,
-        float duration,
-        int collisionDamage,
-        float chainDistance,
-        float chainDuration)
-    {
-        if (enemy == null)
-            return;
-
-        if (enemySlideRoutineTable.TryGetValue(enemy, out Coroutine running) && running != null)
-        {
-            StopCoroutine(running);
-            RestoreEnemyMoveSpeed(enemy);
-            enemySlideRoutineTable.Remove(enemy);
-        }
-
-        Coroutine routine = StartCoroutine(
-            SlideEnemyRoutine(enemy, dir, distance, duration, collisionDamage, chainDistance, chainDuration)
-        );
-
-        enemySlideRoutineTable[enemy] = routine;
-    }
-
-    private IEnumerator SlideEnemyRoutine(
-        EnemyController enemy,
-        Vector3 dir,
-        float distance,
-        float duration,
-        int collisionDamage,
-        float chainDistance,
-        float chainDuration)
-    {
-        if (enemy == null || enemy.transform == null)
-        {
-            if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
-                EndStrongAttackPresentation();
-
-            yield break;
-        }
-
-        CacheAndStopEnemyMove(enemy);
-
-        dir.y = 0f;
-        if (dir.sqrMagnitude <= 0.0001f)
-            dir = Vector3.forward;
-        dir.Normalize();
-
-        float safeDuration = Mathf.Max(0.01f, duration);
-        float startSpeed = distance / safeDuration;
-        float fixedY = enemy.transform.position.y;
-        float timer = 0f;
-
-        HashSet<EnemyController> hitDuringSlide = new HashSet<EnemyController> { enemy };
-
-        while (timer < safeDuration)
-        {
-            if (enemy == null || enemy.transform == null || !enemy.IsAlive)
-            {
-                RestoreEnemyMoveSpeed(enemy);
-                enemySlideRoutineTable.Remove(enemy);
-
-                if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
-                    EndStrongAttackPresentation();
-
-                yield break;
-            }
-
-            float t = timer / safeDuration;
-            float speed = Mathf.Lerp(startSpeed, 0f, t);
-
-            Vector3 move = dir * speed * Time.deltaTime;
-            Vector3 nextPos = enemy.transform.position + move;
-            nextPos.y = fixedY;
-            enemy.transform.position = nextPos;
-
-            if (collisionDamage > 0)
-            {
-                ResolveSlidingEnemyHits(
-                    enemy,
-                    dir,
-                    collisionDamage,
-                    chainDistance,
-                    chainDuration,
-                    hitDuringSlide
-                );
-            }
-
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        if (enemy != null)
-        {
-            RestoreEnemyMoveSpeed(enemy);
-            enemySlideRoutineTable.Remove(enemy);
-        }
-
-        if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
-            EndStrongAttackPresentation();
-    }
-
-    private void ResolveSlidingEnemyHits(
-        EnemyController slidingEnemy,
-        Vector3 slideDir,
-        int collisionDamage,
-        float chainDistance,
-        float chainDuration,
-        HashSet<EnemyController> hitDuringSlide)
-    {
-        if (slidingEnemy == null || !slidingEnemy.IsAlive)
-            return;
-
-        Vector3 center = slidingEnemy.transform.position + Vector3.up * slideHitHeightOffset;
-
-        int hitCount = Physics.OverlapSphereNonAlloc(
-            center,
-            slideHitRadius,
-            overlapResults,
-            ~0,
-            QueryTriggerInteraction.Collide
-        );
-
-        for (int i = 0; i < hitCount; i++)
-        {
-            EnemyController other = GetEnemyFromCollider(overlapResults[i]);
-            if (other == null || other == slidingEnemy || !hitDuringSlide.Add(other))
-                continue;
-
-            Vector3 chainDir = other.transform.position - slidingEnemy.transform.position;
-            chainDir.y = 0f;
-
-            if (chainDir.sqrMagnitude <= 0.0001f)
-                chainDir = slideDir;
-
-            chainDir.Normalize();
-
-            bool dead = ApplyDamageToEnemy(other, collisionDamage);
-            if (dead)
-                continue;
-
-            if (chainDistance > 0f)
-            {
-                StartOrReplaceSlide(
-                    other,
-                    chainDir,
-                    chainDistance,
-                    chainDuration,
-                    0,
-                    0f,
-                    0.01f
-                );
-            }
-        }
-    }
-
-    private void CacheAndStopEnemyMove(EnemyController enemy)
-    {
-        if (enemy == null)
-            return;
-
-        if (!enemyMoveSpeedBackupTable.ContainsKey(enemy))
-            enemyMoveSpeedBackupTable.Add(enemy, enemy.moveSpeed);
-
-        enemy.moveSpeed = 0f;
-    }
-
-    private void RestoreEnemyMoveSpeed(EnemyController enemy)
-    {
-        if (enemy == null)
-            return;
-
-        if (enemyMoveSpeedBackupTable.TryGetValue(enemy, out float oldMoveSpeed))
-        {
-            enemy.moveSpeed = oldMoveSpeed;
-            enemyMoveSpeedBackupTable.Remove(enemy);
-        }
-    }
-
-    private void RestoreAllEnemyMoveSpeeds()
-    {
-        foreach (var pair in enemyMoveSpeedBackupTable)
-        {
-            if (pair.Key != null)
-                pair.Key.moveSpeed = pair.Value;
-        }
-
-        enemyMoveSpeedBackupTable.Clear();
-        enemySlideRoutineTable.Clear();
-    }
-
-    private void CleanupDeadEnemyEntries()
-    {
-        List<EnemyController> removeSlideKeys = null;
-        foreach (var pair in enemySlideRoutineTable)
-        {
-            if (pair.Key == null)
-            {
-                if (removeSlideKeys == null)
-                    removeSlideKeys = new List<EnemyController>();
-
-                removeSlideKeys.Add(pair.Key);
-            }
-        }
-
-        if (removeSlideKeys != null)
-        {
-            for (int i = 0; i < removeSlideKeys.Count; i++)
-                enemySlideRoutineTable.Remove(removeSlideKeys[i]);
-        }
-
-        List<EnemyController> removeSpeedKeys = null;
-        foreach (var pair in enemyMoveSpeedBackupTable)
-        {
-            if (pair.Key == null)
-            {
-                if (removeSpeedKeys == null)
-                    removeSpeedKeys = new List<EnemyController>();
-
-                removeSpeedKeys.Add(pair.Key);
-            }
-        }
-
-        if (removeSpeedKeys != null)
-        {
-            for (int i = 0; i < removeSpeedKeys.Count; i++)
-                enemyMoveSpeedBackupTable.Remove(removeSpeedKeys[i]);
-        }
     }
 
     private void SetActionEnabled(InputActionReference actionRef, bool enable)
@@ -1295,10 +1125,14 @@ public class SC_Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(strongCenter, strongAttackRadius);
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position + Vector3.up * slideHitHeightOffset, slideHitRadius);
-
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, targetSearchRadius);
+    }
+
+    private struct StrongAttackResult
+    {
+        public bool anyHit;
+        public EnemyController presentationEnemy;
+        public Vector3 presentationEnemyStartPos;
     }
 }
