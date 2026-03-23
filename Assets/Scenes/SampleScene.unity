@@ -949,11 +949,12 @@ MonoBehaviour:
   strongAttackHeight: 1.85
   strongAttackSideOffset: 0.75
   strongAttackLookHeight: 1.25
-  strongAttackCutInDuration: 0.22
+  strongAttackFallbackLookDistance: 4
   strongAttackBlendInSpeed: 12
   strongAttackBlendOutSpeed: 10
-  sensitivity: 100
+  sensitivity: 10
   positionSmoothTime: 0.1
+  lookSmoothTime: 0.06
   rotationSmoothSpeed: 5
 --- !u!1 &2075184563 stripped
 GameObject:
@@ -992,6 +993,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: currentHeat
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: targetAction
       value: 
       objectReference: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
@@ -1012,20 +1017,40 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: manualSlowTimeScale
+      value: 0.507
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: strongSlideDistance
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackHeatCost
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: strongAttackSlowDuration
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongKillCutInTimeScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: strongAttackSlowTimeScale
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackHitStopTimeScale
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: strongAttackRestoreSlideProgress
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackHitStopDurationRealtime
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: strongAttackMissRestoreDelayRealtime
