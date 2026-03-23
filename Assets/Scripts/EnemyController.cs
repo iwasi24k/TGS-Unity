@@ -58,6 +58,8 @@ public class EnemyController : MonoBehaviour
     [Header("Animator")]
     public Animator animator;
 
+    private bool isBlowingAway = false;
+
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -198,8 +200,9 @@ public class EnemyController : MonoBehaviour
         }
 
         // 既に速度が閾値以下なら即死亡処理
-        if (rb.linearVelocity.magnitude <= deathVelocityThreshold)
+        if ((rb.linearVelocity.magnitude <= deathVelocityThreshold) )
         {
+            Debug.Log("Die: 速度が閾値以下なので即死します。");
             ExecuteDeath();
         }
         else
@@ -282,6 +285,8 @@ public class EnemyController : MonoBehaviour
         Vector3 BlowDir = this.transform.position - CurrentTransform.position;
 
         BlowDir.Normalize();
+
+        isBlowingAway = true;
 
         Transform nearest = FindNearestEnemy();
         if (nearest == null)
