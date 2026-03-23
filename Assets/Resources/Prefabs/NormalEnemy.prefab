@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 3873150485594401731}
   m_Layer: 0
   m_Name: NormalEnemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -226,6 +226,9 @@ MonoBehaviour:
   waitTime: 1
   maxHP: 100
   hpSlider: {fileID: 1248379708458104429}
+  knockbackForce: 10
+  searchRadius: 10
+  destroyDelay: 1.5
 --- !u!1 &4065806679368641807
 GameObject:
   m_ObjectHideFlags: 0

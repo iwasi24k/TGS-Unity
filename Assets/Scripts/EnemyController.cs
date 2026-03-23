@@ -41,6 +41,16 @@ public class EnemyController : MonoBehaviour
     // HPゲージとして使うSlider
     public Slider hpSlider;
 
+    [Header("死亡時の吹き飛び")]
+    // 吹き飛ぶ力の強さ
+    public float knockbackForce = 10f;
+
+    // 敵を検知する範囲
+    public float searchRadius = 10f;
+
+    // 消えるまでの時間
+    public float destroyDelay = 1.5f;
+
     void Start()
     {
         // タグを使ってシーン内のプレイヤーを取得する
@@ -75,13 +85,8 @@ public class EnemyController : MonoBehaviour
             // プレイヤーが存在する場合、そちらを向く
             if (player != null)
             {
-                // プレイヤーの位置を取得
                 Vector3 lookPos = player.position;
-
-                // 上下の回転を防ぐためにY座標を固定
                 lookPos.y = transform.position.y;
-
-                // プレイヤーの方向を向く
                 transform.LookAt(lookPos);
             }
 
@@ -92,8 +97,6 @@ public class EnemyController : MonoBehaviour
             for (int i = 0; i < shotCount; i++)
             {
                 Shoot();
-
-                // 次の発射まで待機
                 yield return new WaitForSeconds(shotInterval);
             }
 
@@ -109,13 +112,8 @@ public class EnemyController : MonoBehaviour
             // 一定時間だけ移動する
             while (timer < moveDuration)
             {
-                // ワールド座標で移動（回転の影響を受けない）
                 transform.Translate(randomDir * moveSpeed * Time.deltaTime, Space.World);
-
-                // 経過時間を加算
                 timer += Time.deltaTime;
-
-                // 次のフレームまで待機
                 yield return null;
             }
 
@@ -126,23 +124,18 @@ public class EnemyController : MonoBehaviour
 
     void Shoot()
     {
-        // 弾のPrefabが設定されていない場合は何もしない
         if (bulletPrefab == null) return;
 
-        // 弾を生成（敵の前方に少しずらして出す）
         GameObject bullet = Instantiate(
             bulletPrefab,
             transform.position + transform.forward,
             Quaternion.identity
         );
 
-        // 弾のRigidbodyを取得
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        // Rigidbodyがある場合のみ速度を設定
         if (rb != null)
         {
-            // 前方向に速度を与える
             rb.linearVelocity = transform.forward * bulletSpeed;
         }
     }
@@ -150,16 +143,11 @@ public class EnemyController : MonoBehaviour
     // 外部（弾など）から呼ばれるダメージ処理
     public void TakeDamage(float damage)
     {
-        // HPを減らす
         currentHP -= damage;
-
-        // HPが0未満や最大値を超えないように制限
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
-        // HPバーを更新
         UpdateHPBar();
 
-        // HPが0になったら死亡処理
         if (currentHP <= 0)
         {
             Die();
@@ -171,7 +159,6 @@ public class EnemyController : MonoBehaviour
     {
         if (hpSlider != null)
         {
-            // 現在HPを0〜1の割合に変換してSliderに反映
             hpSlider.value = currentHP / maxHP;
         }
     }
@@ -179,7 +166,78 @@ public class EnemyController : MonoBehaviour
     // 敵が倒されたときの処理
     void Die()
     {
-        // 敵オブジェクトを削除
+        // 行動停止
+        StopAllCoroutines();
+
+        // 吹き飛び処理へ
+        StartCoroutine(DieRoutine());
+    }
+
+    // 死亡時の吹き飛び処理
+    IEnumerator DieRoutine()
+    {
+        // 一番近い敵を探す
+        Transform targetEnemy = FindNearestEnemy();
+
+        // Rigidbody取得（無ければ追加）
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        // 物理挙動を有効化
+        rb.isKinematic = false;
+
+        if (targetEnemy != null)
+        {
+            // ターゲット方向に向かうベクトル
+            Vector3 direction = (targetEnemy.position - transform.position).normalized;
+
+            // 少し上方向に持ち上げる
+            direction.y = 0.5f;
+
+            // 力を加える
+            rb.AddForce(direction * knockbackForce, ForceMode.Impulse);
+        }
+        else
+        {
+            // 敵がいない場合は上に飛ばす
+            rb.AddForce(Vector3.up * knockbackForce, ForceMode.Impulse);
+        }
+
+        // 一定時間後に削除
+        yield return new WaitForSeconds(destroyDelay);
+
         Destroy(gameObject);
+    }
+
+    // 周囲の敵の中から一番近いものを探す
+    Transform FindNearestEnemy()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, searchRadius);
+
+        Transform nearest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (Collider col in colliders)
+        {
+            // 自分自身は除外
+            if (col.gameObject == gameObject) continue;
+
+            // Enemyタグのみ対象
+            if (col.CompareTag("Enemy"))
+            {
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearest = col.transform;
+                }
+            }
+        }
+
+        return nearest;
     }
 }
