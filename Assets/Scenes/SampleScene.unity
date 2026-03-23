@@ -149,6 +149,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4433559444314425524, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 303781383510882273, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.1907344
@@ -192,6 +196,10 @@ PrefabInstance:
     - target: {fileID: 303781383511043009, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 1931470471286784717, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1137,7 +1145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_Camera
   followTarget: {fileID: 502074519}
-  normalOffset: {x: 0, y: 25, z: -15}
+  normalOffset: {x: 0, y: 10, z: -10}
   normalLookOffset: {x: 0, y: 1.5, z: 0}
   lockOnDistanceScale: 0.82
   lockOnHeightOffset: 0.15
@@ -1161,6 +1169,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4433559444314425524, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 303781383510882273, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.410867
@@ -1205,6 +1217,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1931470471286784717, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1218,6 +1234,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4433559444314425524, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 303781383510882273, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.7155869
@@ -1261,6 +1281,10 @@ PrefabInstance:
     - target: {fileID: 303781383511043009, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
       propertyPath: m_Name
       value: Enemy (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1931470471286784717, guid: d07dca147c718354db0da90ca853f8d0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
