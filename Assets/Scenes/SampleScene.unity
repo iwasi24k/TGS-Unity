@@ -312,6 +312,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: NormalEnemy 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: hitEffect
+      value: 
+      objectReference: {fileID: 2835178270884087326, guid: 8ff3b2144da17404e813f8a358d3e926, type: 3}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: lowHpEffect
+      value: 
+      objectReference: {fileID: 1659078712644198927, guid: 0d4fd364ae38da94cbd497f79e0ae048, type: 3}
     - target: {fileID: 4612429805875022594, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -609,6 +617,14 @@ PrefabInstance:
       propertyPath: maxHP
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: hitEffect
+      value: 
+      objectReference: {fileID: 2835178270884087326, guid: 8ff3b2144da17404e813f8a358d3e926, type: 3}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: lowHpEffect
+      value: 
+      objectReference: {fileID: 1659078712644198927, guid: 0d4fd364ae38da94cbd497f79e0ae048, type: 3}
     - target: {fileID: 4612429805875022594, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -674,6 +690,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: NormalEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: hitEffect
+      value: 
+      objectReference: {fileID: 2835178270884087326, guid: 8ff3b2144da17404e813f8a358d3e926, type: 3}
+    - target: {fileID: 3873150485594401731, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
+      propertyPath: lowHpEffect
+      value: 
+      objectReference: {fileID: 1659078712644198927, guid: 0d4fd364ae38da94cbd497f79e0ae048, type: 3}
     - target: {fileID: 4612429805875022594, guid: 9d94a7ea0f464da45bbd7910ecb33ec8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
