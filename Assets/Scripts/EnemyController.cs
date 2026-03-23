@@ -27,6 +27,7 @@ public class EnemyController : MonoBehaviour
     public float maxHP = 100f;
     private float currentHP;
     public Slider hpSlider;
+    public bool IsAlive => currentHP > 0;
 
     [Header("エフェクト")]
     public GameObject hitEffect;     // 被弾エフェクト

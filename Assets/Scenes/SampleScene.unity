@@ -189,7 +189,6 @@ MonoBehaviour:
       scale: {x: 0.5, y: 0.5, z: 0.5}
       rotation: {x: 1, y: 1, z: 1}
   currentStage: 0
-  fieldSize: {x: 62, y: 0, z: 44}
 --- !u!1001 &236264609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -580,8 +579,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1605314422}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -635,10 +633,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.9348, y: 3.1492, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 458554152}
-  - {fileID: 816775338}
-  m_Father: {fileID: 253257055}
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -802,7 +798,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 816775338}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1077,10 +1073,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_Camera
   followTarget: {fileID: 502074519}
-  sensitivity: 120
   normalOffset: {x: 0, y: 25, z: -15}
-  attackOffset: {x: 1.5, y: 1.8, z: -3}
-  smoothSpeed: 10
+  normalLookOffset: {x: 0, y: 1.5, z: 0}
+  lockOnDistanceScale: 0.82
+  lockOnHeightOffset: 0.15
+  lockOnLookHeight: 1.2
+  strongAttackBackDistance: 2.2
+  strongAttackHeight: 1.85
+  strongAttackSideOffset: 0.75
+  strongAttackLookHeight: 1.25
+  strongAttackFallbackLookDistance: 4
+  strongAttackBlendInSpeed: 12
+  strongAttackBlendOutSpeed: 4
+  sensitivity: 120
+  positionSmoothTime: 0.08
+  lookSmoothTime: 0.06
+  rotationSmoothSpeed: 12
 --- !u!1001 &1917264728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1208,13 +1216,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1782247070}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: moveAction
+      value: 
+      objectReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: cameraScript
       value: 
       objectReference: {fileID: 1782247075}
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: targetAction
+      value: 
+      objectReference: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: boostMoveSpeed
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: evadeBoostAction
+      value: 
+      objectReference: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: weakAttackAction
+      value: 
+      objectReference: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackAction
+      value: 
+      objectReference: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     - target: {fileID: 7209153948228579137, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: hpSlider
       value: 
@@ -1279,10 +1307,12 @@ SceneRoots:
   - {fileID: 520340098}
   - {fileID: 1782247074}
   - {fileID: 1569827438}
-  - {fileID: 253257055}
   - {fileID: 1485687905}
   - {fileID: 2831616832665357428}
   - {fileID: 845980283}
   - {fileID: 236264609}
   - {fileID: 2038790143}
   - {fileID: 1917264728}
+  - {fileID: 851323427}
+  - {fileID: 1470785452}
+  - {fileID: 1505301353}
