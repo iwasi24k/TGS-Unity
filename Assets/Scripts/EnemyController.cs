@@ -260,7 +260,7 @@ public class EnemyController : MonoBehaviour
         return nearest;
     }
 
-    public void BlowAway()
+    public void BlowAway(Transform CurrentTransform)
     {
 
     }
