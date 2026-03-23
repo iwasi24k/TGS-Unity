@@ -1,49 +1,31 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI; // Sliderを使うために必要
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
     [Header("ターゲット")]
-    // プレイヤーのTransform（位置や向きを取得するために使う）
     private Transform player;
 
     [Header("弾")]
-    // 発射する弾のPrefab
     public GameObject bulletPrefab;
-
-    // 弾の移動速度
     public float bulletSpeed = 10f;
-
-    // 弾を発射する間隔（秒）
     public float shotInterval = 1.0f;
-
-    // 1回の攻撃で発射する弾の最大数
     public int maxShotCount = 5;
 
     // 攻撃箇所のオフセット
     public Vector3 shotOffset = new Vector3(0f, 0f, 0f);
 
     [Header("移動")]
-    // 敵の移動スピード
     public float moveSpeed = 2f;
-
-    // どれくらいの時間移動し続けるか
     public float moveDuration = 1.5f;
-
-    // 攻撃と移動の後に待機する時間
     public float waitTime = 1.0f;
 
     public float rotationSpeed = 5f;
 
     [Header("HP")]
-    // 最大HP
     public float maxHP = 100f;
-
-    // 現在のHP（外から直接いじらないのでprivate）
     private float currentHP;
-
-    // HPゲージとして使うSlider
     public Slider hpSlider;
 
     [Header("エフェクト")]
@@ -68,27 +50,19 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
-        // タグを使ってシーン内のプレイヤーを取得する
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
-        // プレイヤーが見つかった場合
         if (playerObj != null)
         {
             player = playerObj.transform;
         }
         else
         {
-            // タグが設定されていない場合のエラー表示
             Debug.LogError("Playerタグが見つかりません！");
         }
 
-        // HPを最大値で初期化
         currentHP = maxHP;
-
-        // HPバーを初期状態に更新
         UpdateHPBar();
-
-        // 敵の行動ループを開始
         StartCoroutine(EnemyRoutine());
 
         animator = GetComponent<Animator>();
@@ -96,10 +70,8 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator EnemyRoutine()
     {
-        // 無限ループ（敵が生きている限り繰り返す）
-        while (true)
+        while (IsAlive)
         {
-            // プレイヤーが存在する場合、そちらを向く
             if (player != null)
             {
                 Vector3 lookPos = player.position;
@@ -107,20 +79,17 @@ public class EnemyController : MonoBehaviour
                 transform.LookAt(lookPos);
             }
 
-            // 発射する弾数をランダムで決定（1〜maxShotCount）
             int shotCount = Random.Range(1, maxShotCount + 1);
 
-            // 決めた数だけ弾を発射
             for (int i = 0; i < shotCount; i++)
             {
                 Shoot();
                 yield return new WaitForSeconds(shotInterval);
             }
 
-            // ランダムな移動方向を決定（前後左右）
             Vector3 randomDir = new Vector3(
                 Random.Range(-1f, 1f),
-                0,
+                0f,
                 Random.Range(-1f, 1f)
             ).normalized;
 
@@ -128,7 +97,6 @@ public class EnemyController : MonoBehaviour
             if(timer == 0) animator.SetBool("bMove", true);
             else if(timer >= moveDuration) animator.SetBool("bMove", false);
 
-            // 一定時間だけ移動する
             while (timer < moveDuration)
             {
                 // 移動方向が有効ならその方向へ向く（スムーズ回転）
@@ -143,7 +111,6 @@ public class EnemyController : MonoBehaviour
                 yield return null;
             }
 
-            // 行動の区切りとして少し待機
             yield return new WaitForSeconds(waitTime);
         }
     }
@@ -167,8 +134,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // 外部（弾など）から呼ばれるダメージ処理
-    public void TakeDamage(float damage)
+    public bool TakeDamage(float damage)
     {
         currentHP -= damage;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
@@ -195,10 +161,12 @@ public class EnemyController : MonoBehaviour
         if (currentHP <= 0)
         {
             Die();
+            return true;
         }
+
+        return false;
     }
 
-    // HPバー（Slider）の見た目を更新する
     void UpdateHPBar()
     {
         if (hpSlider != null)
@@ -207,7 +175,6 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // 敵が倒されたときの処理
     void Die()
     {
         //死亡エフェクト
