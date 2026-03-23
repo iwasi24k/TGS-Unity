@@ -281,12 +281,17 @@ public class EnemyController : MonoBehaviour
     {
         Vector3 BlowDir = this.transform.position - CurrentTransform.position;
 
+        BlowDir.Normalize();
+
         Transform nearest = FindNearestEnemy();
         if (nearest == null)
         {
             Debug.Log("BlowAway: ターゲットが見つかりません。正面方向へ吹き飛ばします。");
             Rigidbody rbNoTarget = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+            // kinematic にしていると物理で動かない -> false にする
             rbNoTarget.isKinematic = false;
+            rbNoTarget.useGravity = true;
+            rbNoTarget.linearVelocity = Vector3.zero;
             rbNoTarget.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
             return;
         }
@@ -302,6 +307,8 @@ public class EnemyController : MonoBehaviour
             Debug.Log("BlowAway: 方向ベクトルが小さすぎます。");
             Rigidbody rbSmall = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
             rbSmall.isKinematic = false;
+            rbSmall.useGravity = true;
+            rbSmall.linearVelocity = Vector3.zero;
             rbSmall.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
             return;
         }
@@ -318,7 +325,10 @@ public class EnemyController : MonoBehaviour
 
         // Rigidbody取得（無ければ追加）して実際に吹き飛ばす
         Rigidbody rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+        // 物理で動かすため kinematic を解除
         rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.linearVelocity = Vector3.zero;
 
         if (isWithin45)
         {
@@ -326,6 +336,7 @@ public class EnemyController : MonoBehaviour
             Vector3 forceDir = flatToTarget;
             forceDir.y = 0.5f;
             rb.AddForce(forceDir.normalized * knockbackForce, ForceMode.Impulse);
+            Debug.Log("BlowAway: ターゲット方向へ吹き飛ばします。");
         }
         else
         {
@@ -336,11 +347,11 @@ public class EnemyController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy"))
         {
             //CollisionEnemyのRigitbodyがkineticならば、BlowAwayを呼び出す
             Rigidbody collisionRb = collision.gameObject.GetComponent<Rigidbody>();
-            if (collisionRb != null && !collisionRb.isKinematic)
+            if (collisionRb != null && collisionRb.isKinematic)
             {
                 BlowAway(collision.transform);
             }

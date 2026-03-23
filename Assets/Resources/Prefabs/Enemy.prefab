@@ -158,12 +158,14 @@ MonoBehaviour:
   rotationSpeed: 5
   maxHP: 100
   hpSlider: {fileID: 0}
-  hitEffect: {fileID: 0}
-  lowHpEffect: {fileID: 0}
-  deathEffect: {fileID: 0}
+  hitEffect: {fileID: 2835178270884087326, guid: 8ff3b2144da17404e813f8a358d3e926, type: 3}
+  lowHpEffect: {fileID: 1659078712644198927, guid: 0d4fd364ae38da94cbd497f79e0ae048, type: 3}
+  deathEffect: {fileID: 1121192042590650, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
   knockbackForce: 20
   searchRadius: 10
   destroyDelay: 1.5
+  deathVelocityThreshold: 0.5
+  maxWaitForLowVelocity: 3
   animator: {fileID: 303781383503616067}
 --- !u!54 &-4433559444314425524
 Rigidbody:
