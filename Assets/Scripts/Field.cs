@@ -3,73 +3,47 @@ using UnityEngine;
 
 public class Field : MonoBehaviour
 {
-    [SerializeField] public GameObject[] Rock = new GameObject[4];
-    [SerializeField] public float minDistance = 2.0f;
-    [SerializeField] public float scaleMultiplier = 1.0f;
+    [System.Serializable]
+    public class RockData
+    {
+        public GameObject prefab;
+        public Vector3 position;
+        public Vector3 scale = Vector3.one;
+        public Vector3 rotation = Vector3.zero;
+    }
 
-    [SerializeField] private int[] rockNumPerStage;
+    [System.Serializable]
+    public class StageData
+    {
+        public RockData[] rocks;
+    }
+
+    [SerializeField] private StageData[] stages;
     [SerializeField] private int currentStage = 0;
-
-    [SerializeField] public Vector3 fieldSize = new Vector3(10, 0, 10);
 
     private List<GameObject> rocks = new List<GameObject>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        int currentRockNum = rockNumPerStage[currentStage];
+        GenerateStage(currentStage);
+    }
 
-        for (int i = 0; i < currentRockNum; i++)
+    void GenerateStage(int stageIndex)
+    {
+        if (stages == null || stages.Length == 0) return;
+
+        StageData stage = stages[stageIndex];
+
+        foreach (RockData data in stage.rocks)
         {
-            GameObject prefab = Rock[Random.Range(0, Rock.Length)];
+            Vector3 pos = transform.position + data.position;
 
-            Vector3 pos;
-            int retry = 0;
+            GameObject rock = Instantiate(data.prefab, pos, Quaternion.Euler(data.rotation), transform);
 
-            do
-            {
-                float x = Random.Range(-fieldSize.x / 2, fieldSize.x / 2);
-                float z = Random.Range(-fieldSize.z / 2, fieldSize.z / 2);
-
-                pos = transform.position + new Vector3(x, 0, z);
-
-                retry++;
-
-            } while (IsOverlapping(pos, prefab) && retry < 50);
-
-            GameObject rock = Instantiate(prefab, pos, Quaternion.identity, transform);
-
-            rock.transform.localScale = prefab.transform.localScale * scaleMultiplier;
+            rock.transform.localScale = data.scale;
 
             rocks.Add(rock);
         }
-    }
-
-    bool IsOverlapping(Vector3 pos, GameObject prefab)
-    {
-        Collider col = prefab.GetComponent<Collider>();
-        if (col == null) return false;
-
-        float radiusA = col.bounds.extents.magnitude * scaleMultiplier;
-
-        foreach (GameObject rock in rocks)
-        {
-            if (rock == null) continue;
-
-            Collider childCol = rock.GetComponent<Collider>();
-            if (childCol == null) continue;
-
-            float radiusB = childCol.bounds.extents.magnitude;
-
-            float dist = Vector3.Distance(pos, rock.transform.position);
-
-            if (dist < radiusA + radiusB)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public void Refresh()
@@ -81,17 +55,16 @@ public class Field : MonoBehaviour
 
         rocks.Clear();
 
-        Start();
+        GenerateStage(currentStage);
     }
 
     public void NextStage()
     {
         currentStage++;
 
-        // 配列の範囲チェック
-        if (currentStage >= rockNumPerStage.Length)
+        if (currentStage >= stages.Length)
         {
-            currentStage = 0; // ループさせる（または止める）
+            currentStage = 0;
         }
 
         Refresh();
