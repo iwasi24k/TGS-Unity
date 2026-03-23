@@ -1,68 +1,58 @@
-using System.Collections.Generic;
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("HPİ’è")]
+    [Header("HPè¨­å®š")]
+    // æœ€å¤§HP
     public int maxHP = 10;
+
+    // ç¾åœ¨HPï¼ˆå¤–ã‹ã‚‰ç›´æ¥è§¦ã‚‰ã›ãªã„ï¼‰
     private int currentHP;
 
-    [Header("UI")]
-    public GameObject hpBarPrefab; // 1ŒÂ•ª‚Ìƒo[
-    public Transform hpBarParent; // •À‚×‚ée
-
-    private List<GameObject> hpBars = new List<GameObject>();
+    [Header("UIï¼ˆã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ï¼‰")]
+    // HPã‚²ãƒ¼ã‚¸ï¼ˆSliderï¼‰
+    public Slider hpSlider;
 
     void Start()
     {
+        // HPã‚’æœ€å¤§ã§åˆæœŸåŒ–
         currentHP = maxHP;
 
-        CreateHPBars();
+        // UIã«åæ˜ 
+        UpdateHPUI();
     }
 
-    // HPƒo[‚ğ¶¬‚·‚é
-    void CreateHPBars()
-    {
-        for (int i = 0; i < maxHP; i++)
-        {
-            GameObject bar = Instantiate(hpBarPrefab, hpBarParent);
-
-            // ‰¡‚É•À‚×‚é
-            RectTransform rt = bar.GetComponent<RectTransform>();
-            rt.anchoredPosition = new Vector2(i * 15, 0);
-
-            hpBars.Add(bar);
-        }
-    }
-
-    // ƒ_ƒ[ƒWˆ—
+    // ---------------------------
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†
+    // ---------------------------
     public void TakeDamage(int damage)
     {
+        // HPæ¸›å°‘
         currentHP -= damage;
+
+        // 0ã€œæœ€å¤§ã«åˆ¶é™
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
+        // UIæ›´æ–°
         UpdateHPUI();
 
+        // HP0ã§æ­»äº¡
         if (currentHP <= 0)
         {
-            Debug.Log("ƒvƒŒƒCƒ„[€–S");
+            Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ­»äº¡");
         }
     }
 
-    // HPƒo[XVi‰E‚©‚çÁ‚·j
+    // ---------------------------
+    // HPã‚²ãƒ¼ã‚¸æ›´æ–°
+    // ---------------------------
     void UpdateHPUI()
     {
-        for (int i = 0; i < hpBars.Count; i++)
+        if (hpSlider != null)
         {
-            if (i < currentHP)
-            {
-                hpBars[i].SetActive(true);
-            }
-            else
-            {
-                hpBars[i].SetActive(false);
-            }
+            // 0ã€œ1ã®å‰²åˆã«å¤‰æ›ã—ã¦è¡¨ç¤º
+            hpSlider.value = (float)currentHP / maxHP;
         }
     }
 }

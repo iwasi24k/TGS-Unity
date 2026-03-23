@@ -46,6 +46,13 @@ public class EnemyController : MonoBehaviour
     // HPゲージとして使うSlider
     public Slider hpSlider;
 
+    [Header("エフェクト")]
+    public GameObject hitEffect;     // 被弾エフェクト
+    public GameObject lowHpEffect;   // 低HPエフェクト
+    public GameObject deathEffect;   // 死亡エフェクト
+
+    private bool isLowHpEffectPlayed = false;
+
     [Header("死亡時の吹き飛び")]
     // 吹き飛ぶ力の強さ
     public float knockbackForce = 10f;
@@ -165,8 +172,25 @@ public class EnemyController : MonoBehaviour
     {
         currentHP -= damage;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
-
         UpdateHPBar();
+        Debug.Log("TakeDamage呼ばれた HP:" + currentHP);
+
+        //被弾エフェクト
+        if (hitEffect != null)
+        {
+            Debug.Log("エフェクト発動！");
+            Instantiate(hitEffect, transform.position, Quaternion.identity);
+        }
+        //lowエフェクト
+        if (!isLowHpEffectPlayed && currentHP <= maxHP * 0.4f)
+        {
+            Debug.Log("エフェクト発動！");
+            if (lowHpEffect != null)
+            {
+                Instantiate(lowHpEffect, transform.position, Quaternion.identity, transform);
+            }
+            isLowHpEffectPlayed = true;
+        }
 
         if (currentHP <= 0)
         {
@@ -186,6 +210,13 @@ public class EnemyController : MonoBehaviour
     // 敵が倒されたときの処理
     void Die()
     {
+        //死亡エフェクト
+        if (deathEffect != null)
+        {
+            Debug.Log("エフェクト発動！");
+            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        }
+
         // 行動停止
         StopAllCoroutines();
 
