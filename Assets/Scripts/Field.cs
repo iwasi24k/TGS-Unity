@@ -4,7 +4,7 @@ using UnityEngine;
 public class Field : MonoBehaviour
 {
     [System.Serializable]
-    public class RockData
+    public class ObjData
     {
         public GameObject prefab;
         public Vector3 position;
@@ -15,7 +15,7 @@ public class Field : MonoBehaviour
     [System.Serializable]
     public class StageData
     {
-        public RockData[] rocks;
+        public ObjData[] objects;
     }
 
     [SerializeField] private StageData[] stages;
@@ -34,7 +34,7 @@ public class Field : MonoBehaviour
 
         StageData stage = stages[stageIndex];
 
-        foreach (RockData data in stage.rocks)
+        foreach (ObjData data in stage.objects)
         {
             Vector3 pos = transform.position + data.position;
 
