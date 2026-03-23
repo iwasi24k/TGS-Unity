@@ -46,6 +46,15 @@ public class EnemyController : MonoBehaviour
     // 消えるまでの時間
     public float destroyDelay = 1.5f;
 
+    // 速度判定用（この速度以下なら死亡処理を実行）
+    public float deathVelocityThreshold = 0.5f;
+
+    // 速度が閾値以下になるのを待つ最大時間（秒）
+    public float maxWaitForLowVelocity = 3f;
+
+    // 一度死亡処理を開始したら重複させないフラグ
+    private bool isDying = false;
+
     [Header("Animator")]
     public Animator animator;
 
@@ -178,6 +187,54 @@ public class EnemyController : MonoBehaviour
 
     void Die()
     {
+        if (isDying) return;
+
+        // Rigidbody を取得して速度判定する（無ければ即死）
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            ExecuteDeath();
+            return;
+        }
+
+        // 既に速度が閾値以下なら即死亡処理
+        if (rb.linearVelocity.magnitude <= deathVelocityThreshold)
+        {
+            ExecuteDeath();
+        }
+        else
+        {
+            // 閾値以下になるのを待つコルーチンを開始
+            StartCoroutine(WaitForLowVelocityAndDie(rb));
+        }
+    }
+
+    // 速度が閾値以下になるのを待つ（もしくはタイムアウト）して死亡処理を実行
+    IEnumerator WaitForLowVelocityAndDie(Rigidbody rb)
+    {
+        if (isDying) yield break;
+        isDying = true;
+
+        float timer = 0f;
+        while (timer < maxWaitForLowVelocity)
+        {
+            if (rb == null || rb.linearVelocity.magnitude <= deathVelocityThreshold)
+            {
+                break;
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        ExecuteDeath();
+    }
+
+    // 実際の死亡処理（エフェクト、行動停止、消去コルーチン開始）
+    void ExecuteDeath()
+    {
+        if (isDying) return;
+        isDying = true;
+
         //死亡エフェクト
         if (deathEffect != null)
         {
@@ -187,46 +244,6 @@ public class EnemyController : MonoBehaviour
 
         // 行動停止
         StopAllCoroutines();
-
-        // 吹き飛び処理へ
-        StartCoroutine(DieRoutine());
-    }
-
-    // 死亡時の吹き飛び処理
-    IEnumerator DieRoutine()
-    {
-        // 一番近い敵を探す
-        Transform targetEnemy = FindNearestEnemy();
-
-        // Rigidbody取得（無ければ追加）
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody>();
-        }
-
-        // 物理挙動を有効化
-        rb.isKinematic = false;
-
-        if (targetEnemy != null)
-        {
-            // ターゲット方向に向かうベクトル
-            Vector3 direction = (targetEnemy.position - transform.position).normalized;
-
-            // 少し上方向に持ち上げる
-            direction.y = 0.5f;
-
-            // 力を加える
-            rb.AddForce(direction * knockbackForce, ForceMode.Impulse);
-        }
-        else
-        {
-            // 敵がいない場合は上に飛ばす
-            rb.AddForce(Vector3.up * knockbackForce, ForceMode.Impulse);
-        }
-
-        // 一定時間後に削除
-        yield return new WaitForSeconds(destroyDelay);
 
         Destroy(gameObject);
     }
@@ -262,6 +279,71 @@ public class EnemyController : MonoBehaviour
 
     public void BlowAway(Transform CurrentTransform)
     {
+        Vector3 BlowDir = this.transform.position - CurrentTransform.position;
 
+        Transform nearest = FindNearestEnemy();
+        if (nearest == null)
+        {
+            Debug.Log("BlowAway: ターゲットが見つかりません。正面方向へ吹き飛ばします。");
+            Rigidbody rbNoTarget = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+            rbNoTarget.isKinematic = false;
+            rbNoTarget.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
+            return;
+        }
+
+        Vector3 TargetPosition = nearest.position;
+
+        // 水平面（y軸）で角度を計算するため、y成分を取り除く
+        Vector3 flatBlow = Vector3.ProjectOnPlane(BlowDir, Vector3.up);
+        Vector3 flatToTarget = Vector3.ProjectOnPlane(TargetPosition - transform.position, Vector3.up);
+
+        if (flatBlow.sqrMagnitude < 0.0001f || flatToTarget.sqrMagnitude < 0.0001f)
+        {
+            Debug.Log("BlowAway: 方向ベクトルが小さすぎます。");
+            Rigidbody rbSmall = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+            rbSmall.isKinematic = false;
+            rbSmall.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
+            return;
+        }
+
+        flatBlow.Normalize();
+        flatToTarget.Normalize();
+
+        // 2つのベクトル間の角度（度単位）
+        float angle = Vector3.Angle(flatBlow, flatToTarget);
+
+        // 45°以内か確認
+        bool isWithin45 = angle <= 45f;
+        Debug.Log($"BlowAway: 角度 = {angle}°, 45°以内 = {isWithin45}");
+
+        // Rigidbody取得（無ければ追加）して実際に吹き飛ばす
+        Rigidbody rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+        rb.isKinematic = false;
+
+        if (isWithin45)
+        {
+            // ターゲット方向へ少し持ち上げて吹き飛ばす
+            Vector3 forceDir = flatToTarget;
+            forceDir.y = 0.5f;
+            rb.AddForce(forceDir.normalized * knockbackForce, ForceMode.Impulse);
+        }
+        else
+        {
+            // 45°を超えるなら正面方向へ吹き飛ばす（例）
+            rb.AddForce(BlowDir * knockbackForce, ForceMode.Impulse);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Enemy"))
+        {
+            //CollisionEnemyのRigitbodyがkineticならば、BlowAwayを呼び出す
+            Rigidbody collisionRb = collision.gameObject.GetComponent<Rigidbody>();
+            if (collisionRb != null && !collisionRb.isKinematic)
+            {
+                BlowAway(collision.transform);
+            }
+        }
     }
 }
