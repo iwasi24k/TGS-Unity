@@ -21,6 +21,9 @@ public class EnemyController : MonoBehaviour
     // 1回の攻撃で発射する弾の最大数
     public int maxShotCount = 5;
 
+    // 攻撃箇所のオフセット
+    public Vector3 shotOffset = new Vector3(0f, 0f, 0f);
+
     [Header("移動")]
     // 敵の移動スピード
     public float moveSpeed = 2f;
@@ -30,6 +33,8 @@ public class EnemyController : MonoBehaviour
 
     // 攻撃と移動の後に待機する時間
     public float waitTime = 1.0f;
+
+    public float rotationSpeed = 5f;
 
     [Header("HP")]
     // 最大HP
@@ -58,6 +63,9 @@ public class EnemyController : MonoBehaviour
     // 消えるまでの時間
     public float destroyDelay = 1.5f;
 
+    [Header("Animator")]
+    public Animator animator;
+
     void Start()
     {
         // タグを使ってシーン内のプレイヤーを取得する
@@ -82,6 +90,8 @@ public class EnemyController : MonoBehaviour
 
         // 敵の行動ループを開始
         StartCoroutine(EnemyRoutine());
+
+        animator = GetComponent<Animator>();
     }
 
     IEnumerator EnemyRoutine()
@@ -115,10 +125,19 @@ public class EnemyController : MonoBehaviour
             ).normalized;
 
             float timer = 0;
+            if(timer == 0) animator.SetBool("bMove", true);
+            else if(timer >= moveDuration) animator.SetBool("bMove", false);
 
             // 一定時間だけ移動する
             while (timer < moveDuration)
             {
+                // 移動方向が有効ならその方向へ向く（スムーズ回転）
+                if (randomDir != Vector3.zero)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(randomDir);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+                }
+
                 transform.Translate(randomDir * moveSpeed * Time.deltaTime, Space.World);
                 timer += Time.deltaTime;
                 yield return null;
@@ -131,11 +150,12 @@ public class EnemyController : MonoBehaviour
 
     void Shoot()
     {
+        animator.SetTrigger("tAttack");
         if (bulletPrefab == null) return;
 
         GameObject bullet = Instantiate(
             bulletPrefab,
-            transform.position + transform.forward,
+            transform.position + (transform.forward) + shotOffset,
             Quaternion.identity
         );
 

@@ -34,4 +34,31 @@ public class Bullet : MonoBehaviour
         // 弾を削除
         Destroy(gameObject);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // すでに当たっていたら何もしない
+        if (hasHit) return;
+
+        if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Bullet"))
+        {
+            return;
+        }
+        // プレイヤーに当たった場合
+        if (other.gameObject.CompareTag("Player"))
+        {
+            PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
+
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(1);
+            }
+        }
+
+        // ヒット済みにする（これが重要）
+        hasHit = true;
+
+        // 弾を削除
+        Destroy(gameObject);
+    }
 }
