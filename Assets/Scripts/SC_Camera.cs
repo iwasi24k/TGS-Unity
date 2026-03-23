@@ -2,82 +2,82 @@ using UnityEngine;
 
 public class CS_Camera : MonoBehaviour
 {
-    // Follow Target（追従対象）
     [Header("Follow Target (Player)")]
-    [Tooltip("通常時にカメラが追従する対象（プレイヤー）")]
     [SerializeField] private Transform followTarget;
 
-    // Look Target（注視対象）
     [Header("Look Target (Lock-On)")]
-    [Tooltip("攻撃モード時に注視する対象（敵など）")]
     private Transform lookAtTarget;
 
-    // Rotation Settings（回転設定）
-    private float yaw = 0f;   // 横回転
-    private float pitch = 0f; // 縦回転
-    [Tooltip("視線入力の感度")]
+    [Header("Normal Camera")]
+    [SerializeField] private Vector3 normalOffset = new Vector3(0f, 3f, -6f);
+    [SerializeField] private Vector3 normalLookOffset = new Vector3(0f, 1.5f, 0f);
+
+    [Header("Lock-On Camera (Zoom In Only)")]
+    [SerializeField] private float lockOnDistanceScale = 0.82f;
+    [SerializeField] private float lockOnHeightOffset = 0.15f;
+    [SerializeField] private float lockOnLookHeight = 1.2f;
+
+    [Header("Strong Attack Cut-In Camera")]
+    [SerializeField] private float strongAttackBackDistance = 2.2f;
+    [SerializeField] private float strongAttackHeight = 1.85f;
+    [SerializeField] private float strongAttackSideOffset = 0.75f;
+    [SerializeField] private float strongAttackLookHeight = 1.25f;
+    [SerializeField] private float strongAttackCutInDuration = 0.22f;
+    [SerializeField] private float strongAttackBlendInSpeed = 12f;
+    [SerializeField] private float strongAttackBlendOutSpeed = 10f;
+
+    [Header("Look Input")]
     [SerializeField] private float sensitivity = 120f;
+    private float yaw = 0f;
+    private float pitch = 0f;
 
-    // Offset Settings（カメラ位置）
-    [Header("Offsets")]
+    [Header("Smoothing")]
+    [SerializeField] private float positionSmoothTime = 0.08f;
+    [SerializeField] private float rotationSmoothSpeed = 12f;
 
-    // 現在のオフセット（モードに応じて補間で変化）
-    private Vector3 currentOffset;
+    private bool isAttackMode = false;
 
-    [Tooltip("通常視点のオフセット（上 + 後ろ）")]
-    [SerializeField] private Vector3 normalOffset = new Vector3(0, 3, -6);
+    private bool strongAttackCutInActive = false;
+    private float strongAttackCutInTimer = 0f;
+    private float strongAttackCutInWeight = 0f;
 
-    [Tooltip("肩越し視点のオフセット（右肩側）")]
-    [SerializeField] private Vector3 attackOffset = new Vector3(1.5f, 1.8f, -3);
+    private Vector3 strongAttackCutInForward = Vector3.forward;
+    private Vector3 strongAttackCutInRight = Vector3.right;
 
-
-    // Camera Settings
-    [Header("Settings")]
-    [Tooltip("offset補間の滑らかさ")]
-    [SerializeField] private float smoothSpeed = 10f;
-
-
-    // Camera State
-    private bool isAttackMode = false;   // 攻撃（ロックオン）モード
-
-    // Shake Settings（カメラシェイク）
     private bool enableShake = false;
     private float shakeTimer = 0f;
     private float shakeDuration = 0f;
     private float shakePower = 0f;
 
+    private Vector3 positionVelocity;
 
-    // 外部制御API
-
-    /// <summary>
-    /// カメラの追従対象を設定する（通常はプレイヤー）
-    /// </summary>
     public void SetFollowTarget(Transform target)
     {
         followTarget = target;
     }
 
-    /// <summary>
-    /// 攻撃（ロックオン）モードのON/OFF
-    /// </summary>
     public void SetAttackMode(bool enable)
     {
         isAttackMode = enable;
+
+        if (!isAttackMode)
+        {
+            strongAttackCutInActive = false;
+            strongAttackCutInTimer = 0f;
+        }
     }
 
-    /// <summary>
-    /// 注視対象（ロックオン対象）を設定
-    /// </summary>
     public void SetLookAtTarget(Transform target)
     {
         lookAtTarget = target;
+
+        if (lookAtTarget == null)
+        {
+            strongAttackCutInActive = false;
+            strongAttackCutInTimer = 0f;
+        }
     }
 
-    /// <summary>
-    /// カメラシェイクを開始する
-    /// </summary>
-    /// <param name="duration">揺れる時間（秒）</param>
-    /// <param name="power">揺れの強さ</param>
     public void StartShake(float duration, float power)
     {
         enableShake = true;
@@ -86,90 +86,180 @@ public class CS_Camera : MonoBehaviour
         shakeTimer = duration;
     }
 
-
-    /// <summary>
-    /// カメラの視線入力を追加する
-    /// </summary>
-    /// <param name="input">スティックの移動量</param>
     public void AddLookInput(Vector2 input)
     {
         yaw += input.x * sensitivity * Time.deltaTime;
         pitch += input.y * sensitivity * Time.deltaTime;
-
-        pitch = Mathf.Clamp(pitch, 0.0f, 0.0f);
+        pitch = Mathf.Clamp(pitch, -10f, 35f);
     }
 
-    // 初期化
-    void Start()
+    public void StartStrongAttackCutIn()
     {
-        currentOffset = normalOffset;
+        if (!isAttackMode || lookAtTarget == null || followTarget == null)
+            return;
+
+        Vector3 toTarget = lookAtTarget.position - followTarget.position;
+        toTarget.y = 0f;
+
+        if (toTarget.sqrMagnitude <= 0.0001f)
+            toTarget = followTarget.forward;
+
+        if (toTarget.sqrMagnitude <= 0.0001f)
+            toTarget = Vector3.forward;
+
+        strongAttackCutInForward = toTarget.normalized;
+
+        Vector3 right = Vector3.Cross(Vector3.up, strongAttackCutInForward).normalized;
+        if (right.sqrMagnitude <= 0.0001f)
+            right = transform.right;
+
+        Vector3 fromPlayerToCamera = transform.position - followTarget.position;
+        fromPlayerToCamera.y = 0f;
+
+        float sideSign = Vector3.Dot(fromPlayerToCamera, right) >= 0f ? 1f : -1f;
+        strongAttackCutInRight = right * sideSign;
+
+        strongAttackCutInActive = true;
+        strongAttackCutInTimer = strongAttackCutInDuration;
     }
 
-    // メイン更新
-    void LateUpdate()
+    public void StopStrongAttackCutIn()
     {
-        if (!followTarget) return;
+        strongAttackCutInActive = false;
+        strongAttackCutInTimer = 0f;
+    }
 
-        UpdateOffset();
-        UpdatePosition();
+    private void LateUpdate()
+    {
+        if (followTarget == null)
+            return;
+
+        UpdateStrongAttackCutInState();
+
+        Vector3 desiredPos = GetDesiredPosition();
+        Quaternion desiredRot = GetDesiredRotation(desiredPos);
+
+        transform.position = Vector3.SmoothDamp(
+            transform.position,
+            desiredPos,
+            ref positionVelocity,
+            Mathf.Max(0.0001f, positionSmoothTime)
+        );
+
+        float rotLerp = 1f - Mathf.Exp(-rotationSmoothSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, rotLerp);
+
         UpdateShake();
-        UpdateRotation();
     }
 
-    // 位置更新
-    private void UpdatePosition()
+    private void UpdateStrongAttackCutInState()
+    {
+        if (!isAttackMode || lookAtTarget == null)
+        {
+            strongAttackCutInActive = false;
+            strongAttackCutInTimer = 0f;
+        }
+
+        if (strongAttackCutInActive)
+        {
+            strongAttackCutInTimer -= Time.deltaTime;
+            if (strongAttackCutInTimer <= 0f)
+            {
+                strongAttackCutInActive = false;
+                strongAttackCutInTimer = 0f;
+            }
+        }
+
+        float targetWeight = strongAttackCutInActive ? 1f : 0f;
+        float speed = strongAttackCutInActive ? strongAttackBlendInSpeed : strongAttackBlendOutSpeed;
+        strongAttackCutInWeight = Mathf.MoveTowards(
+            strongAttackCutInWeight,
+            targetWeight,
+            speed * Time.deltaTime
+        );
+    }
+
+    private Vector3 GetDesiredPosition()
+    {
+        Vector3 basePos;
+
+        if (isAttackMode && lookAtTarget != null)
+            basePos = GetLockOnZoomPosition();
+        else
+            basePos = GetNormalPosition();
+
+        if (strongAttackCutInWeight <= 0.0001f || !isAttackMode || lookAtTarget == null)
+            return basePos;
+
+        Vector3 cutInPos = GetStrongAttackCutInPosition();
+        return Vector3.Lerp(basePos, cutInPos, strongAttackCutInWeight);
+    }
+
+    private Vector3 GetNormalPosition()
+    {
+        Quaternion cameraRot = Quaternion.Euler(pitch, yaw, 0f);
+        Vector3 rotatedOffset = cameraRot * normalOffset;
+        return followTarget.position + rotatedOffset;
+    }
+
+    private Vector3 GetLockOnZoomPosition()
     {
         Quaternion cameraRot = Quaternion.Euler(pitch, yaw, 0f);
 
-        if (isAttackMode)
+        Vector3 zoomOffset = normalOffset * lockOnDistanceScale;
+        zoomOffset.y += lockOnHeightOffset;
+
+        Vector3 rotatedOffset = cameraRot * zoomOffset;
+        return followTarget.position + rotatedOffset;
+    }
+
+    private Vector3 GetStrongAttackCutInPosition()
+    {
+        Vector3 basePos = followTarget.position + Vector3.up * strongAttackHeight;
+        return basePos
+             - strongAttackCutInForward * strongAttackBackDistance
+             + strongAttackCutInRight * strongAttackSideOffset;
+    }
+
+    private Quaternion GetDesiredRotation(Vector3 cameraPos)
+    {
+        Vector3 lookPos = GetDesiredLookPosition();
+        Vector3 lookDir = lookPos - cameraPos;
+
+        if (lookDir.sqrMagnitude <= 0.0001f)
+            lookDir = transform.forward;
+
+        return Quaternion.LookRotation(lookDir.normalized, Vector3.up);
+    }
+
+    private Vector3 GetDesiredLookPosition()
+    {
+        Vector3 baseLookPos;
+
+        if (isAttackMode && lookAtTarget != null)
         {
-            // 肩越し・攻撃中：プレイヤー基準の位置
-            Vector3 desiredPos = followTarget.position + followTarget.rotation * currentOffset;
-            transform.position = desiredPos;
+            Vector3 playerPos = followTarget.position + Vector3.up * lockOnLookHeight;
+            Vector3 targetPos = lookAtTarget.position + Vector3.up * lockOnLookHeight;
+            baseLookPos = (playerPos + targetPos) * 0.5f;
         }
         else
         {
-            // Normal：yaw/pitchでカメラ位置を回す
-            Vector3 rotatedOffset = cameraRot * currentOffset;
-            Vector3 desiredPos = followTarget.position + rotatedOffset;
-            transform.position = desiredPos;
+            baseLookPos = followTarget.position + normalLookOffset;
         }
+
+        if (strongAttackCutInWeight <= 0.0001f || !isAttackMode || lookAtTarget == null)
+            return baseLookPos;
+
+        Vector3 cutInLookPos = lookAtTarget.position + Vector3.up * strongAttackLookHeight;
+        return Vector3.Lerp(baseLookPos, cutInLookPos, strongAttackCutInWeight);
     }
 
-    // 現在のモードに応じたオフセットを取得
-    private Vector3 GetCurrentOffset()
-    {
-        return isAttackMode ? attackOffset : normalOffset;
-    }
-
-    // オフセットを滑らかに更新
-    private void UpdateOffset()
-    {
-        Vector3 targetOffset = GetCurrentOffset();
-        currentOffset = Vector3.Lerp(currentOffset, targetOffset, Time.deltaTime * smoothSpeed);
-    }
-
-    // 回転更新（視線）
-    private void UpdateRotation()
-    {
-        if (isAttackMode && lookAtTarget)
-        {
-            transform.LookAt(lookAtTarget.position);
-        }
-        else
-        {
-            // 通常：プレイヤーを見る
-            Vector3 lookPos = followTarget.position + Vector3.up * 1.5f;
-            transform.LookAt(lookPos);
-        }
-    }
-
-    // シェイク処理
     private void UpdateShake()
     {
-        if (!enableShake || shakeTimer <= 0f) return;
+        if (!enableShake || shakeTimer <= 0f)
+            return;
 
-        float t = shakeTimer / shakeDuration;
+        float t = shakeTimer / Mathf.Max(0.0001f, shakeDuration);
         float power = shakePower * t;
 
         transform.position += Random.insideUnitSphere * power;

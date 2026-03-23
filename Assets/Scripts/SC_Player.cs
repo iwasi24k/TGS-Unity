@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,13 +7,20 @@ using UnityEngine.UI;
 public class SC_Player : MonoBehaviour
 {
     [Header("Camera")]
-    [SerializeField] private GameObject Camera;
     [SerializeField] private CS_Camera cameraScript;
 
     [Header("References")]
     [SerializeField] private CharacterController cController;
     [SerializeField] private Transform modelRoot;
     [SerializeField] private Slider heatSlider;
+    [SerializeField] private Animator animator;
+
+    [Header("Input Actions")]
+    [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference weakAttackAction;
+    [SerializeField] private InputActionReference strongAttackAction;
+    [SerializeField] private InputActionReference evadeBoostAction;
+    [SerializeField] private InputActionReference targetAction;
 
     [Header("Move")]
     [SerializeField] private float moveSpeed = 2.0f;
@@ -22,6 +28,13 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float gravity = 20f;
     [SerializeField] private float groundedY = -2f;
+    [SerializeField, Range(0f, 1f)] private float moveInputDeadZone = 0.15f;
+
+    [Header("Evade / Boost")]
+    [SerializeField] private float evadeDistance = 3.2f;
+    [SerializeField] private float evadeDuration = 0.18f;
+    [SerializeField] private float evadeHoldThreshold = 0.18f;
+    [SerializeField, Range(0f, 1f)] private float evadeMinInput = 0.2f;
 
     [Header("Heat")]
     [SerializeField] private float maxHeat = 100f;
@@ -29,10 +42,7 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private float weakHitHeatGain = 18f;
     [SerializeField] private float strongAttackHeatCost = 50f;
 
-    [Header("Enemy HP (Player side temporary management)")]
-    [SerializeField] private int enemyMaxHP = 40;
-
-    [Header("Weak Attack (J)")]
+    [Header("Weak Attack")]
     [SerializeField] private int weakDamage = 10;
     [SerializeField] private float weakAttackRadius = 1.0f;
     [SerializeField] private float weakAttackForwardOffset = 1.0f;
@@ -42,13 +52,22 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private float weakKnockbackDistance = 0.55f;
     [SerializeField] private float weakKnockbackDuration = 0.10f;
 
-    [Header("Strong Attack (K)")]
+    [Header("Strong Attack")]
     [SerializeField] private int strongDamage = 20;
     [SerializeField] private float strongAttackRadius = 1.2f;
     [SerializeField] private float strongAttackForwardOffset = 1.1f;
     [SerializeField] private float strongAttackHeightOffset = 0.8f;
     [SerializeField] private float strongAttackStartup = 0.06f;
     [SerializeField] private float strongAttackCooldown = 0.35f;
+
+    [Header("Strong Attack Slow")]
+    [SerializeField, Range(0.01f, 1f)] private float strongAttackSlowTimeScale = 0.08f;
+    [SerializeField, Range(0.05f, 1f)] private float strongAttackRestoreSlideProgress = 0.28f;
+    [SerializeField] private float strongAttackMissRestoreDelayRealtime = 0.06f;
+
+    [Header("Strong Attack Kill Cut In")]
+    [SerializeField, Range(0.01f, 1f)] private float strongKillCutInTimeScale = 0.03f;
+    [SerializeField] private float strongKillCutInDurationRealtime = 0.35f;
 
     [Header("Strong Slide Knockback")]
     [SerializeField] private float strongSlideDistance = 4.2f;
@@ -61,17 +80,13 @@ public class SC_Player : MonoBehaviour
     [SerializeField] private float chainSlideDistance = 1.0f;
     [SerializeField] private float chainSlideDuration = 0.16f;
 
-    [Header("Keys (Input System / Variable)")]
-    [SerializeField] private Key keyUp = Key.W;
-    [SerializeField] private Key keyDown = Key.S;
-    [SerializeField] private Key keyLeft = Key.A;
-    [SerializeField] private Key keyRight = Key.D;
-    [SerializeField] private Key boostMoveKey = Key.LeftShift;
-    [SerializeField] private Key weakAttackKey = Key.J;
-    [SerializeField] private Key strongAttackKey = Key.K;
-
-    [Header("Animator")]
-    [SerializeField] private Animator animator;
+    [Header("Target")]
+    [SerializeField] private float targetSearchRadius = 10f;
+    [SerializeField] private float targetKeepDistance = 14f;
+    [SerializeField, Range(1f, 180f)] private float targetSearchAngle = 110f;
+    [SerializeField, Range(0f, 1f)] private float weakAttackAimAssist = 0.45f;
+    [SerializeField, Range(0f, 1f)] private float strongAttackAimAssist = 0.80f;
+    [SerializeField] private float attackCenterPullMax = 0.45f;
 
     private Vector3 moveInputDir;
     private Vector3 verticalVelocity;
@@ -81,70 +96,48 @@ public class SC_Player : MonoBehaviour
     private float strongAttackCooldownTimer;
 
     private bool isAttacking;
+    private bool isDodging;
+    private bool evadeBoostPressActive;
+    private float evadeBoostPressedTime = -999f;
 
-    private readonly Dictionary<EnemyController, int> enemyHpTable = new Dictionary<EnemyController, int>();
+    private EnemyController currentTarget;
+
+    private readonly Collider[] overlapResults = new Collider[64];
     private readonly Dictionary<EnemyController, Coroutine> enemySlideRoutineTable = new Dictionary<EnemyController, Coroutine>();
     private readonly Dictionary<EnemyController, float> enemyMoveSpeedBackupTable = new Dictionary<EnemyController, float>();
 
-    private readonly Collider[] overlapResults = new Collider[64];
+    private float baseFixedDeltaTime;
 
-    private static Sprite runtimeWhiteSprite;
+    private bool strongAttackSlowActive;
+    private EnemyController strongAttackSlowTrackedEnemy;
+
+    private bool strongKillCutInSlowActive;
+    private Coroutine strongKillCutInRoutine;
 
     public float CurrentHeat => currentHeat;
     public float MaxHeat => maxHeat;
-
-    private static Sprite RuntimeWhiteSprite
-    {
-        get
-        {
-            if (runtimeWhiteSprite == null)
-            {
-                runtimeWhiteSprite = Sprite.Create(
-                    Texture2D.whiteTexture,
-                    new Rect(0f, 0f, 1f, 1f),
-                    new Vector2(0.5f, 0.5f)
-                );
-                runtimeWhiteSprite.name = "RuntimeWhiteSprite";
-            }
-
-            return runtimeWhiteSprite;
-        }
-    }
+    public EnemyController CurrentTarget => currentTarget;
 
     private void OnValidate()
     {
-        if (cController == null)
-            cController = GetComponent<CharacterController>();
-
-        if(animator == null)
-            animator = GetComponentInChildren<Animator>();
-
-        if (Camera == null)
-            Camera = GameObject.FindWithTag("MainCamera");
-
-        if (cameraScript == null)
-            cameraScript = Camera.GetComponent<CS_Camera>();
-
-        keyUp = SanitizeKey(keyUp, Key.W);
-        keyDown = SanitizeKey(keyDown, Key.S);
-        keyLeft = SanitizeKey(keyLeft, Key.A);
-        keyRight = SanitizeKey(keyRight, Key.D);
-        boostMoveKey = SanitizeKey(boostMoveKey, Key.LeftShift);
-        weakAttackKey = SanitizeKey(weakAttackKey, Key.J);
-        strongAttackKey = SanitizeKey(strongAttackKey, Key.K);
+        CacheReferences();
 
         moveSpeed = Mathf.Max(0f, moveSpeed);
         boostMoveSpeed = Mathf.Max(moveSpeed, boostMoveSpeed);
         rotationSpeed = Mathf.Max(0f, rotationSpeed);
         gravity = Mathf.Max(0f, gravity);
         groundedY = Mathf.Min(groundedY, 0f);
+        moveInputDeadZone = Mathf.Clamp01(moveInputDeadZone);
+
+        evadeDistance = Mathf.Max(0.1f, evadeDistance);
+        evadeDuration = Mathf.Max(0.01f, evadeDuration);
+        evadeHoldThreshold = Mathf.Max(0.01f, evadeHoldThreshold);
+        evadeMinInput = Mathf.Clamp01(evadeMinInput);
 
         maxHeat = Mathf.Max(1f, maxHeat);
         currentHeat = Mathf.Clamp(currentHeat, 0f, maxHeat);
         weakHitHeatGain = Mathf.Max(0f, weakHitHeatGain);
         strongAttackHeatCost = Mathf.Clamp(strongAttackHeatCost, 0f, maxHeat);
-
-        enemyMaxHP = Mathf.Max(1, enemyMaxHP);
 
         weakDamage = Mathf.Max(1, weakDamage);
         weakAttackRadius = Mathf.Max(0.1f, weakAttackRadius);
@@ -162,6 +155,13 @@ public class SC_Player : MonoBehaviour
         strongAttackStartup = Mathf.Max(0f, strongAttackStartup);
         strongAttackCooldown = Mathf.Max(0f, strongAttackCooldown);
 
+        strongAttackSlowTimeScale = Mathf.Clamp(strongAttackSlowTimeScale, 0.01f, 1f);
+        strongAttackRestoreSlideProgress = Mathf.Clamp(strongAttackRestoreSlideProgress, 0.05f, 1f);
+        strongAttackMissRestoreDelayRealtime = Mathf.Max(0f, strongAttackMissRestoreDelayRealtime);
+
+        strongKillCutInTimeScale = Mathf.Clamp(strongKillCutInTimeScale, 0.01f, 1f);
+        strongKillCutInDurationRealtime = Mathf.Max(0.01f, strongKillCutInDurationRealtime);
+
         strongSlideDistance = Mathf.Max(0.1f, strongSlideDistance);
         strongSlideDuration = Mathf.Max(0.01f, strongSlideDuration);
 
@@ -171,26 +171,54 @@ public class SC_Player : MonoBehaviour
         chainSlideDistance = Mathf.Max(0f, chainSlideDistance);
         chainSlideDuration = Mathf.Max(0.01f, chainSlideDuration);
 
-        cameraScript.SetFollowTarget(this.transform);
+        targetSearchRadius = Mathf.Max(0.1f, targetSearchRadius);
+        targetKeepDistance = Mathf.Max(targetSearchRadius, targetKeepDistance);
+        targetSearchAngle = Mathf.Clamp(targetSearchAngle, 1f, 180f);
+        weakAttackAimAssist = Mathf.Clamp01(weakAttackAimAssist);
+        strongAttackAimAssist = Mathf.Clamp01(strongAttackAimAssist);
+        attackCenterPullMax = Mathf.Max(0f, attackCenterPullMax);
+
+        if (cameraScript != null)
+            cameraScript.SetFollowTarget(transform);
     }
 
     private void Awake()
     {
-        if (cController == null)
-            cController = GetComponent<CharacterController>();
-
-        keyUp = SanitizeKey(keyUp, Key.W);
-        keyDown = SanitizeKey(keyDown, Key.S);
-        keyLeft = SanitizeKey(keyLeft, Key.A);
-        keyRight = SanitizeKey(keyRight, Key.D);
-        boostMoveKey = SanitizeKey(boostMoveKey, Key.LeftShift);
-        weakAttackKey = SanitizeKey(weakAttackKey, Key.J);
-        strongAttackKey = SanitizeKey(strongAttackKey, Key.K);
-
+        CacheReferences();
         currentHeat = Mathf.Clamp(currentHeat, 0f, maxHeat);
+        baseFixedDeltaTime = Time.fixedDeltaTime;
 
-        CreateHeatGaugeIfNeeded();
+        if (cameraScript != null)
+            cameraScript.SetFollowTarget(transform);
+
         RefreshHeatUI();
+    }
+
+    private void OnEnable()
+    {
+        SetActionEnabled(moveAction, true);
+        SetActionEnabled(weakAttackAction, true);
+        SetActionEnabled(strongAttackAction, true);
+        SetActionEnabled(evadeBoostAction, true);
+        SetActionEnabled(targetAction, true);
+    }
+
+    private void OnDisable()
+    {
+        SetActionEnabled(moveAction, false);
+        SetActionEnabled(weakAttackAction, false);
+        SetActionEnabled(strongAttackAction, false);
+        SetActionEnabled(evadeBoostAction, false);
+        SetActionEnabled(targetAction, false);
+
+        evadeBoostPressActive = false;
+        RestoreAllEnemyMoveSpeeds();
+        RestoreAllTimeScaleEffects();
+    }
+
+    private void OnDestroy()
+    {
+        RestoreAllTimeScaleEffects();
     }
 
     private void Update()
@@ -199,12 +227,28 @@ public class SC_Player : MonoBehaviour
             return;
 
         TickTimers();
+        ValidateCurrentTarget();
         ReadMoveInput();
+        HandleTargetInput();
+        HandleEvadeBoostInput();
         HandleAttackInput();
         MovePlayer();
         RotateModel();
+        UpdateCameraTargetState();
         CleanupDeadEnemyEntries();
         RefreshHeatUI();
+    }
+
+    private void CacheReferences()
+    {
+        if (cController == null)
+            cController = GetComponent<CharacterController>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
+        if (cameraScript == null && Camera.main != null)
+            cameraScript = Camera.main.GetComponent<CS_Camera>();
     }
 
     private void TickTimers()
@@ -216,204 +260,116 @@ public class SC_Player : MonoBehaviour
             strongAttackCooldownTimer -= Time.deltaTime;
     }
 
+    private void ValidateCurrentTarget()
+    {
+        if (currentTarget == null)
+            return;
+
+        if (!IsEnemyTargetable(currentTarget))
+        {
+            ClearTarget();
+            return;
+        }
+
+        float sqrDistance = (currentTarget.transform.position - transform.position).sqrMagnitude;
+        if (sqrDistance > targetKeepDistance * targetKeepDistance)
+            ClearTarget();
+    }
+
     private void ReadMoveInput()
     {
-        float x = 0f;
-        float z = 0f;
-
-        if (GetKeySafe(keyLeft)) x -= 1f;
-        if (GetKeySafe(keyRight)) x += 1f;
-        if (GetKeySafe(keyUp)) z += 1f;
-        if (GetKeySafe(keyDown)) z -= 1f;
-
-        moveInputDir = new Vector3(x, 0f, z);
+        Vector2 input2D = ReadMoveValue();
+        moveInputDir = new Vector3(input2D.x, 0f, input2D.y);
 
         if (moveInputDir.sqrMagnitude > 1f)
             moveInputDir.Normalize();
 
-        if (moveInputDir.sqrMagnitude > 0.0001f)
-        {
+        bool hasMove = moveInputDir.sqrMagnitude > 0.0001f;
+
+        if (hasMove)
             lastMoveDirection = moveInputDir.normalized;
-            animator.SetBool("bWalk", true);
-        }
-        else
+
+        if (!isDodging && animator != null)
+            animator.SetBool("bWalk", hasMove);
+    }
+
+    private void HandleTargetInput()
+    {
+        if (!WasPressedThisFrame(targetAction))
+            return;
+
+        EnemyController nextTarget = FindBestTarget();
+
+        if (nextTarget == null)
         {
-            animator.SetBool("bWalk", false);
+            ClearTarget();
+            return;
+        }
+
+        SetCurrentTarget(nextTarget);
+    }
+
+    private void HandleEvadeBoostInput()
+    {
+        if (WasPressedThisFrame(evadeBoostAction))
+        {
+            evadeBoostPressActive = true;
+            evadeBoostPressedTime = Time.time;
+        }
+
+        if (WasReleasedThisFrame(evadeBoostAction))
+        {
+            float heldTime = Time.time - evadeBoostPressedTime;
+
+            bool canEvade =
+                evadeBoostPressActive &&
+                heldTime < evadeHoldThreshold &&
+                !isDodging &&
+                !isAttacking &&
+                HasEnoughMoveInputForEvade();
+
+            if (canEvade)
+                StartCoroutine(EvadeRoutine(GetEvadeDirection()));
+
+            evadeBoostPressActive = false;
         }
     }
 
     private void HandleAttackInput()
     {
-        if (isAttacking)
+        if (isAttacking || isDodging)
             return;
 
-        if (GetKeyDownSafe(weakAttackKey) && weakAttackCooldownTimer <= 0f)
+        if (WasPressedThisFrame(weakAttackAction) && weakAttackCooldownTimer <= 0f)
         {
-            animator.SetTrigger("tWeakAttack");
+            if (animator != null)
+                animator.SetTrigger("tWeakAttack");
+
             StartCoroutine(WeakAttackRoutine());
             return;
         }
 
-        if (GetKeyDownSafe(strongAttackKey) && strongAttackCooldownTimer <= 0f)
+        if (WasPressedThisFrame(strongAttackAction) && strongAttackCooldownTimer <= 0f && CanUseStrongAttack())
         {
-            if (!CanUseStrongAttack())
-                return;
+            if (animator != null)
+                animator.SetTrigger("tStrongAttack");
 
-            animator.SetTrigger("tStrongAttack");
             StartCoroutine(StrongAttackRoutine());
-        }
-    }
-
-    private bool CanUseStrongAttack()
-    {
-        return currentHeat >= strongAttackHeatCost;
-    }
-
-    private void SpendHeat(float value)
-    {
-        currentHeat -= value;
-        if (currentHeat < 0f)
-            currentHeat = 0f;
-    }
-
-    private void GainHeat(float value)
-    {
-        currentHeat += value;
-        if (currentHeat > maxHeat)
-            currentHeat = maxHeat;
-    }
-
-    private void CreateHeatGaugeIfNeeded()
-    {
-        if (heatSlider != null)
-            return;
-
-        GameObject canvasObj = GameObject.Find("RuntimeHeatCanvas");
-        Canvas canvas;
-
-        if (canvasObj == null)
-        {
-            canvasObj = new GameObject(
-                "RuntimeHeatCanvas",
-                typeof(RectTransform),
-                typeof(Canvas),
-                typeof(CanvasScaler),
-                typeof(GraphicRaycaster)
-            );
-
-            canvas = canvasObj.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-
-            CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
-        }
-        else
-        {
-            canvas = canvasObj.GetComponent<Canvas>();
-            if (canvas == null)
-                canvas = canvasObj.AddComponent<Canvas>();
-
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-            if (canvasObj.GetComponent<CanvasScaler>() == null)
-            {
-                CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
-                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                scaler.referenceResolution = new Vector2(1920f, 1080f);
-                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-                scaler.matchWidthOrHeight = 0.5f;
-            }
-
-            if (canvasObj.GetComponent<GraphicRaycaster>() == null)
-                canvasObj.AddComponent<GraphicRaycaster>();
-        }
-
-        GameObject gaugeRoot = new GameObject(
-            "HeatGaugeRoot",
-            typeof(RectTransform),
-            typeof(Image),
-            typeof(Slider)
-        );
-        gaugeRoot.transform.SetParent(canvasObj.transform, false);
-
-        RectTransform rootRect = gaugeRoot.GetComponent<RectTransform>();
-        rootRect.anchorMin = new Vector2(0f, 1f);
-        rootRect.anchorMax = new Vector2(0f, 1f);
-        rootRect.pivot = new Vector2(0f, 1f);
-        rootRect.sizeDelta = new Vector2(320f, 24f);
-        rootRect.anchoredPosition = new Vector2(30f, -30f);
-
-        Image backgroundImage = gaugeRoot.GetComponent<Image>();
-        backgroundImage.sprite = RuntimeWhiteSprite;
-        backgroundImage.type = Image.Type.Sliced;
-        backgroundImage.color = new Color(0.12f, 0.12f, 0.12f, 0.9f);
-
-        GameObject fillArea = new GameObject("Fill Area", typeof(RectTransform));
-        fillArea.transform.SetParent(gaugeRoot.transform, false);
-
-        RectTransform fillAreaRect = fillArea.GetComponent<RectTransform>();
-        fillAreaRect.anchorMin = Vector2.zero;
-        fillAreaRect.anchorMax = Vector2.one;
-        fillAreaRect.offsetMin = new Vector2(3f, 3f);
-        fillAreaRect.offsetMax = new Vector2(-3f, -3f);
-
-        GameObject fillObj = new GameObject("Fill", typeof(RectTransform), typeof(Image));
-        fillObj.transform.SetParent(fillArea.transform, false);
-
-        RectTransform fillRect = fillObj.GetComponent<RectTransform>();
-        fillRect.anchorMin = Vector2.zero;
-        fillRect.anchorMax = Vector2.one;
-        fillRect.offsetMin = Vector2.zero;
-        fillRect.offsetMax = Vector2.zero;
-
-        Image fillImage = fillObj.GetComponent<Image>();
-        fillImage.sprite = RuntimeWhiteSprite;
-        fillImage.type = Image.Type.Sliced;
-        fillImage.color = new Color(1.0f, 0.42f, 0.05f, 1f);
-
-        Slider slider = gaugeRoot.GetComponent<Slider>();
-        slider.transition = Selectable.Transition.None;
-        slider.interactable = false;
-        slider.direction = Slider.Direction.LeftToRight;
-        slider.minValue = 0f;
-        slider.maxValue = maxHeat;
-        slider.wholeNumbers = false;
-        slider.fillRect = fillRect;
-        slider.handleRect = null;
-        slider.targetGraphic = fillImage;
-        slider.SetValueWithoutNotify(currentHeat);
-
-        heatSlider = slider;
-    }
-
-    private void RefreshHeatUI()
-    {
-        if (heatSlider == null)
-            return;
-
-        heatSlider.minValue = 0f;
-        heatSlider.maxValue = maxHeat;
-        heatSlider.SetValueWithoutNotify(currentHeat);
-
-        Image fillImage = null;
-        if (heatSlider.fillRect != null)
-            fillImage = heatSlider.fillRect.GetComponent<Image>();
-
-        if (fillImage != null)
-        {
-            if (CanUseStrongAttack())
-                fillImage.color = new Color(1.0f, 0.25f, 0.1f, 1f);
-            else
-                fillImage.color = new Color(1.0f, 0.42f, 0.05f, 1f);
         }
     }
 
     private void MovePlayer()
     {
+        if (isDodging)
+        {
+            if (animator != null)
+            {
+                animator.SetBool("bWalk", false);
+                animator.SetBool("bRun", false);
+            }
+            return;
+        }
+
         if (cController.isGrounded)
         {
             if (verticalVelocity.y < 0f)
@@ -424,27 +380,28 @@ public class SC_Player : MonoBehaviour
             verticalVelocity.y -= gravity * Time.deltaTime;
         }
 
-        bool isBoostMoving = GetKeySafe(boostMoveKey);
+        bool isBoostMoving = IsBoostMoveActive();
         float currentSpeed = isBoostMoving ? boostMoveSpeed : moveSpeed;
 
-        if(isBoostMoving)
-            animator.SetBool("bRun", true);
-        else
-            animator.SetBool("bRun", false);
+        if (animator != null)
+            animator.SetBool("bRun", isBoostMoving);
 
-        Vector3 horizontalVelocity = moveInputDir * currentSpeed;
+        Vector3 velocity = moveInputDir * currentSpeed;
+        velocity.y = verticalVelocity.y;
 
-        Vector3 finalVelocity = horizontalVelocity;
-        finalVelocity.y = verticalVelocity.y;
-
-        cController.Move(finalVelocity * Time.deltaTime);
+        cController.Move(velocity * Time.deltaTime);
     }
 
     private void RotateModel()
     {
-        Vector3 faceDir = moveInputDir.sqrMagnitude > 0.0001f ? moveInputDir : Vector3.zero;
+        Vector3 faceDir = Vector3.zero;
 
-        if (faceDir == Vector3.zero)
+        if (IsLockOnActive() && TryGetTargetDirection(out Vector3 targetDir))
+            faceDir = targetDir;
+        else if (moveInputDir.sqrMagnitude > 0.0001f)
+            faceDir = moveInputDir.normalized;
+
+        if (faceDir.sqrMagnitude <= 0.0001f)
             return;
 
         Quaternion targetRot = Quaternion.LookRotation(faceDir, Vector3.up);
@@ -467,12 +424,66 @@ public class SC_Player : MonoBehaviour
         }
     }
 
+    private void UpdateCameraTargetState()
+    {
+        if (cameraScript == null)
+            return;
+
+        cameraScript.SetFollowTarget(transform);
+        cameraScript.SetAttackMode(IsLockOnActive());
+        cameraScript.SetLookAtTarget(IsLockOnActive() ? currentTarget.transform : null);
+    }
+
+    private IEnumerator EvadeRoutine(Vector3 evadeDir)
+    {
+        isDodging = true;
+
+        if (animator != null)
+        {
+            animator.SetBool("bWalk", false);
+            animator.SetBool("bRun", false);
+        }
+
+        float safeDuration = Mathf.Max(0.01f, evadeDuration);
+        float startSpeed = evadeDistance / safeDuration;
+        float timer = 0f;
+
+        while (timer < safeDuration)
+        {
+            if (cController == null)
+                yield break;
+
+            if (cController.isGrounded)
+            {
+                if (verticalVelocity.y < 0f)
+                    verticalVelocity.y = groundedY;
+            }
+            else
+            {
+                verticalVelocity.y -= gravity * Time.deltaTime;
+            }
+
+            float t = timer / safeDuration;
+            float speed = Mathf.Lerp(startSpeed, 0f, t);
+
+            Vector3 velocity = evadeDir * speed;
+            velocity.y = verticalVelocity.y;
+
+            cController.Move(velocity * Time.deltaTime);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        isDodging = false;
+    }
+
     private IEnumerator WeakAttackRoutine()
     {
         isAttacking = true;
         weakAttackCooldownTimer = weakAttackCooldown;
 
-        Vector3 attackDir = GetAttackDirection();
+        Vector3 attackDir = GetAttackDirection(weakAttackAimAssist);
 
         if (weakAttackStartup > 0f)
             yield return new WaitForSeconds(weakAttackStartup);
@@ -486,45 +497,102 @@ public class SC_Player : MonoBehaviour
     {
         isAttacking = true;
         strongAttackCooldownTimer = strongAttackCooldown;
-
         SpendHeat(strongAttackHeatCost);
 
-        Vector3 attackDir = GetAttackDirection();
+        Vector3 attackDir = GetAttackDirection(strongAttackAimAssist);
+
+        BeginStrongAttackSlow();
 
         if (strongAttackStartup > 0f)
             yield return new WaitForSeconds(strongAttackStartup);
 
         DoStrongAttack(attackDir);
 
+        if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == null)
+        {
+            if (strongAttackMissRestoreDelayRealtime > 0f)
+                yield return new WaitForSecondsRealtime(strongAttackMissRestoreDelayRealtime);
+
+            EndStrongAttackSlow();
+        }
+
         isAttacking = false;
     }
 
-    private Vector3 GetAttackDirection()
+    private void BeginStrongAttackSlow()
     {
-        Vector3 dir = moveInputDir.sqrMagnitude > 0.0001f ? moveInputDir : lastMoveDirection;
-        dir.y = 0f;
+        strongAttackSlowTrackedEnemy = null;
+        strongAttackSlowActive = true;
+        ApplyCombinedTimeScale();
+    }
 
-        if (dir.sqrMagnitude <= 0.0001f)
+    private void EndStrongAttackSlow()
+    {
+        strongAttackSlowActive = false;
+        strongAttackSlowTrackedEnemy = null;
+        ApplyCombinedTimeScale();
+    }
+
+    private void RestoreAllTimeScaleEffects()
+    {
+        strongAttackSlowActive = false;
+        strongAttackSlowTrackedEnemy = null;
+        strongKillCutInSlowActive = false;
+
+        if (strongKillCutInRoutine != null)
         {
-            if (modelRoot != null)
-                dir = modelRoot.forward;
-            else
-                dir = transform.forward;
+            StopCoroutine(strongKillCutInRoutine);
+            strongKillCutInRoutine = null;
         }
 
-        dir.y = 0f;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = baseFixedDeltaTime > 0f ? baseFixedDeltaTime : 0.02f;
+    }
 
-        if (dir.sqrMagnitude <= 0.0001f)
-            dir = Vector3.forward;
+    private void ApplyCombinedTimeScale()
+    {
+        float newTimeScale = 1f;
 
-        return dir.normalized;
+        if (strongAttackSlowActive)
+            newTimeScale = Mathf.Min(newTimeScale, strongAttackSlowTimeScale);
+
+        if (strongKillCutInSlowActive)
+            newTimeScale = Mathf.Min(newTimeScale, strongKillCutInTimeScale);
+
+        Time.timeScale = newTimeScale;
+        Time.fixedDeltaTime = (baseFixedDeltaTime > 0f ? baseFixedDeltaTime : 0.02f) * Time.timeScale;
+    }
+
+    private void StartStrongKillCutIn()
+    {
+        if (cameraScript != null)
+            cameraScript.StartStrongAttackCutIn();
+
+        if (strongKillCutInRoutine != null)
+        {
+            StopCoroutine(strongKillCutInRoutine);
+            strongKillCutInRoutine = null;
+        }
+
+        strongKillCutInRoutine = StartCoroutine(StrongKillCutInRoutine());
+    }
+
+    private IEnumerator StrongKillCutInRoutine()
+    {
+        strongKillCutInSlowActive = true;
+        ApplyCombinedTimeScale();
+
+        if (strongKillCutInDurationRealtime > 0f)
+            yield return new WaitForSecondsRealtime(strongKillCutInDurationRealtime);
+
+        strongKillCutInSlowActive = false;
+        strongKillCutInRoutine = null;
+        ApplyCombinedTimeScale();
     }
 
     private void DoWeakAttack(Vector3 attackDir)
     {
-        Vector3 center = transform.position
-                       + Vector3.up * weakAttackHeightOffset
-                       + attackDir * weakAttackForwardOffset;
+        Vector3 center = BuildAttackCenter(attackDir, weakAttackHeightOffset, weakAttackForwardOffset);
 
         int hitCount = Physics.OverlapSphereNonAlloc(
             center,
@@ -535,22 +603,28 @@ public class SC_Player : MonoBehaviour
         );
 
         HashSet<EnemyController> hitEnemies = new HashSet<EnemyController>();
+        bool targetAssignedThisAttack = false;
         int validHitCount = 0;
 
         for (int i = 0; i < hitCount; i++)
         {
             EnemyController enemy = GetEnemyFromCollider(overlapResults[i]);
-            if (enemy == null)
-                continue;
-
-            if (!hitEnemies.Add(enemy))
+            if (enemy == null || !hitEnemies.Add(enemy))
                 continue;
 
             validHitCount++;
 
+            if (!targetAssignedThisAttack)
+            {
+                SetCurrentTarget(enemy);
+                targetAssignedThisAttack = true;
+            }
+
             Vector3 knockDir = GetKnockDirection(enemy.transform.position, attackDir);
 
-            cameraScript.StartShake(0.12f, 0.20f);
+            if (cameraScript != null)
+                cameraScript.StartShake(0.12f, 0.20f);
+
             bool dead = ApplyDamageToEnemy(enemy, weakDamage);
             if (dead)
                 continue;
@@ -564,9 +638,7 @@ public class SC_Player : MonoBehaviour
 
     private void DoStrongAttack(Vector3 attackDir)
     {
-        Vector3 center = transform.position
-                       + Vector3.up * strongAttackHeightOffset
-                       + attackDir * strongAttackForwardOffset;
+        Vector3 center = BuildAttackCenter(attackDir, strongAttackHeightOffset, strongAttackForwardOffset);
 
         int hitCount = Physics.OverlapSphereNonAlloc(
             center,
@@ -577,22 +649,44 @@ public class SC_Player : MonoBehaviour
         );
 
         HashSet<EnemyController> hitEnemies = new HashSet<EnemyController>();
+        bool targetAssignedThisAttack = false;
+        bool slowTargetAssigned = false;
+        bool killCutInTriggered = false;
 
         for (int i = 0; i < hitCount; i++)
         {
             EnemyController enemy = GetEnemyFromCollider(overlapResults[i]);
-            if (enemy == null)
+            if (enemy == null || !hitEnemies.Add(enemy))
                 continue;
 
-            if (!hitEnemies.Add(enemy))
-                continue;
+            if (!targetAssignedThisAttack)
+            {
+                SetCurrentTarget(enemy);
+                targetAssignedThisAttack = true;
+            }
 
             Vector3 slideDir = GetKnockDirection(enemy.transform.position, attackDir);
 
-            cameraScript.StartShake(0.20f, 1.00f);
+            if (cameraScript != null)
+                cameraScript.StartShake(0.20f, 1.00f);
+
             bool dead = ApplyDamageToEnemy(enemy, strongDamage);
+
             if (dead)
+            {
+                if (!killCutInTriggered)
+                {
+                    StartStrongKillCutIn();
+                    killCutInTriggered = true;
+                }
                 continue;
+            }
+
+            if (strongAttackSlowActive && !slowTargetAssigned)
+            {
+                strongAttackSlowTrackedEnemy = enemy;
+                slowTargetAssigned = true;
+            }
 
             StartOrReplaceSlide(
                 enemy,
@@ -606,19 +700,141 @@ public class SC_Player : MonoBehaviour
         }
     }
 
-    private EnemyController GetEnemyFromCollider(Collider col)
+    private Vector3 GetAttackDirection(float assistWeight)
     {
-        if (col == null)
+        Vector3 dir;
+
+        if (IsLockOnActive() && TryGetTargetDirection(out Vector3 targetDir))
+        {
+            dir = moveInputDir.sqrMagnitude > 0.0001f
+                ? Vector3.Slerp(moveInputDir.normalized, targetDir, assistWeight).normalized
+                : targetDir;
+        }
+        else
+        {
+            dir = GetBaseForward();
+
+            if (TryGetTargetDirection(out Vector3 assistTargetDir))
+                dir = Vector3.Slerp(dir, assistTargetDir, assistWeight).normalized;
+        }
+
+        return dir;
+    }
+
+    private Vector3 BuildAttackCenter(Vector3 attackDir, float heightOffset, float forwardOffset)
+    {
+        Vector3 center = transform.position + Vector3.up * heightOffset + attackDir * forwardOffset;
+
+        if (currentTarget != null && IsEnemyTargetable(currentTarget))
+        {
+            Vector3 targetPos = currentTarget.transform.position + Vector3.up * heightOffset;
+            Vector3 toTarget = targetPos - center;
+            toTarget.y = 0f;
+
+            if (toTarget.sqrMagnitude > 0.0001f)
+                center += Vector3.ClampMagnitude(toTarget, attackCenterPullMax);
+        }
+
+        return center;
+    }
+
+    private EnemyController FindBestTarget()
+    {
+        EnemyController[] enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        if (enemies == null || enemies.Length == 0)
             return null;
 
-        EnemyController enemy = col.GetComponentInParent<EnemyController>();
-        if (enemy == null)
-            return null;
+        Vector3 baseForward = GetTargetSearchForward();
 
-        if (enemy.gameObject == gameObject)
-            return null;
+        EnemyController bestFrontTarget = null;
+        float bestFrontScore = float.MaxValue;
 
-        return enemy;
+        EnemyController bestFallbackTarget = null;
+        float bestFallbackDistance = float.MaxValue;
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            EnemyController enemy = enemies[i];
+            if (!IsEnemyTargetable(enemy))
+                continue;
+
+            Vector3 toEnemy = enemy.transform.position - transform.position;
+            toEnemy.y = 0f;
+
+            float distance = toEnemy.magnitude;
+            if (distance > targetSearchRadius)
+                continue;
+
+            if (distance < bestFallbackDistance)
+            {
+                bestFallbackDistance = distance;
+                bestFallbackTarget = enemy;
+            }
+
+            if (distance <= 0.0001f)
+                continue;
+
+            Vector3 dir = toEnemy / distance;
+            float angle = Vector3.Angle(baseForward, dir);
+
+            if (angle > targetSearchAngle)
+                continue;
+
+            float score = distance + angle * 0.08f;
+            if (score < bestFrontScore)
+            {
+                bestFrontScore = score;
+                bestFrontTarget = enemy;
+            }
+        }
+
+        return bestFrontTarget != null ? bestFrontTarget : bestFallbackTarget;
+    }
+
+    private Vector3 GetTargetSearchForward()
+    {
+        if (IsLockOnActive() && TryGetTargetDirection(out Vector3 targetDir))
+            return targetDir;
+
+        return GetBaseForward();
+    }
+
+    private Vector3 GetBaseForward()
+    {
+        Vector3 forward = moveInputDir.sqrMagnitude > 0.0001f ? moveInputDir : lastMoveDirection;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude <= 0.0001f)
+        {
+            if (modelRoot != null)
+                forward = modelRoot.forward;
+            else
+                forward = transform.forward;
+        }
+
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude <= 0.0001f)
+            forward = Vector3.forward;
+
+        return forward.normalized;
+    }
+
+    private bool TryGetTargetDirection(out Vector3 dir)
+    {
+        dir = Vector3.zero;
+
+        if (currentTarget == null || !IsEnemyTargetable(currentTarget))
+            return false;
+
+        Vector3 toTarget = currentTarget.transform.position - transform.position;
+        toTarget.y = 0f;
+
+        if (toTarget.sqrMagnitude <= 0.0001f)
+            return false;
+
+        dir = toTarget.normalized;
+        return true;
     }
 
     private Vector3 GetKnockDirection(Vector3 targetPos, Vector3 fallbackDir)
@@ -637,55 +853,124 @@ public class SC_Player : MonoBehaviour
         return dir.normalized;
     }
 
-    private int GetEnemyHP(EnemyController enemy)
+    private Vector3 GetEvadeDirection()
     {
-        if (enemy == null)
-            return 0;
+        Vector3 dir = moveInputDir;
 
-        if (!enemyHpTable.TryGetValue(enemy, out int hp))
+        if (dir.sqrMagnitude <= 0.0001f)
+            dir = lastMoveDirection;
+
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude <= 0.0001f)
         {
-            hp = enemyMaxHP;
-            enemyHpTable.Add(enemy, hp);
+            if (modelRoot != null)
+                dir = modelRoot.forward;
+            else
+                dir = transform.forward;
         }
 
-        return hp;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude <= 0.0001f)
+            dir = Vector3.forward;
+
+        return dir.normalized;
+    }
+
+    private bool CanUseStrongAttack()
+    {
+        return currentHeat >= strongAttackHeatCost;
+    }
+
+    private void SpendHeat(float value)
+    {
+        currentHeat = Mathf.Max(0f, currentHeat - value);
+    }
+
+    private void GainHeat(float value)
+    {
+        currentHeat = Mathf.Min(maxHeat, currentHeat + value);
+    }
+
+    private void RefreshHeatUI()
+    {
+        if (heatSlider == null)
+            return;
+
+        heatSlider.minValue = 0f;
+        heatSlider.maxValue = maxHeat;
+        heatSlider.SetValueWithoutNotify(currentHeat);
+
+        Image fillImage = heatSlider.fillRect != null ? heatSlider.fillRect.GetComponent<Image>() : null;
+        if (fillImage != null)
+        {
+            fillImage.color = CanUseStrongAttack()
+                ? new Color(1.0f, 0.25f, 0.1f, 1f)
+                : new Color(1.0f, 0.42f, 0.05f, 1f);
+        }
+    }
+
+    private bool HasEnoughMoveInputForEvade()
+    {
+        return moveInputDir.sqrMagnitude >= evadeMinInput * evadeMinInput;
+    }
+
+    private bool IsBoostMoveActive()
+    {
+        if (isDodging)
+            return false;
+
+        if (!IsPressed(evadeBoostAction))
+            return false;
+
+        if (!HasEnoughMoveInputForEvade())
+            return false;
+
+        return Time.time - evadeBoostPressedTime >= evadeHoldThreshold;
+    }
+
+    private bool IsLockOnActive()
+    {
+        return currentTarget != null && IsEnemyTargetable(currentTarget);
+    }
+
+    private bool IsEnemyTargetable(EnemyController enemy)
+    {
+        return enemy != null && enemy.IsAlive;
+    }
+
+    private EnemyController GetEnemyFromCollider(Collider col)
+    {
+        if (col == null)
+            return null;
+
+        EnemyController enemy = col.GetComponentInParent<EnemyController>();
+        if (enemy == null || enemy.gameObject == gameObject || !IsEnemyTargetable(enemy))
+            return null;
+
+        return enemy;
     }
 
     private bool ApplyDamageToEnemy(EnemyController enemy, int damage)
     {
-        if (enemy == null)
-            return false;
-
-        int currentEnemyHP = GetEnemyHP(enemy);
-        currentEnemyHP -= Mathf.Max(0, damage);
-
-        enemyHpTable[enemy] = currentEnemyHP;
-
-        if (currentEnemyHP <= 0)
-        {
-            KillEnemy(enemy);
-            return true;
-        }
-
-        return false;
+        return enemy != null && enemy.TakeDamage(damage);
     }
 
-    private void KillEnemy(EnemyController enemy)
+    private void SetCurrentTarget(EnemyController target)
     {
-        if (enemy == null)
-            return;
-
-        if (enemySlideRoutineTable.TryGetValue(enemy, out Coroutine running) && running != null)
+        if (target == null || !IsEnemyTargetable(target))
         {
-            StopCoroutine(running);
-            enemySlideRoutineTable.Remove(enemy);
+            ClearTarget();
+            return;
         }
 
-        RestoreEnemyMoveSpeed(enemy);
-        enemyHpTable.Remove(enemy);
+        currentTarget = target;
+    }
 
-        if (enemy != null && enemy.gameObject != null)
-            Destroy(enemy.gameObject);
+    private void ClearTarget()
+    {
+        currentTarget = null;
     }
 
     private void StartOrReplaceSlide(
@@ -723,12 +1008,13 @@ public class SC_Player : MonoBehaviour
         float chainDistance,
         float chainDuration)
     {
-        if (enemy == null)
-            yield break;
+        if (enemy == null || enemy.transform == null)
+        {
+            if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
+                EndStrongAttackSlow();
 
-        Transform target = enemy.transform;
-        if (target == null)
             yield break;
+        }
 
         CacheAndStopEnemyMove(enemy);
 
@@ -739,25 +1025,35 @@ public class SC_Player : MonoBehaviour
 
         float safeDuration = Mathf.Max(0.01f, duration);
         float startSpeed = distance / safeDuration;
-        float fixedY = target.position.y;
-
-        HashSet<EnemyController> hitDuringSlide = new HashSet<EnemyController>();
-        hitDuringSlide.Add(enemy);
-
+        float fixedY = enemy.transform.position.y;
         float timer = 0f;
+
+        HashSet<EnemyController> hitDuringSlide = new HashSet<EnemyController> { enemy };
 
         while (timer < safeDuration)
         {
-            if (enemy == null || target == null)
+            if (enemy == null || enemy.transform == null || !enemy.IsAlive)
+            {
+                RestoreEnemyMoveSpeed(enemy);
+                enemySlideRoutineTable.Remove(enemy);
+
+                if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
+                    EndStrongAttackSlow();
+
                 yield break;
+            }
 
             float t = timer / safeDuration;
             float speed = Mathf.Lerp(startSpeed, 0f, t);
 
             Vector3 move = dir * speed * Time.deltaTime;
-            Vector3 nextPos = target.position + move;
+            Vector3 nextPos = enemy.transform.position + move;
             nextPos.y = fixedY;
-            target.position = nextPos;
+            enemy.transform.position = nextPos;
+
+            float progress = Mathf.Clamp01((timer + Time.deltaTime) / safeDuration);
+            if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy && progress >= strongAttackRestoreSlideProgress)
+                EndStrongAttackSlow();
 
             if (collisionDamage > 0)
             {
@@ -780,6 +1076,9 @@ public class SC_Player : MonoBehaviour
             RestoreEnemyMoveSpeed(enemy);
             enemySlideRoutineTable.Remove(enemy);
         }
+
+        if (strongAttackSlowActive && strongAttackSlowTrackedEnemy == enemy)
+            EndStrongAttackSlow();
     }
 
     private void ResolveSlidingEnemyHits(
@@ -790,7 +1089,7 @@ public class SC_Player : MonoBehaviour
         float chainDuration,
         HashSet<EnemyController> hitDuringSlide)
     {
-        if (slidingEnemy == null)
+        if (slidingEnemy == null || !slidingEnemy.IsAlive)
             return;
 
         Vector3 center = slidingEnemy.transform.position + Vector3.up * slideHitHeightOffset;
@@ -806,13 +1105,7 @@ public class SC_Player : MonoBehaviour
         for (int i = 0; i < hitCount; i++)
         {
             EnemyController other = GetEnemyFromCollider(overlapResults[i]);
-            if (other == null)
-                continue;
-
-            if (other == slidingEnemy)
-                continue;
-
-            if (!hitDuringSlide.Add(other))
+            if (other == null || other == slidingEnemy || !hitDuringSlide.Add(other))
                 continue;
 
             Vector3 chainDir = other.transform.position - slidingEnemy.transform.position;
@@ -865,24 +1158,20 @@ public class SC_Player : MonoBehaviour
         }
     }
 
+    private void RestoreAllEnemyMoveSpeeds()
+    {
+        foreach (var pair in enemyMoveSpeedBackupTable)
+        {
+            if (pair.Key != null)
+                pair.Key.moveSpeed = pair.Value;
+        }
+
+        enemyMoveSpeedBackupTable.Clear();
+        enemySlideRoutineTable.Clear();
+    }
+
     private void CleanupDeadEnemyEntries()
     {
-        List<EnemyController> removeHpKeys = null;
-        foreach (var pair in enemyHpTable)
-        {
-            if (pair.Key == null)
-            {
-                if (removeHpKeys == null) removeHpKeys = new List<EnemyController>();
-                removeHpKeys.Add(pair.Key);
-            }
-        }
-
-        if (removeHpKeys != null)
-        {
-            for (int i = 0; i < removeHpKeys.Count; i++)
-                enemyHpTable.Remove(removeHpKeys[i]);
-        }
-
         List<EnemyController> removeSlideKeys = null;
         foreach (var pair in enemySlideRoutineTable)
         {
@@ -916,60 +1205,69 @@ public class SC_Player : MonoBehaviour
         }
     }
 
-    private Key SanitizeKey(Key current, Key fallback)
+    private void SetActionEnabled(InputActionReference actionRef, bool enable)
     {
-        if (!Enum.IsDefined(typeof(Key), current))
-            return fallback;
+        if (actionRef == null || actionRef.action == null)
+            return;
 
-        if (current == Key.None)
-            return fallback;
-
-        return current;
+        if (enable)
+            actionRef.action.Enable();
+        else
+            actionRef.action.Disable();
     }
 
-    private bool GetKeySafe(Key key)
+    private Vector2 ReadMoveValue()
     {
-        Keyboard kb = Keyboard.current;
-        if (kb == null)
-            return false;
+        if (moveAction == null || moveAction.action == null)
+            return Vector2.zero;
 
-        if (!Enum.IsDefined(typeof(Key), key) || key == Key.None)
-            return false;
+        Vector2 value = moveAction.action.ReadValue<Vector2>();
 
-        return kb[key].isPressed;
+        if (value.magnitude < moveInputDeadZone)
+            return Vector2.zero;
+
+        if (value.sqrMagnitude > 1f)
+            value.Normalize();
+
+        return value;
     }
 
-    private bool GetKeyDownSafe(Key key)
+    private bool IsPressed(InputActionReference actionRef)
     {
-        Keyboard kb = Keyboard.current;
-        if (kb == null)
-            return false;
+        return actionRef != null && actionRef.action != null && actionRef.action.IsPressed();
+    }
 
-        if (!Enum.IsDefined(typeof(Key), key) || key == Key.None)
-            return false;
+    private bool WasPressedThisFrame(InputActionReference actionRef)
+    {
+        return actionRef != null && actionRef.action != null && actionRef.action.WasPressedThisFrame();
+    }
 
-        return kb[key].wasPressedThisFrame;
+    private bool WasReleasedThisFrame(InputActionReference actionRef)
+    {
+        return actionRef != null && actionRef.action != null && actionRef.action.WasReleasedThisFrame();
     }
 
     private void OnDrawGizmosSelected()
     {
-        Vector3 attackDir = Application.isPlaying ? GetAttackDirection() : transform.forward;
+        Vector3 attackDir = Application.isPlaying ? GetAttackDirection(1f) : transform.forward;
 
-        Vector3 weakCenter = transform.position
-                           + Vector3.up * weakAttackHeightOffset
-                           + attackDir.normalized * weakAttackForwardOffset;
+        if (attackDir.sqrMagnitude <= 0.0001f)
+            attackDir = Vector3.forward;
 
+        attackDir.Normalize();
+
+        Vector3 weakCenter = transform.position + Vector3.up * weakAttackHeightOffset + attackDir * weakAttackForwardOffset;
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(weakCenter, weakAttackRadius);
 
-        Vector3 strongCenter = transform.position
-                             + Vector3.up * strongAttackHeightOffset
-                             + attackDir.normalized * strongAttackForwardOffset;
-
+        Vector3 strongCenter = transform.position + Vector3.up * strongAttackHeightOffset + attackDir * strongAttackForwardOffset;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(strongCenter, strongAttackRadius);
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position + Vector3.up * slideHitHeightOffset, slideHitRadius);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, targetSearchRadius);
     }
 }

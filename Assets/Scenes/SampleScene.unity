@@ -921,7 +921,7 @@ Transform:
   m_GameObject: {fileID: 1782247070}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: -0, z: -0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 26.4, z: -15}
+  m_LocalPosition: {x: 0, y: 20, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -940,10 +940,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_Camera
   followTarget: {fileID: 502074519}
-  sensitivity: 120
-  normalOffset: {x: 0, y: 25, z: -15}
-  attackOffset: {x: 1.5, y: 1.8, z: -3}
-  smoothSpeed: 10
+  normalOffset: {x: 0, y: 20, z: -10}
+  normalLookOffset: {x: 0, y: 1.5, z: 0}
+  lockOnDistanceScale: 0.82
+  lockOnHeightOffset: 0.15
+  lockOnLookHeight: 1.2
+  strongAttackBackDistance: 2.2
+  strongAttackHeight: 1.85
+  strongAttackSideOffset: 0.75
+  strongAttackLookHeight: 1.25
+  strongAttackCutInDuration: 0.22
+  strongAttackBlendInSpeed: 12
+  strongAttackBlendOutSpeed: 10
+  sensitivity: 100
+  positionSmoothTime: 0.1
+  rotationSmoothSpeed: 5
 --- !u!1 &2075184563 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9066085203353394400, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
@@ -973,8 +984,52 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: lookAction
+      value: 
+      objectReference: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: moveAction
+      value: 
+      objectReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: targetAction
+      value: 
+      objectReference: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: boostMoveSpeed
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: evadeBoostAction
+      value: 
+      objectReference: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: weakAttackAction
+      value: 
+      objectReference: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackAction
+      value: 
+      objectReference: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongSlideDistance
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackSlowDuration
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackSlowTimeScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackRestoreSlideProgress
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629486707080217933, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
+      propertyPath: strongAttackMissRestoreDelayRealtime
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 9066085203353157826, guid: 1b2a4a49f174060458e4e47b0aa44347, type: 3}
       propertyPath: m_LocalPosition.x
