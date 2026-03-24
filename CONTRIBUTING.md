@@ -1,4 +1,4 @@
-## Git 開発ルール（Unityチーム開発用）
+w## Git 開発ルール（Unityチーム開発用）
 
 このプロジェクトは **Git フローに基づいたブランチ戦略**で開発します。
 エンジン: Unity
@@ -28,12 +28,31 @@ feature/ui-system
 ```
 feature/* → develop → main
 ```
+1. Issueを作成
+2. `develop` から `feature` ブランチを作成
+3. 機能開発
+4. `develop` に Pull Request
+5. レビュー後 `develop` にマージ
+6. リリース時 `develop` → `main` に Pull Request
 
-1. `develop` から `feature` ブランチを作成
-2. 機能開発
-3. `develop` に Pull Request
-4. レビュー後 `develop` にマージ
-5. リリース時 `develop` → `main` に Pull Request
+---
+
+# Issue記述法
+
+```
+## 内容
+- 
+
+## 変更箇所
+- 
+
+## 完了条件
+[ ]
+
+## 担当者
+@github-name
+```
+変更箇所には、変更するファイルなどを必ず記載してください。
 
 ---
 
