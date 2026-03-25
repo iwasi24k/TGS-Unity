@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: b578c5af920243b4083679bdbc82645b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - settingUI: {instanceID: 0}
+  - iaSettingtoggle: {fileID: -3149287562716944869, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

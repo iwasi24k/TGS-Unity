@@ -949,6 +949,45 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Setting",
+            "id": "56faa73a-13a6-4cd1-bee6-8526dca85744",
+            "actions": [
+                {
+                    "name": "ToggleState",
+                    "type": "Button",
+                    "id": "7ca78003-78b8-43e7-9a19-7d9327d075cb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "de9ca1e9-ae29-41c7-99b9-342aa046eba3",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ToggleState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aa9d19f2-2774-43c0-9c1a-1cd4da4e84c8",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ToggleState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

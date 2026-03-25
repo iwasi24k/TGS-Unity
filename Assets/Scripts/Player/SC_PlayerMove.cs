@@ -42,7 +42,6 @@ public class SC_PlayerMove : MonoBehaviour
         //ƒXƒvƒŠƒ“ƒg
         var sprintInput = iaSprint.action.ReadValue<float>();
         
-        Debug.Log($"Sprint Input: {sprintInput}");
         float SprintFactor = sprintInput > 0.5f ? sprintMultiplier : 1f;
 
         //ˆÚ“®
