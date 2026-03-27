@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public enum EnemyState
 {
@@ -13,11 +13,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]
     [Tooltip("HPSlider")]
-    [SerializeField] Slider hpSlider;
+    [SerializeField]  private Slider hpSlider;
 
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
-    
+    [Tooltip("“G‚Ì‚Á”ò‚Ô—Í")]
+    [SerializeField] private float BlowAwayPower = 20f;
+
     private EnemyState currentPerformance = EnemyState.Idle;
     void Start()
     {
@@ -27,7 +29,26 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
         else
         {
-            hpSlider.highValue = hpSlider.value = HP;
+            hpSlider.maxValue = hpSlider.value = HP;
+        }
+    }
+
+    void Update()
+    {
+        switch (currentPerformance)
+        {
+            case EnemyState.Idle:
+                // ‘Ò‹@ó‘Ô‚Ìˆ—
+                break;
+            case EnemyState.Walk:
+                // •àsó‘Ô‚Ìˆ—
+                break;
+            case EnemyState.Attack:
+                // UŒ‚ó‘Ô‚Ìˆ—
+                break;
+            case EnemyState.BlowAway:
+                // ‚Á”ò‚Ñó‘Ô‚Ìˆ—
+                break;
         }
     }
 
@@ -52,6 +73,5 @@ public class SC_EnemyStatusManager : MonoBehaviour
     {
         currentPerformance = next;
     }
-
 
 }
