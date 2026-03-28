@@ -33,6 +33,15 @@ public class SC_PlayerMove : MonoBehaviour
         if(ccPlayer == null) ccPlayer = GetComponent<CharacterController>();
 
         currentSplintMul = sprintMultiplier;
+
+        if(iaMove == null)
+        {
+            Debug.LogError("移動用のInputActionReferenceがアタッチされていません。");
+        }
+        if(iaSprint == null)
+        {
+            Debug.LogError("スプリント用のInputActionReferenceがアタッチされていません。");
+        }
     }
 
     // Update is called once per frame

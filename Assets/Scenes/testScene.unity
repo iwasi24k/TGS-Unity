@@ -795,7 +795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerCamera
   goMainCamera: {fileID: 0}
-  v3CameraOffset: {x: 0, y: 10, z: -10}
+  CameraOffset: {x: 0, y: 10, z: -10}
 --- !u!114 &780519195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -815,6 +815,21 @@ MonoBehaviour:
   strongAttackDamage: 20
   AttackAreaSize: {x: 1.4, y: 2, z: 1}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
+--- !u!114 &780519198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780519188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44f2507305109534db7d471a0feee483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerTarget
+  goMainCamera: {fileID: 0}
+  iaTarget: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  currentTarget: {fileID: 0}
 --- !u!1 &1072109512 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
@@ -1220,6 +1235,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
       addedObject: {fileID: 780519189}
+    - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 780519198}
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
       addedObject: {fileID: 780519192}

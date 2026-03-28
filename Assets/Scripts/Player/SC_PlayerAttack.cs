@@ -8,6 +8,8 @@ public class SC_PlayerAttack : MonoBehaviour
     [SerializeField] private InputActionReference iaWeakAttack;
     [Tooltip("攻撃用インプットアクション(強)")]
     [SerializeField] private InputActionReference iaStrongAttack;
+    [Tooltip("ターゲット情報"), SerializeField] SC_PlayerTarget scTarget;
+    [Tooltip("キャラクターコントローラー"),SerializeField] CharacterController ccPlayer;
 
     [Header("Settings")]
     [Tooltip("攻撃のクールダウン時間")]
@@ -21,12 +23,22 @@ public class SC_PlayerAttack : MonoBehaviour
 
 
     private readonly Collider[] overlapCollision = new Collider[32];
-    private CharacterController ccPlayer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         ccPlayer = GetComponent<CharacterController>();
+
+        if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
+
+        if (iaWeakAttack == null)
+        {
+            Debug.LogError("弱攻撃のInputActionReferenceがアタッチされていません。");
+        }
+        if(iaStrongAttack == null)
+        {
+            Debug.LogError("強攻撃のInputActionReferenceがアタッチされていません。");
+        }
     }
 
     // Update is called once per frame
