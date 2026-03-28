@@ -48,26 +48,26 @@ public class SC_PlayerMove : MonoBehaviour
             Vector3 lookDir = moveDir.normalized;
             Quaternion targetRot = Quaternion.LookRotation(lookDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+
+            //スプリント
+            var sprintInput = iaSprint.action.ReadValue<float>();
+            bool isSprint = sprintInput > 0.5f; // スプリント入力があるかどうかを判定
+
+            if (isSprint && !wasBlink)
+            {//スプリントが開始された瞬間にブリンクを試みる
+                TryBlink(moveDir);
+            }
+            else
+            {
+                BlinkTimer -= Time.deltaTime; // ブリンクのクールダウンを減少させる
+            }
+            wasBlink = isSprint; // ブリンクの使用状態をリセット
+
+            float SprintFactor = isSprint ? currentSplintMul : 1f;
+
+            //移動
+            ccPlayer.Move(moveDir.normalized * (moveSpeed * SprintFactor) * Time.deltaTime);
         }
-
-        //スプリント
-        var sprintInput = iaSprint.action.ReadValue<float>();
-        bool isSprint = sprintInput > 0.5f; // スプリント入力があるかどうかを判定
-
-        if(isSprint && !wasBlink)
-        {//スプリントが開始された瞬間にブリンクを試みる
-            TryBlink(moveDir);
-        }
-        else
-        {
-            BlinkTimer -= Time.deltaTime; // ブリンクのクールダウンを減少させる
-        }
-        wasBlink = isSprint; // ブリンクの使用状態をリセット
-
-        float SprintFactor = isSprint ? currentSplintMul : 1f;
-
-        //移動
-        ccPlayer.Move(moveDir.normalized * (moveSpeed * SprintFactor) * Time.deltaTime);
 
         // ブリンクの効果がスプリント倍率を超えている場合、徐々に減少させる
         if (currentSplintMul > sprintMultiplier)
