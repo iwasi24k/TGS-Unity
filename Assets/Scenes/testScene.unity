@@ -343,13 +343,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 133846802}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 10, z: -6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!114 &133846806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -774,9 +774,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 455c6e98385ca7b479f6614a39359e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerMove
+  goMainCamera: {fileID: 0}
   ccPlayer: {fileID: 0}
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   iaSprint: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  scTarget: {fileID: 0}
   moveSpeed: 5
   rotationSpeed: 10
   sprintMultiplier: 2
@@ -795,7 +797,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerCamera
   goMainCamera: {fileID: 0}
-  CameraOffset: {x: 0, y: 10, z: -10}
+  scTarget: {fileID: 0}
+  iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  NonTargetCameraOffset: {x: 0, y: 10, z: -6}
+  TargetCameraOffset: {x: 0, y: 2, z: -2}
+  CameraMoveSpeed: 20
+  TargetingCameraMoveSpeed: 10
+  CameraRotateSpeed: 8
+  CameraHorizontalOffset: 1.5
 --- !u!114 &780519195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,11 +819,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerAttack
   iaWeakAttack: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   iaStrongAttack: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  scTarget: {fileID: 0}
+  ccPlayer: {fileID: 0}
   attackCooldown: 1
   weakAttackDamage: 10
   strongAttackDamage: 20
   AttackAreaSize: {x: 1.4, y: 2, z: 1}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
+  TargetingJumpInAreaSize: {x: 3, y: 2, z: 10}
 --- !u!114 &780519198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -829,7 +841,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerTarget
   goMainCamera: {fileID: 0}
   iaTarget: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  currentTarget: {fileID: 0}
+  iaTargetChange: {fileID: 5088705261531595010, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1 &1072109512 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}

@@ -19,15 +19,18 @@ public class SC_PlayerAttack : MonoBehaviour
     [Tooltip("攻撃のダメージ量(強)")]
     [SerializeField] private int strongAttackDamage = 20;
     [Tooltip("攻撃範囲"), SerializeField] private Vector3 AttackAreaSize = new Vector3(2f,2f,3f);
-    [Tooltip("飛びつきの範囲"), SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
+    [Tooltip("飛びつきの範囲")]
+    [SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
+    [Tooltip("ターゲット時の飛びつきの範囲")]
+    [SerializeField] private Vector3 TargetingJumpInAreaSize = new Vector3(3f, 2f, 10f);
 
-
+    private float currentAttackCooldown = 0f;
     private readonly Collider[] overlapCollision = new Collider[32];
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        ccPlayer = GetComponent<CharacterController>();
+        if (ccPlayer == null) ccPlayer = GetComponent<CharacterController>();
 
         if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
 
@@ -54,7 +57,7 @@ public class SC_PlayerAttack : MonoBehaviour
             //弱攻撃の処理
             if(enemys.Length > 0)
             {
-                JumpInEnemy(JumpInAreaSize,AttackAreaSize);
+                JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
                 AttackExe(weakAttackDamage,AttackAreaSize);
             }
 
@@ -65,9 +68,14 @@ public class SC_PlayerAttack : MonoBehaviour
             //強攻撃の処理
             if(enemys.Length > 0)
             {
-                JumpInEnemy(JumpInAreaSize, AttackAreaSize);
+                JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
                 AttackExe(strongAttackDamage, AttackAreaSize);
             }
+        }
+
+        if(currentAttackCooldown > 0f)
+        {
+            currentAttackCooldown -= Time.deltaTime;
         }
     }
 
@@ -166,14 +174,26 @@ public class SC_PlayerAttack : MonoBehaviour
              transform.rotation
         );
 
-        for(int i = 0; i < HitCount; i++)
+        bool hasHitEnemy = false;
+
+        for (int i = 0; i < HitCount; i++)
         {
             var hit = overlapCollision[i];
-            if(hit.CompareTag("Enemy"))
+            if (hit.CompareTag("Enemy"))
             {
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
                 enemy.TakeDamage(AttackDamage);
+                hasHitEnemy = true;
             }
+        }
+
+        if (hasHitEnemy && currentAttackCooldown <= 0f)
+        {
+            currentAttackCooldown = attackCooldown;
+        }
+        else
+        {
+            currentAttackCooldown = attackCooldown * 0.5f; // 敵に当たらなかった場合はクールダウンを短くするなどの調整も可能
         }
     }
 
@@ -195,5 +215,12 @@ public class SC_PlayerAttack : MonoBehaviour
         Gizmos.DrawCube(JumpInCenter, JumpInAreaSize);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(JumpInCenter, JumpInAreaSize);
+
+        //緑 = ターゲット時の飛びつき範囲
+        var TargetingJumpInCenter = transform.forward * (TargetingJumpInAreaSize.z * 0.5f) + transform.up * (TargetingJumpInAreaSize.y * 0.5f) + transform.position;
+        Gizmos.color = new Color(0f, 1f, 0f, 0.15f);
+        Gizmos.DrawCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
     }
 }

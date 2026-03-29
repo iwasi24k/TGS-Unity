@@ -5,11 +5,14 @@ using UnityEngine.InputSystem;
 public class SC_PlayerMove : MonoBehaviour
 {
     [Header("Ref")]
+    [SerializeField] private Camera goMainCamera;
     [SerializeField] private CharacterController ccPlayer;
     [Tooltip("移動用インプットアクション")]
     [SerializeField]private InputActionReference iaMove;
     [Tooltip("スプリント用インプットアクション")]
     [SerializeField] private InputActionReference iaSprint;
+    [Tooltip("ターゲット情報")]
+    [SerializeField] SC_PlayerTarget scTarget;
 
     [Header("Settings")]
     [Tooltip("移動速度")]
@@ -30,8 +33,9 @@ public class SC_PlayerMove : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(ccPlayer == null) ccPlayer = GetComponent<CharacterController>();
-
+        if(goMainCamera == null) goMainCamera = Camera.main;
+        if (ccPlayer == null) ccPlayer = GetComponent<CharacterController>();
+        if(scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
         currentSplintMul = sprintMultiplier;
 
         if(iaMove == null)
@@ -49,14 +53,39 @@ public class SC_PlayerMove : MonoBehaviour
     {
         var MoveInput = iaMove.action.ReadValue<Vector2>();
 
-        Vector3 moveDir = new Vector3(MoveInput.x, 0, MoveInput.y);
+        // カメラの向きを XZ 平面に投影してから移動方向を計算
+        Vector3 camForward = Vector3.ProjectOnPlane(goMainCamera.transform.forward, Vector3.up);
+        Vector3 camRight = Vector3.ProjectOnPlane(goMainCamera.transform.right, Vector3.up);
 
-        //進行方向に身体を向ける
+        // 極端なケース（カメラが真上/真下を向いている等）を保険
+        if (camForward.sqrMagnitude < 0.0001f) camForward = Vector3.forward;
+        if (camRight.sqrMagnitude < 0.0001f) camRight = Vector3.right;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDir = camForward * MoveInput.y + camRight * MoveInput.x;
+
+        //ターゲット方向に向く
+        if (scTarget.GetCurrentTarget() != null)
+        {
+            Vector3 targetDir = scTarget.GetCurrentTarget().transform.position - transform.position;
+            targetDir.y = 0; // 水平方向のみにする
+
+            Quaternion targetRot = Quaternion.LookRotation(targetDir.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+
+        }
+
         if (moveDir.sqrMagnitude > 0.001f)
         {
-            Vector3 lookDir = moveDir.normalized;
-            Quaternion targetRot = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+
+            if (scTarget.GetCurrentTarget() == null)
+            { 
+                Vector3 lookDir = moveDir.normalized;
+                Quaternion targetRot = Quaternion.LookRotation(lookDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+            }
 
             //スプリント
             var sprintInput = iaSprint.action.ReadValue<float>();

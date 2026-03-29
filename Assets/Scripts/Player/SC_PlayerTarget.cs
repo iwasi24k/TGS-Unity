@@ -6,10 +6,10 @@ public class SC_PlayerTarget : MonoBehaviour
     [Header("Ref")]
     [Tooltip("メインカメラ"),SerializeField] private Camera goMainCamera;
     [Tooltip("ターゲットトグル用入力"),SerializeField] private InputActionReference iaTarget;
+    [Tooltip("ターゲット変更用入力"), SerializeField] private InputActionReference iaTargetChange;
 
-    [Header("Don't Attach from Inspector")]
-    public GameObject currentTarget;
-    
+
+    private GameObject currentTarget;
     private GameObject[] enemys;
     private int targetIndex = 0;
 
@@ -23,6 +23,10 @@ public class SC_PlayerTarget : MonoBehaviour
         {
             Debug.LogError("ターゲットトグル用のInputActionReferenceがアタッチされていません。");
         }
+        if(iaTargetChange == null)
+        { 
+            Debug.LogError("ターゲット変更用のInputActionReferenceがアタッチされていません。");
+        }
     }
 
     // Update is called once per frame
@@ -30,9 +34,9 @@ public class SC_PlayerTarget : MonoBehaviour
     {
         var targetInput = iaTarget.action.WasPressedThisFrame();
 
-        if(targetInput)
+        if (targetInput)
         {
-            if(currentTarget == null)
+            if (currentTarget == null)
             {
                 currentTarget = GetTargetInView();
             }
@@ -40,6 +44,15 @@ public class SC_PlayerTarget : MonoBehaviour
             {
                 //ターゲットがいる場合、ターゲットを解除する
                 currentTarget = null;
+            }
+        }
+
+        var targetChangeInput = iaTargetChange.action.ReadValue<Vector2>();
+        if (targetInput)
+        {
+            if (currentTarget != null)
+            {
+                ChangeTarget(1);
             }
         }
     }
@@ -111,4 +124,18 @@ public class SC_PlayerTarget : MonoBehaviour
         return inView[idx];
     }
 
+    public void ChangeTarget(int direction)
+    {
+        if (currentTarget == null || enemys == null || enemys.Length == 0)
+            return;
+        targetIndex += direction;
+        if (targetIndex < 0) targetIndex = enemys.Length - 1;
+        else if (targetIndex >= enemys.Length) targetIndex = 0;
+        currentTarget = GetTargetInView();
+    }
+
+    public GameObject GetCurrentTarget()
+    {
+        return currentTarget;
+    }
 }
