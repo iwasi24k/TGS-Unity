@@ -1,14 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum EnemyState
-{
-    Idle,
-    Walk,
-    Attack,
-    BlowAway,
-}
-
 public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]
@@ -17,10 +9,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
-    [Tooltip("敵の吹っ飛ぶ力")]
-    [SerializeField] private float BlowAwayPower = 20f;
 
-    private EnemyState currentPerformance = EnemyState.Idle;
+    [Header("State")]
+    [Tooltip("初期状態のState"),SerializeField] private SC_EnemyBaceState initialState;
+
+    private SC_EnemyBaceState currentState;
+
     void Start()
     {
         if(hpSlider == null)
@@ -31,25 +25,19 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             hpSlider.maxValue = hpSlider.value = HP;
         }
+
+        SC_EnemyBaceState initialState = GetComponent<SC_EnemyWalk>();
+        if (initialState == null)
+        {
+            Debug.LogError("初期状態のStateがアタッチされていません。");
+        }
+
+        TransitionTo(initialState);
     }
 
     void Update()
     {
-        switch (currentPerformance)
-        {
-            case EnemyState.Idle:
-                // 待機状態の処理
-                break;
-            case EnemyState.Walk:
-                // 歩行状態の処理
-                break;
-            case EnemyState.Attack:
-                // 攻撃状態の処理
-                break;
-            case EnemyState.BlowAway:
-                // 吹っ飛び状態の処理
-                break;
-        }
+
     }
 
     /* : 以下、各ステータスの管理用関数。　外部から呼び出して仕様。 : */
@@ -69,9 +57,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    public void SetEnemyState(EnemyState next)
+    public void TransitionTo(SC_EnemyBaceState newState)
     {
-        currentPerformance = next;
+        if (currentState != null)
+        {
+            currentState.Exit(this);
+        }
+        currentState = newState;
+        currentState.Enter(this);
     }
-
 }

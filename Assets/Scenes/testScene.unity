@@ -801,8 +801,8 @@ MonoBehaviour:
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   NonTargetCameraOffset: {x: 0, y: 10, z: -6}
   TargetCameraOffset: {x: 0, y: 2, z: -2}
-  CameraMoveSpeed: 20
-  TargetingCameraMoveSpeed: 10
+  CameraMoveSpeed: 5
+  TargetingCameraMoveSpeed: 5
   CameraRotateSpeed: 8
   CameraHorizontalOffset: 1.5
 --- !u!114 &780519195
@@ -824,7 +824,7 @@ MonoBehaviour:
   attackCooldown: 1
   weakAttackDamage: 10
   strongAttackDamage: 20
-  AttackAreaSize: {x: 1.4, y: 2, z: 1}
+  AttackAreaSize: {x: 1.4, y: 2, z: 2}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
   TargetingJumpInAreaSize: {x: 3, y: 2, z: 10}
 --- !u!114 &780519198
@@ -916,7 +916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 1185721235}
   HP: 100
-  BlowAwayPower: 20
+  initialState: {fileID: 0}
 --- !u!1 &1098034465
 GameObject:
   m_ObjectHideFlags: 0
