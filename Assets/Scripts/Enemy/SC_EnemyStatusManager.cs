@@ -37,7 +37,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     void Update()
     {
-
+        currentState.UpdateState(this);
     }
 
     /* : 以下、各ステータスの管理用関数。　外部から呼び出して仕様。 : */

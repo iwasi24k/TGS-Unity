@@ -16,6 +16,7 @@ public class SC_EnemyWalk : SC_EnemyBaceState
     {
         Debug.Log("Walk State Exit");
     }
+
     public override void UpdateState(SC_EnemyStatusManager owner)
     {
         Debug.Log("Walk State Update");
