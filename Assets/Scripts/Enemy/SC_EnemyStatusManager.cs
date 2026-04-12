@@ -63,7 +63,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             currentState.Exit(this);
         }
-        currentState = newState;
+        SC_EnemyBaceState nextState = Instantiate(newState);
+        currentState = nextState;
         currentState.Enter(this);
     }
 }

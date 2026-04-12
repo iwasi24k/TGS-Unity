@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enemy/Idle State")]
-public class SC_EnemyIdol : SC_EnemyBaceState
+public class SC_EnemyIdle : SC_EnemyBaceState
 {
     public override void Enter(SC_EnemyStatusManager owner)
     {

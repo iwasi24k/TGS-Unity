@@ -916,7 +916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 1185721235}
   HP: 100
-  initialState: {fileID: 0}
+  initialState: {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
 --- !u!1 &1098034465
 GameObject:
   m_ObjectHideFlags: 0
