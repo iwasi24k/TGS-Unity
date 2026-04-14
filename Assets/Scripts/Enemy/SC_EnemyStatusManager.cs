@@ -26,13 +26,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
             hpSlider.maxValue = hpSlider.value = HP;
         }
 
-        SC_EnemyBaceState initialState = GetComponent<SC_EnemyWalk>();
-        if (initialState == null)
-        {
-            Debug.LogError("初期状態のStateがアタッチされていません。");
-        }
+        //SC_EnemyBaceState initialState = GetComponent<SC_EnemyWalk>();
+        //if (initialState == null)
+        //{
+        //    Debug.LogError("初期状態のStateがアタッチされていません。");
+        //}
 
-        TransitionTo(initialState);
+        //TransitionTo(initialState);
     }
 
     void Update()
