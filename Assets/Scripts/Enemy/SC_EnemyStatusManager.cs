@@ -12,8 +12,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     [Header("State")]
     [Tooltip("初期状態のState"),SerializeField] private SC_EnemyBaceState initialState;
+    [Tooltip("Stateのリスト"),SerializeField] private SC_EnemyBaceState[] stateList;
+    [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
 
     private SC_EnemyBaceState currentState;
+    private SC_EnemyBaceState[] localStateList;
+    private int currentStateIndex = 0;
 
     void Start()
     {
@@ -26,13 +30,23 @@ public class SC_EnemyStatusManager : MonoBehaviour
             hpSlider.maxValue = hpSlider.value = HP;
         }
 
-        //SC_EnemyBaceState initialState = GetComponent<SC_EnemyWalk>();
-        //if (initialState == null)
-        //{
-        //    Debug.LogError("初期状態のStateがアタッチされていません。");
-        //}
+        //全ステートのインスタンス化し、アセットを直接いじらない形に変更
+        for(int i = 0; i < stateList.Length; i++)
+        {
+            localStateList[i] = Instantiate(stateList[i]);
+        }
 
-        //TransitionTo(initialState);
+        //初期状態の設定、CurrentIndexを初期状態に合わせて変更
+        for(int i = 0; i < localStateList.Length; i++)
+        {
+            if(localStateList[i].name == initialState.name)
+            {
+                currentState = localStateList[i];
+                currentStateIndex = i;
+                break;
+            }
+        }
+
     }
 
     void Update()
@@ -63,8 +77,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             currentState.Exit(this);
         }
-        SC_EnemyBaceState nextState = Instantiate(newState);
-        currentState = nextState;
+        currentState = localStateList[currentStateIndex];
+        currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //次のステートに移行、ループする形
         currentState.Enter(this);
     }
 }

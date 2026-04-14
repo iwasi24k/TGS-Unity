@@ -917,6 +917,8 @@ MonoBehaviour:
   hpSlider: {fileID: 1185721235}
   HP: 100
   initialState: {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
+  stateList: []
+  blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
 --- !u!1 &1098034465
 GameObject:
   m_ObjectHideFlags: 0
