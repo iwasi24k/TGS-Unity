@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class SC_EnemyBaceState : ScriptableObject
 {
-    public abstract void Enter(SC_EnemyStatusManager owner);
-    public abstract void Exit(SC_EnemyStatusManager owner);
-    public abstract void UpdateState(SC_EnemyStatusManager owner);
+    public abstract void Enter(GameObject Owner, SC_EnemyStatusManager Manager);
+    public abstract void Exit(GameObject Owner, SC_EnemyStatusManager Manager);
+    public abstract void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager);
 }
