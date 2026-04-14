@@ -58,7 +58,7 @@ public class SC_PlayerAttack : MonoBehaviour
             if(enemys.Length > 0)
             {
                 JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
-                AttackExe(weakAttackDamage,AttackAreaSize);
+                AttackExe(weakAttackDamage, AttackAreaSize, false);
             }
 
         }
@@ -69,7 +69,7 @@ public class SC_PlayerAttack : MonoBehaviour
             if(enemys.Length > 0)
             {
                 JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
-                AttackExe(strongAttackDamage, AttackAreaSize);
+                AttackExe(strongAttackDamage, AttackAreaSize, true);
             }
         }
 
@@ -164,7 +164,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    private void AttackExe(int AttackDamage, Vector3 AreaSize)
+    private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway)
     {
         var center = transform.forward * (AreaSize.z * 0.5f) + transform.up * (AreaSize.y * 0.5f) + transform.position;
         int HitCount = Physics.OverlapBoxNonAlloc(
@@ -182,7 +182,7 @@ public class SC_PlayerAttack : MonoBehaviour
             if (hit.CompareTag("Enemy"))
             {
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
-                enemy.TakeDamage(AttackDamage);
+                enemy.TakeDamage(AttackDamage,BlowAway);
                 hasHitEnemy = true;
             }
         }
