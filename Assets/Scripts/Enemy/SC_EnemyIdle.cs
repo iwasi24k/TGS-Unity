@@ -18,6 +18,6 @@ public class SC_EnemyIdle : SC_EnemyBaceState
     {
         Debug.Log("Idle State Update");
 
-        owner.TransitionToNext();
+        Manager.TransitionToNext();
     }
 }

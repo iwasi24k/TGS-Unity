@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -72,7 +73,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return HP;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool isBlowAway)
     {
         HP -= damage;
         hpSlider.value = HP;
@@ -80,7 +81,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
+            TransitionToBlownAway();
         }
+        else if (isBlowAway)
+        {
+            TransitionToBlownAway();
+        }
+
     }
 
     public void TransitionToNext()
@@ -90,6 +97,28 @@ public class SC_EnemyStatusManager : MonoBehaviour
             currentState.Exit(this.gameObject, this);
         }
         currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //次のステートに移行、ループする形
+        currentState = localStateList[currentStateIndex];
+        currentState.Enter(this.gameObject, this);
+    }
+
+    private void TransitionToBlownAway()
+    {
+        Debug.Log("吹っ飛び状態に移行");
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+        currentState = blowAwayState;
+        currentState.Enter(this.gameObject, this);
+    }
+
+    public void ReturnFromBlownAway()
+    {
+        Debug.Log("吹っ飛び状態から復帰");
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
         currentState = localStateList[currentStateIndex];
         currentState.Enter(this.gameObject, this);
     }
