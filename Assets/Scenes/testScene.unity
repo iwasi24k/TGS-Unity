@@ -886,7 +886,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072109512}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 6eab155ad04441d49b9113a9edd51fcf, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -916,10 +916,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 1185721235}
   HP: 100
-  initialState: {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
   stateList:
   - {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
   - {fileID: 11400000, guid: e17a1d3593bf67044a4e58f8eef0d402, type: 2}
+  initialStateNum: 0
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
 --- !u!1 &1098034465
 GameObject:
