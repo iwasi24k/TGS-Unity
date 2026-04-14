@@ -9,17 +9,17 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("‚«”ò‚Î‚³‚ê‚é•ûŒü"), SerializeField] private Vector3 blownAwayDirection = new Vector3(0, 0, 0);
     [Tooltip("—Í‚ÌŒ¸Š‘¬“x"), SerializeField] private float decaySpeed = 5f;
 
-    public override void Enter(SC_EnemyStatusManager owner)
+    public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("BlownAway State Enter");
     }
 
-    public override void Exit(SC_EnemyStatusManager owner)
+    public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("BlownAway State Exit");
     }
 
-    public override void UpdateState(SC_EnemyStatusManager owner)
+    public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("BlownAway State Update");
 

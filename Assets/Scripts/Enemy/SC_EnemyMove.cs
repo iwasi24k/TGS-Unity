@@ -1,23 +1,23 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Enemy/Idle State")]
-public class SC_EnemyIdle : SC_EnemyBaceState
+[CreateAssetMenu(menuName = "Enemy/Move State")]
+public class SC_EnemyMove : SC_EnemyBaceState
 {
+    [Header("Settings")]
+    [Tooltip("ˆÚ“®‘¬“x"), SerializeField] private int moveSpeed = 3;
+
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Idle State Enter");
+        Debug.Log("Move State Enter");
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Idle State Exit");
-
+        Debug.Log("Move State Exit");
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Idle State Update");
-
-        owner.TransitionToNext();
+        Debug.Log("Move State Update");
     }
 }
