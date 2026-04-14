@@ -11,8 +11,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [SerializeField] private int HP = 100;
 
     [Header("State")]
-    [Tooltip("初期状態のState"),SerializeField] private SC_EnemyBaceState initialState;
     [Tooltip("Stateのリスト"),SerializeField] private SC_EnemyBaceState[] stateList;
+    [Tooltip("初期状態のStateの配列番号"),SerializeField] private int initialStateNum;
     [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
 
     private SC_EnemyBaceState currentState;
@@ -21,7 +21,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     void Start()
     {
-        if(hpSlider == null)
+        localStateList = new SC_EnemyBaceState[stateList.Length];
+
+        if (hpSlider == null)
         {
             Debug.LogError("HPスライダーがアタッチされていません。");
         }
@@ -31,27 +33,37 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
 
         //全ステートのインスタンス化し、アセットを直接いじらない形に変更
-        for(int i = 0; i < stateList.Length; i++)
+        for (int i = 0; i < stateList.Length; i++)
         {
-            localStateList[i] = Instantiate(stateList[i]);
+            Debug.Log("StateListの" + i + "番目のStateをインスタンス化" + "StateName : " + stateList[i].name);
+            SC_EnemyBaceState newState = Instantiate(stateList[i]);
+            localStateList[i] = newState;
         }
 
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
-        for(int i = 0; i < localStateList.Length; i++)
-        {
-            if(localStateList[i].name == initialState.name)
-            {
-                currentState = localStateList[i];
-                currentStateIndex = i;
-                break;
-            }
-        }
-
+        currentState = localStateList[initialStateNum];
+        currentState.Enter(this);
     }
 
     void Update()
     {
         currentState.UpdateState(this);
+    }
+
+    void OnDestroy()
+    {
+        if (currentState != null)
+        {
+            currentState.Exit(this);
+        }
+
+        for(int i = 0; i < localStateList.Length; i++)
+        {
+            if (localStateList[i] != null)
+            {
+                Destroy(localStateList[i]);
+            }
+        }
     }
 
     /* : 以下、各ステータスの管理用関数。　外部から呼び出して仕様。 : */
@@ -71,14 +83,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    public void TransitionTo(SC_EnemyBaceState newState)
+    public void TransitionToNext()
     {
         if (currentState != null)
         {
             currentState.Exit(this);
         }
-        currentState = localStateList[currentStateIndex];
         currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //次のステートに移行、ループする形
+        currentState = localStateList[currentStateIndex];
         currentState.Enter(this);
     }
 }

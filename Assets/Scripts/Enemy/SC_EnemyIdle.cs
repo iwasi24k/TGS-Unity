@@ -11,10 +11,13 @@ public class SC_EnemyIdle : SC_EnemyBaceState
     public override void Exit(SC_EnemyStatusManager owner)
     {
         Debug.Log("Idle State Exit");
+
     }
 
     public override void UpdateState(SC_EnemyStatusManager owner)
     {
         Debug.Log("Idle State Update");
+
+        owner.TransitionToNext();
     }
 }
