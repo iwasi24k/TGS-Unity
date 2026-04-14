@@ -1,23 +1,23 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Enemy/BlownAway State")]
-public class SC_EnemyBlownAway : SC_EnemyBaceState
+[CreateAssetMenu(menuName = "Enemy/Move State")]
+public class SC_EnemyMove : SC_EnemyBaceState
 {
     [Header("Settings")]
-    [Tooltip("‚«”ò‚Î‚³‚ê‚éŠî‘b‹——£"), SerializeField] private float blownAwayDistance = 5f;
+    [Tooltip("ˆÚ“®‘¬“x"), SerializeField] private int moveSpeed = 3;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("BlownAway State Enter");
+        Debug.Log("Move State Enter");
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("BlownAway State Exit");
+        Debug.Log("Move State Exit");
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("BlownAway State Update");
+        Debug.Log("Move State Update");
     }
 }

@@ -42,19 +42,19 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
         currentState = localStateList[initialStateNum];
-        currentState.Enter(this);
+        currentState.Enter(this.gameObject,this);
     }
 
     void Update()
     {
-        currentState.UpdateState(this);
+        currentState.UpdateState(this.gameObject, this);
     }
 
     void OnDestroy()
     {
         if (currentState != null)
         {
-            currentState.Exit(this);
+            currentState.Exit(this.gameObject, this);
         }
 
         for(int i = 0; i < localStateList.Length; i++)
@@ -87,10 +87,10 @@ public class SC_EnemyStatusManager : MonoBehaviour
     {
         if (currentState != null)
         {
-            currentState.Exit(this);
+            currentState.Exit(this.gameObject, this);
         }
         currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //次のステートに移行、ループする形
         currentState = localStateList[currentStateIndex];
-        currentState.Enter(this);
+        currentState.Enter(this.gameObject, this);
     }
 }
