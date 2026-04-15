@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class SC_Bullet : MonoBehaviour
 {
     public float lifeTime = 3f;
 
@@ -20,12 +20,7 @@ public class Bullet : MonoBehaviour
         // プレイヤーに当たった場合
         if (collision.gameObject.CompareTag("Player"))
         {
-            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(1);
-            }
+            //体力を減らす処理
         }
 
         // ヒット済みにする（これが重要）
@@ -47,12 +42,8 @@ public class Bullet : MonoBehaviour
         // プレイヤーに当たった場合
         if (other.gameObject.CompareTag("Player"))
         {
-            PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
+            //体力を減らす処理
 
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(1);
-            }
         }
 
         // ヒット済みにする（これが重要）

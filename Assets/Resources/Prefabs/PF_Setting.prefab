@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 8186477166025329203}
   - component: {fileID: 7355134868008125873}
   m_Layer: 0
-  m_Name: Setting
+  m_Name: PF_Setting
   m_TagString: Setting
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
