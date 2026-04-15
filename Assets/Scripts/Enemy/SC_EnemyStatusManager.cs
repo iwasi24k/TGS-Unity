@@ -73,7 +73,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return HP;
     }
 
-    public void TakeDamage(int damage, bool isBlowAway)
+    public void TakeDamage(int damage, Vector3 AttackerPosition , bool isBlowAway = false)
     {
         HP -= damage;
         hpSlider.value = HP;
@@ -81,11 +81,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway();
+            TransitionToBlownAway(damage , AttackerPosition);
         }
         else if (isBlowAway)
         {
-            TransitionToBlownAway();
+            TransitionToBlownAway(damage , AttackerPosition);
         }
 
     }
@@ -101,15 +101,23 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    private void TransitionToBlownAway()
+    private void TransitionToBlownAway(float power,Vector3 attackerPosition)
     {
-        Debug.Log("‚Á”ò‚Ñó‘Ô‚ÉˆÚs");
-        if (currentState != null)
+        SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
+        if (blownAway != null)
         {
-            currentState.Exit(this.gameObject, this);
+            Debug.Log("‚Á”ò‚Ñó‘Ô‚ÉˆÚs\n" + "power : " + power);
+            {
+                currentState.Exit(this.gameObject, this);
+            }
+
+            blownAway.Enter(this.gameObject, this);
+
+            Vector3 blowDirection = (this.transform.position - attackerPosition).normalized;
+            blowDirection.y = 0f; // …•½•ûŒü‚Ì‚Ý‚É‚·‚é
+            blownAway.SetBlownAway(power, blowDirection);
+            currentState = blownAway;
         }
-        currentState = blowAwayState;
-        currentState.Enter(this.gameObject, this);
     }
 
     public void ReturnFromBlownAway()
@@ -121,5 +129,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
         currentState = localStateList[currentStateIndex];
         currentState.Enter(this.gameObject, this);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Player‚ÆÕ“Ë");
+        }
     }
 }

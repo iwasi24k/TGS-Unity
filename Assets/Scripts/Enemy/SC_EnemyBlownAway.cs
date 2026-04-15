@@ -84,6 +84,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     {
         blownAwayPower = power;
         blownAwayDirection = direction.normalized;
+        Debug.Log("BlownAway Power and Direction Set\n" + "Power: " + blownAwayPower + "Direction: " + blownAwayDirection);
     }
 
 }
