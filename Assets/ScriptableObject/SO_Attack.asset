@@ -19,3 +19,4 @@ MonoBehaviour:
   spreadAngle: 3
   spawnForwardOffset: 1.5
   spawnUpOffset: 0.5
+  spawnRightOffset: 0

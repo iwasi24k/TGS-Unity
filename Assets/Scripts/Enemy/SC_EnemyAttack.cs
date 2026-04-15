@@ -6,21 +6,27 @@ public class SC_EnemyAttack : SC_EnemyBaceState
     [Header("Settings")]
     [Tooltip("弾数"), SerializeField] private int bulletNum = 3;
     [Tooltip("弾プレハブ"), SerializeField] private GameObject bulletPrefab;
+    [Tooltip("発射までのディレイ"), SerializeField] private float attackStartDelay = 0.5f;
     [Tooltip("弾速"), SerializeField] private float bulletSpeed = 10f;
     [Tooltip("発射間隔"), SerializeField] private float fireInterval = 0.2f;
     [Tooltip("拡散角度"), SerializeField] private float spreadAngle = 30f;
     [Tooltip("前方向オフセット"), SerializeField] private float spawnForwardOffset = 1.5f;
     [Tooltip("上方向オフセット"), SerializeField] private float spawnUpOffset = 0.5f;
+    [Tooltip("左右オフセット"), SerializeField] private float spawnRightOffset = 0f;
 
     private int firedBulletCount;
     private float fireTimer;
+    private float delayTimer;
     private bool isAttacking;
+    private bool canFire;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         firedBulletCount = 0;
         fireTimer = 0f;
+        delayTimer = 0f;
         isAttacking = true;
+        canFire = false;
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -35,6 +41,14 @@ public class SC_EnemyAttack : SC_EnemyBaceState
 
         // プレハブ未設定なら何もしない
         if (bulletPrefab == null) return;
+
+        // 発射ディレイを進める
+        if (!canFire)
+        {
+            delayTimer += Time.deltaTime;
+            if (delayTimer < attackStartDelay) return;
+            canFire = true;
+        }
 
         // 発射間隔を進める
         fireTimer += Time.deltaTime;
@@ -62,7 +76,8 @@ public class SC_EnemyAttack : SC_EnemyBaceState
         Vector3 spawnPos =
             Owner.transform.position +
             Owner.transform.forward * spawnForwardOffset +
-            Owner.transform.up * spawnUpOffset;
+            Owner.transform.up * spawnUpOffset +
+            Owner.transform.right * spawnRightOffset;
 
         // 弾生成
         GameObject bulletObj = Object.Instantiate(bulletPrefab, spawnPos, rot);
