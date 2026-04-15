@@ -182,7 +182,7 @@ public class SC_PlayerAttack : MonoBehaviour
             if (hit.CompareTag("Enemy"))
             {
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
-                enemy.TakeDamage(AttackDamage,BlowAway);
+                enemy.TakeDamage(AttackDamage, transform.position, BlowAway);
                 hasHitEnemy = true;
             }
         }
