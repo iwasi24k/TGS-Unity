@@ -8,9 +8,15 @@ public class SC_EnemyMove : SC_EnemyBaceState
     [Tooltip("移動速度"), SerializeField] private int moveSpeed = 3;
     [Tooltip("移動距離"), SerializeField] private float moveDistance = 3f;
 
+    [Tooltip("この秒数動かなければアウト"), SerializeField] private float stuckCheckTime = 1.0f;
+    [Tooltip("この距離以下なら動いてない扱い"), SerializeField] private float stuckThreshold = 0.1f;
+
     private Vector3 moveDirection;
     private Vector3 startPosition;
     private Rigidbody rb;
+
+    private Vector3 lastPosition;
+    private float stuckTimer = 0f;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -20,6 +26,9 @@ public class SC_EnemyMove : SC_EnemyBaceState
 
         // 開始位置記録
         startPosition = Owner.transform.position;
+
+        lastPosition = Owner.transform.position;
+        stuckTimer = 0f;
 
         // ランダム方向（XZ平面）
         moveDirection = new Vector3
@@ -54,7 +63,21 @@ public class SC_EnemyMove : SC_EnemyBaceState
         // 移動距離チェック
         float distance = Vector3.Distance(startPosition, Owner.transform.position);
 
-        if (distance >= moveDistance)
+        float movedDistance = Vector3.Distance(lastPosition, Owner.transform.position);
+
+        if (movedDistance < stuckThreshold)
+        {
+            stuckTimer += Time.deltaTime;
+        }
+        else
+        {
+            stuckTimer = 0f;
+        }
+
+        // 位置更新
+        lastPosition = Owner.transform.position;
+
+        if (distance >= moveDistance || stuckTimer >= stuckCheckTime)
         {
             // 停止
             rb.linearVelocity = Vector3.zero;
