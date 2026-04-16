@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8540339103212135799}
   - component: {fileID: 5420031787787702149}
   - component: {fileID: 1997604078084577678}
-  - component: {fileID: -6474239961348894030}
+  - component: {fileID: 5630678410939932132}
   m_Layer: 6
   m_Name: PF_Bullet
   m_TagString: Bullet
@@ -141,7 +141,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-6474239961348894030
+--- !u!114 &5630678410939932132
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,7 +150,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5102349697781354183}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b2f8e3c899a57f4b96f31a0705ff336, type: 3}
+  m_Script: {fileID: 11500000, guid: ed707b46d3695c143b820368d1024cfe, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  lifeTime: 3
+  m_EditorClassIdentifier: Assembly-CSharp::SC_BulletMulti
+  lifeTime: 10
+  spreadMoveTime: 1
+  spreadSpeed: 10
+  straightSpeed: 20
