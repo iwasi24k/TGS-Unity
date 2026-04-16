@@ -111,11 +111,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 currentState.Exit(this.gameObject, this);
             }
 
-            blownAway.Enter(this.gameObject, this);
-
             Vector3 blowDirection = (this.transform.position - attackerPosition).normalized;
             blowDirection.y = 0f; // êÖïΩï˚å¸ÇÃÇ›Ç…Ç∑ÇÈ
             blownAway.SetBlownAway(power, blowDirection);
+
+            blownAway.Enter(this.gameObject, this);
             currentState = blownAway;
         }
     }

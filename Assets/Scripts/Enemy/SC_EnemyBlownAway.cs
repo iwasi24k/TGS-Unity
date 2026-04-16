@@ -19,7 +19,11 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
+        Debug.Log($"Enter dir={blownAwayDirection} power={blownAwayPower}");
+
         rb.linearVelocity = blownAwayDirection.normalized * blownAwayPower;
+
+        Debug.Log($"Enter velocity={rb.linearVelocity}");
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)

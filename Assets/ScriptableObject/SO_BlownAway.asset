@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e230353cf528e9b419e39e41e3916914, type: 3}
   m_Name: SO_BlownAway
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyBlownAway
-  blownAwayPower: 20
-  blownAwayDirection: {x: -0.67194986, y: 0, z: -0.74059665}
+  blownAwayPower: 10
+  blownAwayDirection: {x: 0.045604534, y: 0, z: 0.99895954}
   endSpeed: 0.1
   decaySpeed: 2
