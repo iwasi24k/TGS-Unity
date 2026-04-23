@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81bf6539a0f8a0f449e700fb114ca498, type: 3}
-  m_Name: SO_Attack
-  m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttack
-  bulletNum: 5
+  m_Script: {fileID: 11500000, guid: 9a9947c75d830fd4cbf2e3fb1648a3f7, type: 3}
+  m_Name: SO_AttackMulti
+  m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttackMulti
+  bulletNum: 16
   bulletPrefab: {fileID: 5102349697781354183, guid: ea8a6556f2b64994eb2946b6a3fcf2ce, type: 3}
   attackStartDelay: 0.5
-  bulletSpeed: 15
-  fireInterval: 0.1
-  spreadAngle: 3
+  bulletSpeed: 10
+  fireInterval: 0.2
+  spreadAngle: 180
   spawnForwardOffset: 1.5
   spawnUpOffset: 0.5
   spawnRightOffset: 0

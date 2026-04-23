@@ -16,6 +16,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("‰Šúó‘Ô‚ÌState‚Ì”z—ñ”Ô†"),SerializeField] private int initialStateNum;
     [Tooltip("‚Á”ò‚Ñ‚ÌState"),SerializeField] private SC_EnemyBaceState blowAwayState;
 
+    [Header("Õ“Ë”»’è‰~")]
+    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~’†S"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
+    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
+    [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 50f;
+
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
@@ -81,11 +86,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(damage , AttackerPosition);
+            //TransitionToBlownAway(damage , AttackerPosition);
+            TransitionToBlownAway(blowAwayPowerOnCollision);
         }
         else if (isBlowAway)
         {
-            TransitionToBlownAway(damage , AttackerPosition);
+            //TransitionToBlownAway(damage , AttackerPosition);
+            TransitionToBlownAway(blowAwayPowerOnCollision);
         }
 
     }
@@ -131,11 +138,88 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
+    //ˆê”Ô‹ß‚¢“G‚ÉŒü‚©‚Á‚Ä‚Á”ò‚Ñó‘Ô‚ÉˆÚs
+    private void TransitionToBlownAway(float power)
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != this.gameObject)
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy;
+                }
+            }
+        }
+
+        if (closestEnemy != null) 
+        {
+            Debug.Log("Å‚à‹ß‚¢“G‚ğŒ©‚Â‚¯‚Ü‚µ‚½ : " + closestEnemy.name);
+
+            SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
+            if (blownAway != null)
+            {
+                Debug.Log("‚Á”ò‚Ñó‘Ô‚ÉˆÚs\n" + "power : " + power);
+                {
+                    currentState.Exit(this.gameObject, this);
+                }
+                Vector3 blowDirection = (closestEnemy.transform.position - this.transform.position).normalized;
+                blowDirection.y = 0f; 
+                blownAway.SetBlownAway(power, blowDirection);
+                
+                blownAway.Enter(this.gameObject, this);
+                currentState = blownAway;
+            }
+        }
+        else
+        {
+            Debug.Log("‹ß‚­‚É“G‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
+        }
+
+    }
+
+
+    //“G“¯m‚ÌÕ“Ë”»’è
+    public void CheckCollisionWithOtherEnemies()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position + collisionCenter, collisionRadius);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.gameObject != this.gameObject && hitCollider.CompareTag("Enemy"))
+            {
+                Debug.Log("“G“¯m‚ªÕ“Ë");
+                TransitionToBlownAway(blowAwayPowerOnCollision, hitCollider.transform.position);
+
+                SC_EnemyStatusManager otherStatusManager = hitCollider.GetComponent<SC_EnemyStatusManager>();
+                if (otherStatusManager != null)
+                {
+                    otherStatusManager.TransitionToBlownAway(blowAwayPowerOnCollision, this.transform.position);
+                }
+            }
+        }
+    }
+
+
+
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Player‚ÆÕ“Ë");
         }
+    }
+
+    // Sceneã‚Å‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚ÉUŒ‚”ÍˆÍ‚ğ‰Â‹‰»
+    private void OnDrawGizmosSelected()
+    {
+        // “G“¯m‚ÌÕ“Ë”»’è‰~‚ğ•`‰æ
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position + collisionCenter, collisionRadius);
     }
 }
