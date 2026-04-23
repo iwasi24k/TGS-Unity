@@ -97,3 +97,14 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+
+# User-specific files
+Assets/Textures/*
+Assets/Models/*
+Assets/Audio/*
+
+# meta files for user-specific assets
+!Assets/Textures.meta
+!Assets/Models.meta
+!Assets/Audio.meta
