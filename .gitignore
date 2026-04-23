@@ -104,6 +104,11 @@ Assets/Textures/*
 Assets/Models/*
 Assets/Audio/*
 
+# Ignore user-specific assets, but keep the meta files for them
+Assets/Textures
+Assets/Models
+Assets/Audio
+
 # meta files for user-specific assets
 !Assets/Textures.meta
 !Assets/Models.meta
