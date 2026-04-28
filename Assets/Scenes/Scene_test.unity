@@ -1990,7 +1990,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &806507539
 Rigidbody:
@@ -2074,7 +2074,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &806512316
 Rigidbody:
@@ -2761,7 +2761,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!1 &1097688755
 GameObject:
@@ -3079,7 +3079,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &1213534183
 Rigidbody:
@@ -3265,7 +3265,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &1284557438
 Rigidbody:
@@ -4289,7 +4289,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &1766328326
 Rigidbody:
@@ -4475,7 +4475,7 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 50
+  blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
 --- !u!54 &1872602913
 Rigidbody:

@@ -18,7 +18,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("Õ“Ë”»’è‰~")]
     [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~’†S"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
     [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
-    [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 50f;
+    [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 1.5f;
     [Tooltip("ƒT[ƒ`‚ÌŠp“x"), SerializeField] private float searchAngleThreshold = 30f;
 
     private SC_EnemyBaceState currentState;
@@ -86,11 +86,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(blowAwayPowerOnCollision, AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition);
         }
         else if (isBlowAway)
         {
-            TransitionToBlownAway(blowAwayPowerOnCollision, AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition);
         }
 
     }
@@ -190,17 +190,23 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public void CheckCollisionWithOtherEnemies()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + collisionCenter, collisionRadius);
+        Rigidbody myRb = GetComponent<Rigidbody>();
+        float mySpeed = (myRb != null) ? myRb.linearVelocity.magnitude : 0f;
+
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.gameObject != this.gameObject && hitCollider.CompareTag("Enemy"))
             {
                 Debug.Log("“G“¯m‚ªÕ“Ë");
-                TransitionToBlownAway(blowAwayPowerOnCollision, hitCollider.transform.position);
+
+                float myPower= mySpeed * blowAwayPowerOnCollision;
+
+                TransitionToBlownAway(myPower, hitCollider.transform.position);
 
                 SC_EnemyStatusManager otherStatusManager = hitCollider.GetComponent<SC_EnemyStatusManager>();
                 if (otherStatusManager != null)
                 {
-                    otherStatusManager.TransitionToBlownAway(blowAwayPowerOnCollision, this.transform.position);
+                    otherStatusManager.TransitionToBlownAway(myPower, this.transform.position);
                 }
             }
         }
