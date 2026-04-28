@@ -1,4 +1,4 @@
-w## Git 開発ルール（Unityチーム開発用）
+## Git 開発ルール（Unityチーム開発用）
 
 このプロジェクトは **Git フローに基づいたブランチ戦略**で開発します。
 エンジン: Unity
@@ -47,7 +47,7 @@ feature/* → develop → main
 - 
 
 ## 完了条件
-[ ]
+-[ ]
 
 ## 担当者
 @github-name
@@ -176,6 +176,9 @@ Temp/
 Logs/
 Obj/
 Build/
+Assets/Textues
+Assets/Models
+Assets/Audio
 ```
 
 `.gitignore` により自動で除外されます。

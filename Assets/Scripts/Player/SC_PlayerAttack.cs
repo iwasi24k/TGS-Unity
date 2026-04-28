@@ -123,6 +123,13 @@ public class SC_PlayerAttack : MonoBehaviour
                 if (hit == null) continue;
                 if (!hit.CompareTag("Enemy")) continue;
 
+                // BlownAwayó‘Ô‚Ì“G‚É‚Í”ò‚Ñ‚Â‚©‚È‚¢
+                SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
+                if (enemy != null && enemy.IsBlownAway())
+                {
+                    continue;
+                }
+
                 Vector3 toEnemy = hit.transform.position - selfPos;
                 toEnemy.y = 0f; // …•½‹——£‚Å”äŠr
                 float sqr = toEnemy.sqrMagnitude;
@@ -181,7 +188,13 @@ public class SC_PlayerAttack : MonoBehaviour
             var hit = overlapCollision[i];
             if (hit.CompareTag("Enemy"))
             {
+                // BlownAwayó‘Ô‚Ì“G‚É‚Íƒ_ƒ[ƒW‚ğ—^‚¦‚È‚¢
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
+                if (enemy.IsBlownAway())
+                {
+                    continue;
+                }
+
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway);
                 hasHitEnemy = true;
             }

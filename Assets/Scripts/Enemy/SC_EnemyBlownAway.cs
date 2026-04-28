@@ -40,6 +40,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     {
         Debug.Log("BlownAway State Update");
 
+        Manager.CheckCollisionWithOtherEnemies();
+
         Rigidbody rb = Owner.GetComponent<Rigidbody>();
         if (rb == null) return;
 

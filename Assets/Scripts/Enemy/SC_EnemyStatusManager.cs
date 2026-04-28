@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +14,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("State‚ÌƒŠƒXƒg"),SerializeField] private SC_EnemyBaceState[] stateList;
     [Tooltip("‰Šúó‘Ô‚ÌState‚Ì”z—ñ”Ô†"),SerializeField] private int initialStateNum;
     [Tooltip("‚Á”ò‚Ñ‚ÌState"),SerializeField] private SC_EnemyBaceState blowAwayState;
+
+    [Header("Õ“Ë”»’è‰~")]
+    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~’†S"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
+    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
+    [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 1.5f;
+    [Tooltip("ƒT[ƒ`‚ÌŠp“x"), SerializeField] private float searchAngleThreshold = 30f;
+    [Tooltip("“G“¯m‚ÌÕ“Ëƒ_ƒ[ƒW"),SerializeField] private int collisionDamage = 10;
 
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
@@ -81,11 +87,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(damage , AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition);
         }
         else if (isBlowAway)
         {
-            TransitionToBlownAway(damage , AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition);
         }
 
     }
@@ -111,8 +117,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 currentState.Exit(this.gameObject, this);
             }
 
-            Vector3 blowDirection = (this.transform.position - attackerPosition).normalized;
-            blowDirection.y = 0f; // …•½•ûŒü‚Ì‚İ‚É‚·‚é
+            Vector3 initialBlowDirection = (this.transform.position - attackerPosition).normalized;
+            initialBlowDirection.y = 0f;
+            initialBlowDirection.Normalize();
+
+            Vector3 blowDirection = SearchForEnemyInDirection(initialBlowDirection, searchAngleThreshold);
+            blowDirection.y = 0f;
+            blowDirection.Normalize();
+
             blownAway.SetBlownAway(power, blowDirection);
 
             blownAway.Enter(this.gameObject, this);
@@ -123,6 +135,15 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public void ReturnFromBlownAway()
     {
         Debug.Log("‚Á”ò‚Ñó‘Ô‚©‚ç•œ‹A");
+
+        //‚à‚µHP‚ª0ˆÈ‰º‚È‚çAÁ–Å‚·‚é
+        if(HP <= 0)
+        {
+            Debug.Log("HP‚ª0ˆÈ‰º‚Ì‚½‚ßA“G‚ğÁ–Å‚³‚¹‚Ü‚·B");
+            Destroy(this.gameObject);
+            return;
+        }
+
         if (currentState != null)
         {
             currentState.Exit(this.gameObject, this);
@@ -131,11 +152,114 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
+    //ƒT[ƒ`(À•W•ûŒü‚©‚ç30“xˆÈ“à‚É‚¢‚é“G‚ğ’T‚·)
+    public Vector3 SearchForEnemyInDirection(Vector3 direction, float angleThreshold)
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != this.gameObject)
+            {
+                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
+                toEnemy.y = 0f;
+
+                float angle = Vector3.Angle(direction, toEnemy);
+
+                if (angle <= angleThreshold)
+                {
+                    float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestEnemy = enemy;
+                    }
+                }
+            }
+        }
+        
+        if(closestEnemy != null)
+        {
+            Debug.Log("ƒT[ƒ`‚Å“G‚ğŒ©‚Â‚¯‚Ü‚µ‚½ : " + closestEnemy.name);
+
+            Vector3 blowDirection = (closestEnemy.transform.position - this.transform.position).normalized;
+            return blowDirection;
+        }
+        else
+        {
+            Debug.Log("ƒT[ƒ`‚Å“G‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
+            return direction; 
+        }
+    }
+
+
+
+    //“G“¯m‚ÌÕ“Ë”»’è
+    public void CheckCollisionWithOtherEnemies()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position + collisionCenter, collisionRadius);
+        Rigidbody myRb = GetComponent<Rigidbody>();
+        float mySpeed = (myRb != null) ? myRb.linearVelocity.magnitude : 0f;
+
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.gameObject != this.gameObject && hitCollider.CompareTag("Enemy"))
+            {
+                Debug.Log("“G“¯m‚ªÕ“Ë");
+
+                float myPower= mySpeed * blowAwayPowerOnCollision;
+
+                TransitionToBlownAway(myPower, hitCollider.transform.position);
+                CollisionDamage(collisionDamage);
+
+                SC_EnemyStatusManager otherStatusManager = hitCollider.GetComponent<SC_EnemyStatusManager>();
+                if (otherStatusManager != null)
+                {
+                    otherStatusManager.TransitionToBlownAway(myPower, this.transform.position);
+                    otherStatusManager.CollisionDamage(collisionDamage);
+                }
+            }
+        }
+    }
+
+
+
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Player‚ÆÕ“Ë");
         }
+    }
+
+    // Sceneã‚Å‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚ÉUŒ‚”ÍˆÍ‚ğ‰Â‹‰»
+    private void OnDrawGizmosSelected()
+    {
+        // “G“¯m‚ÌÕ“Ë”»’è‰~‚ğ•`‰æ
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position + collisionCenter, collisionRadius);
+
+        // ƒT[ƒ`‚ÌŠp“x‚ğ•`‰æ
+        Gizmos.color = Color.blue;
+        Vector3 forward = transform.forward;
+        Vector3 rightBoundary = Quaternion.Euler(0, searchAngleThreshold, 0) * forward;
+        Vector3 leftBoundary = Quaternion.Euler(0, -searchAngleThreshold, 0) * forward;
+        Gizmos.DrawLine(transform.position, transform.position + rightBoundary * 2f);
+        Gizmos.DrawLine(transform.position, transform.position + leftBoundary * 2f);
+    }
+
+    //Õ“Ëƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”
+    private void CollisionDamage(int damage)
+    {
+        HP -= damage;
+        hpSlider.value = HP;
+    }
+
+    //‚à‚µ“G‚ªBlownAwayó‘Ô‚Ì‚ÉAture‚ğ•Ô‚·ŠÖ”
+    public bool IsBlownAway()
+    {
+        return currentState == blowAwayState;
     }
 }
