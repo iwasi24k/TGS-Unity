@@ -20,6 +20,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
     [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 1.5f;
     [Tooltip("ƒT[ƒ`‚ÌŠp“x"), SerializeField] private float searchAngleThreshold = 30f;
+    [Tooltip("“G“¯m‚ÌÕ“Ëƒ_ƒ[ƒW"),SerializeField] private int collisionDamage = 10;
 
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
@@ -202,11 +203,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 float myPower= mySpeed * blowAwayPowerOnCollision;
 
                 TransitionToBlownAway(myPower, hitCollider.transform.position);
+                CollisionDamage(collisionDamage);
 
                 SC_EnemyStatusManager otherStatusManager = hitCollider.GetComponent<SC_EnemyStatusManager>();
                 if (otherStatusManager != null)
                 {
                     otherStatusManager.TransitionToBlownAway(myPower, this.transform.position);
+                    otherStatusManager.CollisionDamage(collisionDamage);
                 }
             }
         }
@@ -236,5 +239,18 @@ public class SC_EnemyStatusManager : MonoBehaviour
         Vector3 leftBoundary = Quaternion.Euler(0, -searchAngleThreshold, 0) * forward;
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary * 2f);
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary * 2f);
+    }
+
+    //Õ“Ëƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”
+    private void CollisionDamage(int damage)
+    {
+        HP -= damage;
+        hpSlider.value = HP;
+    }
+
+    //‚à‚µ“G‚ªBlownAwayó‘Ô‚Ì‚ÉAture‚ğ•Ô‚·ŠÖ”
+    public bool IsBlownAway()
+    {
+        return currentState == blowAwayState;
     }
 }
