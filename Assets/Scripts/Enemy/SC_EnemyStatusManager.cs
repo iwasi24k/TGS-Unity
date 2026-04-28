@@ -135,6 +135,15 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public void ReturnFromBlownAway()
     {
         Debug.Log("吹っ飛び状態から復帰");
+
+        //もしHPが0以下なら、消滅する
+        if(HP <= 0)
+        {
+            Debug.Log("HPが0以下のため、敵を消滅させます。");
+            Destroy(this.gameObject);
+            return;
+        }
+
         if (currentState != null)
         {
             currentState.Exit(this.gameObject, this);
