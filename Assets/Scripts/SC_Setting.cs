@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SC_Setting : MonoBehaviour
 {
@@ -49,6 +50,11 @@ public class SC_Setting : MonoBehaviour
         {
             OpenSettings();
         }
+    }
+
+    public void ReturnTitle()
+    {
+        SceneManager.LoadScene("Scene_Title");
     }
 
     private void OpenSettings()
