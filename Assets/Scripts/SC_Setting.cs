@@ -10,8 +10,8 @@ public class SC_Setting : MonoBehaviour
     [SerializeField] private GameObject settingUI;
     [SerializeField] InputActionReference iaSettingtoggle;
 
-    [Header("SeetingsData")]
-    public bool CameraMode = false;
+    [Header("SettingsData")]
+    [SerializeField] bool CameraMode = false;
 
     private bool isPaused = false;
     private CursorLockMode previousLockMode;
@@ -32,6 +32,11 @@ public class SC_Setting : MonoBehaviour
         {
             ToggleSettings();
         }
+    }
+
+    public bool IsPaused()
+    {
+        return isPaused;
     }
 
     public void ToggleSettings()
