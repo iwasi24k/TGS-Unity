@@ -4,16 +4,20 @@ using UnityEngine.UI;
 
 public class SC_Minimap : MonoBehaviour
 {
-    public Transform player;
-    public float radarRange = 30f;
-
-    public RectTransform radarUI;
-    public GameObject enemyBlipPrefab;
-    public Transform blipParent;
-
+    private Transform player;
     private List<GameObject> blips = new List<GameObject>();
 
-    public RectTransform playerArrow;
+    [Tooltip("Š´’m”ÍˆÍ"), SerializeField] private float radarRange = 30f;
+
+    [SerializeField] private RectTransform radarUI;
+    [SerializeField] private GameObject enemyBlipPrefab;
+    [SerializeField] private Transform blipParent;
+    [SerializeField] private RectTransform playerArrow;
+
+    void Start()
+    {
+        player = GameObject.FindWithTag("Player").transform;
+    }
 
     void Update()
     {
