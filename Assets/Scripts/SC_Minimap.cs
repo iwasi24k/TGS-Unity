@@ -13,8 +13,15 @@ public class SC_Minimap : MonoBehaviour
 
     private List<GameObject> blips = new List<GameObject>();
 
+    public RectTransform playerArrow;
+
     void Update()
     {
+        if (player == null) return;
+
+        playerArrow.localEulerAngles =
+            new Vector3(0, 0, -player.localEulerAngles.y);
+
         // Šù‘¶‚Ì“_‚ğíœ
         foreach (var b in blips)
         {
