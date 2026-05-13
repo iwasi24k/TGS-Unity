@@ -5,22 +5,22 @@ public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]
     [Tooltip("HPSlider")]
-    [SerializeField]  private Slider hpSlider;
+    [SerializeField] private Slider hpSlider;
 
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
 
     [Header("State")]
-    [Tooltip("State‚ÌƒŠƒXƒg"),SerializeField] private SC_EnemyBaceState[] stateList;
-    [Tooltip("‰Šúó‘Ô‚ÌState‚Ì”z—ñ”Ô†"),SerializeField] private int initialStateNum;
-    [Tooltip("‚Á”ò‚Ñ‚ÌState"),SerializeField] private SC_EnemyBaceState blowAwayState;
+    [Tooltip("State‚ÌƒŠƒXƒg"), SerializeField] private SC_EnemyBaceState[] stateList;
+    [Tooltip("‰Šúó‘Ô‚ÌState‚Ì”z—ñ”Ô†"), SerializeField] private int initialStateNum;
+    [Tooltip("‚Á”ò‚Ñ‚ÌState"), SerializeField] private SC_EnemyBaceState blowAwayState;
 
     [Header("Õ“Ë”»’è‰~")]
     [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~’†S"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
-    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
+    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"), SerializeField] private float collisionRadius = 0.5f;
     [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 1.5f;
     [Tooltip("ƒT[ƒ`‚ÌŠp“x"), SerializeField] private float searchAngleThreshold = 30f;
-    [Tooltip("“G“¯m‚ÌÕ“Ëƒ_ƒ[ƒW"),SerializeField] private int collisionDamage = 10;
+    [Tooltip("“G“¯m‚ÌÕ“Ëƒ_ƒ[ƒW"), SerializeField] private int collisionDamage = 10;
 
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
@@ -49,7 +49,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         //‰Šúó‘Ô‚Ìİ’èACurrentIndex‚ğ‰Šúó‘Ô‚É‡‚í‚¹‚Ä•ÏX
         currentState = localStateList[initialStateNum];
-        currentState.Enter(this.gameObject,this);
+        currentState.Enter(this.gameObject, this);
     }
 
     void Update()
@@ -64,7 +64,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
             currentState.Exit(this.gameObject, this);
         }
 
-        for(int i = 0; i < localStateList.Length; i++)
+        for (int i = 0; i < localStateList.Length; i++)
         {
             if (localStateList[i] != null)
             {
@@ -79,7 +79,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return HP;
     }
 
-    public void TakeDamage(int damage, Vector3 AttackerPosition , bool isBlowAway = false)
+    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false)
     {
         HP -= damage;
         hpSlider.value = HP;
@@ -107,7 +107,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    private void TransitionToBlownAway(float power,Vector3 attackerPosition)
+    private void TransitionToBlownAway(float power, Vector3 attackerPosition)
     {
         SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
         if (blownAway != null)
@@ -137,7 +137,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         Debug.Log("‚Á”ò‚Ñó‘Ô‚©‚ç•œ‹A");
 
         //‚à‚µHP‚ª0ˆÈ‰º‚È‚çAÁ–Å‚·‚é
-        if(HP <= 0)
+        if (HP <= 0)
         {
             Debug.Log("HP‚ª0ˆÈ‰º‚Ì‚½‚ßA“G‚ğÁ–Å‚³‚¹‚Ü‚·B");
             Destroy(this.gameObject);
@@ -179,8 +179,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 }
             }
         }
-        
-        if(closestEnemy != null)
+
+        if (closestEnemy != null)
         {
             Debug.Log("ƒT[ƒ`‚Å“G‚ğŒ©‚Â‚¯‚Ü‚µ‚½ : " + closestEnemy.name);
 
@@ -190,7 +190,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         else
         {
             Debug.Log("ƒT[ƒ`‚Å“G‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
-            return direction; 
+            return direction;
         }
     }
 
@@ -209,7 +209,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
             {
                 Debug.Log("“G“¯m‚ªÕ“Ë");
 
-                float myPower= mySpeed * blowAwayPowerOnCollision;
+                float myPower = mySpeed * blowAwayPowerOnCollision;
 
                 TransitionToBlownAway(myPower, hitCollider.transform.position);
                 CollisionDamage(collisionDamage);
@@ -228,7 +228,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Player‚ÆÕ“Ë");
         }
@@ -248,6 +248,19 @@ public class SC_EnemyStatusManager : MonoBehaviour
         Vector3 leftBoundary = Quaternion.Euler(0, -searchAngleThreshold, 0) * forward;
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary * 2f);
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary * 2f);
+
+        //‹ßÚUŒ‚—p”»’è•\¦
+        if (stateList != null)
+        {
+            for (int i = 0; i < stateList.Length; i++)
+            {
+                SC_EnemyAttackMelee meleeState = stateList[i] as SC_EnemyAttackMelee;
+
+                if (meleeState == null) continue;
+
+                meleeState.DrawAttackGizmo(this.gameObject);
+            }
+        }
     }
 
     //Õ“Ëƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”

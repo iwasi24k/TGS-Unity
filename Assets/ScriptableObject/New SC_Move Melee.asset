@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74c0f44f1bd385848900b7cd3106e616, type: 3}
-  m_Name: SO_Move
-  m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyMove
-  moveSpeed: 3
-  moveDistance: 3
-  stuckCheckTime: 1
-  stuckThreshold: 0.1
+  m_Script: {fileID: 11500000, guid: cb451dbccac7825418f549ac485f8177, type: 3}
+  m_Name: New SC_Move Melee
+  m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyMoveMelee
+  moveSpeed: 10
+  attackDistance: 2
