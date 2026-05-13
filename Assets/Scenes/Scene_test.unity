@@ -642,20 +642,24 @@ MonoBehaviour:
   stages:
   - objects:
     - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
-      position: {x: 10, y: -1, z: -10}
+      position: {x: 10, y: -1.5, z: -10}
+      scale: {x: 1, y: 1, z: 1}
+      rotation: {x: 0, y: 0, z: 0}
+    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+      position: {x: -10, y: -1.5, z: -10}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
   - objects:
     - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
-      position: {x: 10, y: -1, z: -20}
+      position: {x: 10, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
     - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
-      position: {x: 0, y: -1, z: -20}
+      position: {x: 0, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
     - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
-      position: {x: -10, y: -1, z: -20}
+      position: {x: -10, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
   currentStage: 0
