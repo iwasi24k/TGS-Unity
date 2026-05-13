@@ -400,7 +400,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_Name
-      value: PF_MeleeEnemy 1
+      value: Enemy (1)
       objectReference: {fileID: 0}
     - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_TagString
@@ -534,8 +534,8 @@ MonoBehaviour:
   HP: 100
   stateList:
   - {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
-  - {fileID: 11400000, guid: 7d905cb2d6927144a9f24beb8b066f2e, type: 2}
-  - {fileID: 11400000, guid: dd0328389a50e5d49b615d1dec56ab3e, type: 2}
+  - {fileID: 11400000, guid: a55a8a0cb0f321d459d9181a47d5f388, type: 2}
+  - {fileID: 11400000, guid: f65588680c2a2a74694ee5a13ce10451, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}

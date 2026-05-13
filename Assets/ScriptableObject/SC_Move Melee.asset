@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb451dbccac7825418f549ac485f8177, type: 3}
-  m_Name: New SC_Move Melee
+  m_Name: SC_Move Melee
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyMoveMelee
   moveSpeed: 10
   attackDistance: 2
