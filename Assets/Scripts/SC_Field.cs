@@ -27,11 +27,22 @@ public class SC_Field : MonoBehaviour
 
     // 敵管理
     private List<GameObject> enemies = new List<GameObject>();
+    //プレイヤー
+    private GameObject player;
+    private Vector3 playerStartPos;
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+        {
+            playerStartPos = player.transform.position;
+        }
+
         GenerateStage(currentStage);
     }
+
 
     void GenerateStage(int stageIndex)
     {
@@ -148,8 +159,55 @@ public class SC_Field : MonoBehaviour
             currentStage = 0;
         }
 
+        ResetPlayer();
+
         Refresh();
 
         yield return new WaitForSeconds(0.5f);
+    }
+
+    void ResetPlayer()
+    {
+        if (player == null) return;
+
+        CharacterController controller =
+            player.GetComponent<CharacterController>();
+
+        if (controller != null)
+        {
+            controller.enabled = false;
+        }
+
+        player.transform.position = playerStartPos;
+
+        if (controller != null)
+        {
+            controller.enabled = true;
+        }
+
+        Debug.Log("Playerリセット");
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("何か触れた : " + other.name);
+
+        if (!other.CompareTag("Player"))
+        {
+            Debug.Log("Playerじゃない");
+            return;
+        }
+
+        Debug.Log("Playerが触れた");
+        Debug.Log("敵の数 : " + GetEnemyCount());
+
+        if (GetEnemyCount() > 0)
+        {
+            Debug.Log("まだ敵がいる");
+            return;
+        }
+
+        Debug.Log("次ステージへ");
+        NextStage();
     }
 }
