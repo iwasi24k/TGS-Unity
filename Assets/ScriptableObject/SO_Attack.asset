@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81bf6539a0f8a0f449e700fb114ca498, type: 3}
   m_Name: SO_Attack
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttack
-  bulletNum: 1
+  bulletNum: 5
   bulletPrefab: {fileID: 5102349697781354183, guid: ea8a6556f2b64994eb2946b6a3fcf2ce, type: 3}
   attackStartDelay: 0.5
   bulletSpeed: 15
