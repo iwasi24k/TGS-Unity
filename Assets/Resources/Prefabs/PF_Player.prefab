@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       propertyPath: m_Name
-      value: Player 1
+      value: PF_Player
       objectReference: {fileID: 0}
     - target: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       propertyPath: m_TagString
@@ -86,6 +86,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4987308906888708760}
+    - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9222720908445434421}
   m_SourcePrefab: {fileID: 100100000, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
 --- !u!1 &6050779772031455837 stripped
 GameObject:
@@ -214,9 +217,26 @@ MonoBehaviour:
   iaStrongAttack: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   scTarget: {fileID: 0}
   ccPlayer: {fileID: 0}
+  scSetting: {fileID: 0}
   attackCooldown: 1
   weakAttackDamage: 10
   strongAttackDamage: 20
   AttackAreaSize: {x: 1.4, y: 2, z: 2}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
   TargetingJumpInAreaSize: {x: 3, y: 2, z: 10}
+--- !u!114 &9222720908445434421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6050779772031455837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86f2f0d70aa251a47b180a7f236627a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerHP
+  maxHP: 100
+  currentHP: 0
+  hpSlider: {fileID: 0}
+  bulletDamage: 10
