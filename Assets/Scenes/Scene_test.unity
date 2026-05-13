@@ -1198,7 +1198,6 @@ MonoBehaviour:
   searchAngleThreshold: 15
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
-  comboManager: {fileID: 1764883328}
 --- !u!54 &806512316
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1413,7 +1412,6 @@ MonoBehaviour:
   searchAngleThreshold: 15
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
-  comboManager: {fileID: 1764883328}
 --- !u!1 &1097688755
 GameObject:
   m_ObjectHideFlags: 0
@@ -2037,17 +2035,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1764883328 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 930843001942429364, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
-  m_PrefabInstance: {fileID: 119155994}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02cec00bb556401489d9a8c52f0ad66f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &1876405711
 GameObject:
   m_ObjectHideFlags: 0
@@ -2211,6 +2198,10 @@ PrefabInstance:
     - target: {fileID: 4987308906888708760, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: comboResetTime
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4987308906888708760, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: weak1Attack.blowAway
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6050779772031225471, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: m_LocalPosition.x
