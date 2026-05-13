@@ -56,6 +56,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
         //‰Šúó‘Ô‚Ìİ’èACurrentIndex‚ğ‰Šúó‘Ô‚É‡‚í‚¹‚Ä•ÏX
         currentState = localStateList[initialStateNum];
         currentState.Enter(this.gameObject,this);
+
+        comboManager = GameObject.FindGameObjectWithTag("ComboManager").GetComponent<ComboManager>();
     }
 
     void Update()

@@ -18,6 +18,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [SerializeField] private InputActionReference iaStrongAttack;
     [Tooltip("ターゲット情報"), SerializeField] SC_PlayerTarget scTarget;
     [Tooltip("キャラクターコントローラー"),SerializeField] CharacterController ccPlayer;
+    [Tooltip("ポーズ用オブジェクト"), SerializeField] SC_Setting scSetting;
 
     [Header("Settings")]
     [Tooltip("攻撃のクールダウン時間")]
@@ -115,6 +116,8 @@ public class SC_PlayerAttack : MonoBehaviour
 
         if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
 
+        if(scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
+
         if (iaWeakAttack == null)
         {
             Debug.LogError("弱攻撃のInputActionReferenceがアタッチされていません。");
@@ -128,6 +131,11 @@ public class SC_PlayerAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(scSetting != null && scSetting.IsPaused())
+        {
+            return; // ポーズ中は攻撃できないようにする
+        }
+
         GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");
 
         var weakAttackInput = iaWeakAttack.action.WasPressedThisFrame();
@@ -241,6 +249,7 @@ public class SC_PlayerAttack : MonoBehaviour
 
     private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
+
         var center = transform.forward * (AreaSize.z * 0.5f) + transform.up * (AreaSize.y * 0.5f) + transform.position;
         int HitCount = Physics.OverlapBoxNonAlloc(
              center,
