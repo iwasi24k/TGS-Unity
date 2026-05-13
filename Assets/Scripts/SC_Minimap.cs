@@ -4,17 +4,28 @@ using UnityEngine.UI;
 
 public class SC_Minimap : MonoBehaviour
 {
-    public Transform player;
-    public float radarRange = 30f;
-
-    public RectTransform radarUI;
-    public GameObject enemyBlipPrefab;
-    public Transform blipParent;
-
+    private Transform player;
     private List<GameObject> blips = new List<GameObject>();
+
+    [Tooltip("Š´’m”ÍˆÍ"), SerializeField] private float radarRange = 30f;
+
+    [SerializeField] private RectTransform radarUI;
+    [SerializeField] private GameObject enemyBlipPrefab;
+    [SerializeField] private Transform blipParent;
+    [SerializeField] private RectTransform playerArrow;
+
+    void Start()
+    {
+        player = GameObject.FindWithTag("Player").transform;
+    }
 
     void Update()
     {
+        if (player == null) return;
+
+        playerArrow.localEulerAngles =
+            new Vector3(0, 0, -player.localEulerAngles.y);
+
         // Šù‘¶‚Ì“_‚ğíœ
         foreach (var b in blips)
         {
