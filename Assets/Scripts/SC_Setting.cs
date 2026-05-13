@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SC_Setting : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class SC_Setting : MonoBehaviour
     [SerializeField] private GameObject settingUI;
     [SerializeField] InputActionReference iaSettingtoggle;
 
-    [Header("SeetingsData")]
-    public bool CameraMode = false;
+    [Header("SettingsData")]
+    [SerializeField] bool CameraMode = false;
 
     private bool isPaused = false;
     private CursorLockMode previousLockMode;
@@ -34,6 +35,11 @@ public class SC_Setting : MonoBehaviour
         }
     }
 
+    public bool IsPaused()
+    {
+        return isPaused;
+    }
+
     public void ToggleSettings()
     {
         if(isPaused)
@@ -44,6 +50,11 @@ public class SC_Setting : MonoBehaviour
         {
             OpenSettings();
         }
+    }
+
+    public void ReturnTitle()
+    {
+        SceneManager.LoadScene("Scene_Title");
     }
 
     private void OpenSettings()
