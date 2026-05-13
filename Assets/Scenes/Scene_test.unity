@@ -1674,14 +1674,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
-      propertyPath: m_Name
-      value: Enemy (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5
-      objectReference: {fileID: 0}
     - target: {fileID: 4674282708414248726, guid: 657a5a940cf35dd489c4ca683fa6ecae, type: 3}
       propertyPath: VelocityModule.enabled
       value: 1
@@ -1946,6 +1938,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
+      propertyPath: m_Name
+      value: Enemy (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1992,7 +1992,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &806507539
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2077,7 +2079,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &806512316
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2765,7 +2769,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!1 &1097688755
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,7 +3090,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &1213534183
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3276,7 +3284,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &1284557438
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4370,7 +4380,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &1766328326
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4557,7 +4569,9 @@ MonoBehaviour:
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 1
   searchAngleThreshold: 15
-  collisionDamage: 10
+  minCollisionSpeed: 1
+  enemyCollisionCooldown: 0.5
+  comboManager: {fileID: 0}
 --- !u!54 &1872602913
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5222,6 +5236,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 367225850388757839, guid: 192b5986a457bc548a0555ab63507a59, type: 3}
+      propertyPath: enemyArrowPrefab
+      value: 
+      objectReference: {fileID: 3026778899440460068, guid: 65e95a8eb686bc64aa98f8a5324ac2ca, type: 3}
     - target: {fileID: 2702990570483683786, guid: 192b5986a457bc548a0555ab63507a59, type: 3}
       propertyPath: player
       value: 
