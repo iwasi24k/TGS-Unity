@@ -641,24 +641,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_Field
   stages:
   - objects:
-    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+    - prefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
       position: {x: 10, y: -1.5, z: -10}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
-    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+    - prefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
       position: {x: -10, y: -1.5, z: -10}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
   - objects:
-    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+    - prefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
       position: {x: 10, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
-    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+    - prefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
       position: {x: 0, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
-    - prefab: {fileID: 7333114898890283553, guid: 0e78a41b360fd4b48b239368aee7ebcc, type: 3}
+    - prefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
       position: {x: -10, y: -1.5, z: -20}
       scale: {x: 1, y: 1, z: 1}
       rotation: {x: 0, y: 0, z: 0}
@@ -1018,6 +1018,67 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 36
   m_CollisionDetection: 0
+--- !u!1001 &1330755379
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.9731
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.11553
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233364085631387589, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547345198577562485, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_Name
+      value: PF_ComboManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547345198577562485, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
+      propertyPath: m_TagString
+      value: ComboManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0ab402b9fcdbbad418e42be394fdbd7a, type: 3}
 --- !u!1 &1489124219
 GameObject:
   m_ObjectHideFlags: 0
@@ -1600,3 +1661,4 @@ SceneRoots:
   - {fileID: 30968298}
   - {fileID: 4381292407130079008}
   - {fileID: 159443688}
+  - {fileID: 1330755379}
