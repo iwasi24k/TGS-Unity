@@ -1,6 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum AttackType
+{
+    Weak1,
+    Weak2,
+    Strong,
+    Uppercut
+}
+
 public class SC_PlayerAttack : MonoBehaviour
 {
     [Header("Ref")]
@@ -14,7 +22,7 @@ public class SC_PlayerAttack : MonoBehaviour
 
     [Header("Settings")]
     [Tooltip("攻撃のクールダウン時間")]
-    [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackCooldown = 0.5f;
     [Tooltip("攻撃のダメージ量(弱)")]
     [SerializeField] private int weakAttackDamage = 10;
     [Tooltip("攻撃のダメージ量(強)")]
@@ -27,6 +35,79 @@ public class SC_PlayerAttack : MonoBehaviour
 
     private float currentAttackCooldown = 0f;
     private readonly Collider[] overlapCollision = new Collider[32];
+
+    //アクションコンボ
+    private enum AttackInputType
+    {
+        Weak,
+        Strong
+    }
+
+    [System.Serializable]
+    private class AttackData
+    {
+        public AttackType attackType;
+        public int damage = 10;
+        public Vector3 areaSize = new Vector3(2f, 2f, 3f);
+        public bool blowAway = false;
+    }
+
+    [Header("Combo Settings")]
+    [Tooltip("コンボがリセットされるまでの時間")]
+    [SerializeField] private float comboResetTime = 2.0f;
+
+    [Tooltip("弱1段目")]
+    [SerializeField]
+    private AttackData weak1Attack = new AttackData
+    {
+        attackType = AttackType.Weak1,
+        damage = 10,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = false
+    };
+
+    [Tooltip("弱2段目")]
+    [SerializeField]
+    private AttackData weak2Attack = new AttackData
+    {
+        attackType = AttackType.Weak2,
+        damage = 10,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = false
+    };
+
+    [Tooltip("Weak → Weak → Weak の攻撃")]
+    [SerializeField]
+    private AttackData strongComboAttack = new AttackData
+    {
+        attackType = AttackType.Strong,
+        damage = 20,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = true
+    };
+
+    [Tooltip("Weak → Weak → Strong の攻撃")]
+    [SerializeField]
+    private AttackData uppercutComboAttack = new AttackData
+    {
+        attackType = AttackType.Uppercut,
+        damage = 35,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = true
+    };
+
+    [Tooltip("通常の強攻撃")]
+    [SerializeField]
+    private AttackData normalStrongAttack = new AttackData
+    {
+        attackType = AttackType.Strong,
+        damage = 20,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = true
+    };
+
+    private int weakComboCount = 0;
+    private float comboTimer = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,7 +122,7 @@ public class SC_PlayerAttack : MonoBehaviour
         {
             Debug.LogError("弱攻撃のInputActionReferenceがアタッチされていません。");
         }
-        if(iaStrongAttack == null)
+        if (iaStrongAttack == null) 
         {
             Debug.LogError("強攻撃のInputActionReferenceがアタッチされていません。");
         }
@@ -60,30 +141,17 @@ public class SC_PlayerAttack : MonoBehaviour
         var weakAttackInput = iaWeakAttack.action.WasPressedThisFrame();
         var strongAttackInput = iaStrongAttack.action.WasPressedThisFrame();
 
-        if(weakAttackInput)
-        {
-            //弱攻撃の処理
-            if(enemys.Length > 0)
-            {
-                JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
-                AttackExe(weakAttackDamage, AttackAreaSize, false);
-            }
+        UpdateAttackCooldown();
+        UpdateComboTimer();
 
+        if (weakAttackInput)
+        {
+            TryAttackInput(AttackInputType.Weak);
         }
 
-        if(strongAttackInput)
+        if (strongAttackInput)
         {
-            //強攻撃の処理
-            if(enemys.Length > 0)
-            {
-                JumpInEnemy(scTarget.GetCurrentTarget() != null ? TargetingJumpInAreaSize : JumpInAreaSize, AttackAreaSize);
-                AttackExe(strongAttackDamage, AttackAreaSize, true);
-            }
-        }
-
-        if(currentAttackCooldown > 0f)
-        {
-            currentAttackCooldown -= Time.deltaTime;
+            TryAttackInput(AttackInputType.Strong);
         }
     }
 
@@ -179,7 +247,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway)
+    private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
 
         var center = transform.forward * (AreaSize.z * 0.5f) + transform.up * (AreaSize.y * 0.5f) + transform.position;
@@ -204,7 +272,7 @@ public class SC_PlayerAttack : MonoBehaviour
                     continue;
                 }
 
-                enemy.TakeDamage(AttackDamage, transform.position, BlowAway);
+                enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
                 hasHitEnemy = true;
             }
         }
@@ -244,5 +312,143 @@ public class SC_PlayerAttack : MonoBehaviour
         Gizmos.DrawCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
+    }
+
+    //クールダウン
+    private void UpdateAttackCooldown()
+    {
+        if (currentAttackCooldown > 0f)
+        {
+            currentAttackCooldown -= Time.deltaTime;
+        }
+    }
+
+    //アクションコンボ
+
+    //コンボタイマー
+    private void UpdateComboTimer()
+    {
+        if (comboTimer <= 0f)
+        {
+            return;
+        }
+
+        comboTimer -= Time.deltaTime;
+
+        if (comboTimer <= 0f)
+        {
+            ResetCombo();
+        }
+    }
+
+    //アクション入力
+    private void TryAttackInput(AttackInputType inputType)
+    {
+        if (currentAttackCooldown > 0f)
+        {
+            return;
+        }
+
+        AttackData attackData = GetAttackDataByInput(inputType);
+
+        if (attackData == null)
+        {
+            return;
+        }
+
+        ExecuteAttackData(attackData);
+
+        UpdateComboState(inputType, attackData);
+    }
+
+    //入力変換
+    private AttackData GetAttackDataByInput(AttackInputType inputType)
+    {
+        switch (inputType)
+        {
+            case AttackInputType.Weak:
+                return GetAttackDataByWeakInput();
+
+            case AttackInputType.Strong:
+                return GetAttackDataByStrongInput();
+        }
+
+        return null;
+    }
+
+    //Weak入力時の分岐
+    private AttackData GetAttackDataByWeakInput()
+    {
+        // Weak → Weak → Weak
+        // 3回目のWeak入力はStrong攻撃になる
+        if (weakComboCount >= 2)
+        {
+            Debug.Log("PlayerAttack:3回目のWeak→Strong");
+            return strongComboAttack;
+        }
+
+        // 1回目のWeak
+        if (weakComboCount == 0)
+        {
+            Debug.Log("PlayerAttack:1回目のWeak");
+            return weak1Attack;
+        }
+
+        // 2回目のWeak
+        if (weakComboCount == 1)
+        {
+            Debug.Log("PlayerAttack:2回目のWeak");
+            return weak2Attack;
+        }
+
+        return weak1Attack;
+    }
+
+    //Strong入力時の分岐
+    private AttackData GetAttackDataByStrongInput()
+    {
+        if (weakComboCount >= 2)
+        {
+            Debug.Log("PlayerAttack:Uppercut");
+            return uppercutComboAttack;
+        }
+
+        Debug.Log("PlayerAttack:1回目のStrong");
+        return normalStrongAttack;
+    }
+
+    //アクション実行
+    private void ExecuteAttackData(AttackData attackData)
+    {
+        Vector3 jumpInSize = scTarget.GetCurrentTarget() != null
+            ? TargetingJumpInAreaSize
+            : JumpInAreaSize;
+
+        JumpInEnemy(jumpInSize, attackData.areaSize);
+        AttackExe(attackData.damage, attackData.areaSize, attackData.blowAway, attackData.attackType);
+    }
+
+    //コンボ状態更新
+    private void UpdateComboState(AttackInputType inputType, AttackData attackData)
+    {
+        // Weak入力で、まだコンボ途中ならカウントを進める
+        if (inputType == AttackInputType.Weak &&
+            (attackData.attackType == AttackType.Weak1 || attackData.attackType == AttackType.Weak2))
+        {
+            weakComboCount++;
+            comboTimer = comboResetTime;
+            return;
+        }
+
+        // Strong攻撃、VeryStrong攻撃、通常Strong攻撃を出したらコンボ終了
+        ResetCombo();
+    }
+
+    //コンボリセット
+    private void ResetCombo()
+    {
+        Debug.Log("PlayerAttack:コンボリセット");
+        weakComboCount = 0;
+        comboTimer = 0f;
     }
 }

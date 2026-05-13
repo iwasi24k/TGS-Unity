@@ -32,9 +32,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
 
-
-    [Tooltip("コンボマネージャー"), SerializeField] private ComboManager comboManager;
-
     void Start()
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
@@ -95,9 +92,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public int GetMaxHP()
     {
         return MaxHP;
-    }   
+    }
 
-    public void TakeDamage(int damage, Vector3 AttackerPosition , bool isBlowAway = false)
+    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0)
     {
 
         CollisionDamage(damage);
@@ -105,11 +102,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(damage, AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
         else if (isBlowAway)
         {
-            TransitionToBlownAway(damage, AttackerPosition);
+            TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
 
     }
@@ -125,7 +122,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    private void TransitionToBlownAway(float power,Vector3 attackerPosition)
+    private void TransitionToBlownAway(float power,Vector3 attackerPosition, AttackType attackType)
     {
         SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
         if (!IsBlownAway())
@@ -136,21 +133,17 @@ public class SC_EnemyStatusManager : MonoBehaviour
             }
 
             Vector3 initialBlowDirection = (this.transform.position - attackerPosition).normalized;
-            initialBlowDirection.y = 0f;
+            initialBlowDirection.y = 0.0f;
             initialBlowDirection.Normalize();
 
             Vector3 blowDirection = SearchForEnemyInDirection(initialBlowDirection, searchAngleThreshold);
-            blowDirection.y = 0f;
+            blowDirection.y = 0.0f;
             blowDirection.Normalize();
 
-            blownAway.SetBlownAway(power, blowDirection);
+            blownAway.SetBlownAway(power, blowDirection, attackType);
 
             blownAway.Enter(this.gameObject, this);
             currentState = blownAway;
-        }
-        else
-        {
-            Debug.Log("吹っ飛び状態です");
         }
     }
 
@@ -244,9 +237,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             Debug.Log("敵同士が衝突");
 
-            int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + comboManager.GetComboCount();
+            int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
 
-            TransitionToBlownAway(myPower, otherEnemy.transform.position);
+            TransitionToBlownAway(myPower, otherEnemy.transform.position, 0);
             CollisionDamage(myPower);
 
             SC_EnemyStatusManager otherStatusManager = otherEnemy.GetComponent<SC_EnemyStatusManager>();
@@ -255,7 +248,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 // 相手側にも、自分との衝突を登録しておく
                 otherStatusManager.RegisterEnemyCollision(this.gameObject);
 
-                otherStatusManager.TransitionToBlownAway(myPower, this.transform.position);
+                otherStatusManager.TransitionToBlownAway(myPower, this.transform.position, 0);
                 otherStatusManager.CollisionDamage(myPower);
             }
         }
@@ -347,4 +340,5 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
+
 }

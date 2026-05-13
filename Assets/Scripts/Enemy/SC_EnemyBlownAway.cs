@@ -8,6 +8,9 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("吹き飛ばされる方向"), SerializeField] private Vector3 blownAwayDirection = new Vector3(0, 0, 0);
     [Tooltip("この速度以下で終了"), SerializeField] private float endSpeed = 0.1f;
     [Tooltip("力の減衰速度"), SerializeField] private float decaySpeed = 5f;
+    [Tooltip("アッパーY方向威力"), SerializeField] private float uppercutPower = 10.0f;
+    
+    private AttackType receivedAttackType;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -31,7 +34,16 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
 
         Debug.Log($"Enter dir={blownAwayDirection} power={adjustedPower}");
 
-        rb.linearVelocity = blownAwayDirection.normalized * adjustedPower;
+        Vector3 velocity = blownAwayDirection.normalized * adjustedPower;
+
+        // Uppercut の時だけ Y方向を固定値にする
+        if (receivedAttackType == AttackType.Uppercut)
+        {
+            Debug.Log("Uppercut!!");
+           velocity.y = uppercutPower;
+        }
+
+        rb.linearVelocity = velocity;
 
         Debug.Log($"Enter velocity={rb.linearVelocity}");
     }
@@ -96,10 +108,11 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     }
 
     // 吹き飛ばされる力と方向を同時に設定するメソッド
-    public void SetBlownAway(float power, Vector3 direction)
+    public void SetBlownAway(float power, Vector3 direction, AttackType attackType)
     {
         blownAwayPower = power;
         blownAwayDirection = direction.normalized;
+        receivedAttackType = attackType;
         Debug.Log("BlownAway Power and Direction Set\n" + "Power: " + blownAwayPower + "Direction: " + blownAwayDirection);
     }
 
