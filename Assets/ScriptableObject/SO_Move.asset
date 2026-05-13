@@ -14,5 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyMove
   moveSpeed: 3
   moveDistance: 3
-  stuckCheckTime: 1
-  stuckThreshold: 0.1
