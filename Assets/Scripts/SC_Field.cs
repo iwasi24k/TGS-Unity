@@ -31,6 +31,10 @@ public class SC_Field : MonoBehaviour
     private GameObject player;
     private Vector3 playerStartPos;
 
+    private Renderer goalRenderer;
+    private Vector3 goalDefaultScale;
+    private bool isGoalActive = false;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -40,9 +44,48 @@ public class SC_Field : MonoBehaviour
             playerStartPos = player.transform.position;
         }
 
+        // ゴール見た目取得
+        goalRenderer = GetComponent<Renderer>();
+
+        // 元の大きさ保存
+        goalDefaultScale = transform.localScale;
+
+        // 最初は灰色
+        if (goalRenderer != null)
+        {
+            goalRenderer.material.color = Color.gray;
+        }
+
         GenerateStage(currentStage);
     }
 
+    void Update()
+    {
+        // 敵全滅でゴール解放
+        if (!isGoalActive && GetEnemyCount() <= 0)
+        {
+            ActivateGoal();
+        }
+    }
+
+    void ActivateGoal()
+    {
+        if (isGoalActive) return;
+
+        isGoalActive = true;
+
+        Debug.Log("ゴール解放！");
+
+        // 黄色にする
+        if (goalRenderer != null)
+        {
+            goalRenderer.material.color = Color.yellow;
+        }
+
+        // 少し大きくする
+        transform.localScale =
+            goalDefaultScale * 1.3f;
+    }
 
     void GenerateStage(int stageIndex)
     {
@@ -103,26 +146,36 @@ public class SC_Field : MonoBehaviour
         return list;
     }
 
-    // 一番近い敵
     public GameObject GetNearestEnemy(Vector3 from)
     {
-        GameObject nearest = null;
-        float minDist = float.MaxValue;
 
-        foreach (var e in enemies)
+        // 消えた敵を削除
+        enemies.RemoveAll(e => e == null);
+
+        // 敵を近い順に並び替え
+        enemies.Sort((a, b) =>
         {
-            if (e == null) continue;
+            float distA =
+                Vector3.SqrMagnitude(a.transform.position - from);
 
-            float dist = Vector3.SqrMagnitude(e.transform.position - from);
+            float distB =
+                Vector3.SqrMagnitude(b.transform.position - from);
 
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearest = e;
-            }
+            return distA.CompareTo(distB);
+        });
+
+        //デバッグ用
+        foreach (var enemy in enemies)
+        {
+            Debug.Log(enemy.name);
         }
 
-        return nearest;
+        // 敵がいなかったらnull
+        if (enemies.Count == 0)
+            return null;
+
+        // 一番近い敵
+        return enemies[0];
     }
 
     // -----------------------------
@@ -141,6 +194,16 @@ public class SC_Field : MonoBehaviour
         enemies.Clear();
 
         GenerateStage(currentStage);
+
+        //ゴールの色を戻す
+        isGoalActive = false;
+
+        transform.localScale = goalDefaultScale;
+
+        if (goalRenderer != null)
+        {
+            goalRenderer.material.color = Color.gray;
+        }
     }
 
     public void NextStage()
@@ -166,6 +229,7 @@ public class SC_Field : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
+    //Playerのポジションリセット
     void ResetPlayer()
     {
         if (player == null) return;
@@ -188,6 +252,7 @@ public class SC_Field : MonoBehaviour
         Debug.Log("Playerリセット");
     }
 
+    //確認用
     void OnTriggerEnter(Collider other)
     {
         Debug.Log("何か触れた : " + other.name);
