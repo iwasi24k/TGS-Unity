@@ -11,6 +11,8 @@ public class SC_EnemyMove : SC_EnemyBaceState
     [Tooltip("‚±‚Ì•b”“®‚©‚È‚¯‚ê‚ÎƒAƒEƒg"), SerializeField] private float stuckCheckTime = 1.0f;
     [Tooltip("‚±‚Ì‹——£ˆÈ‰º‚È‚ç“®‚¢‚Ä‚È‚¢ˆµ‚¢"), SerializeField] private float stuckThreshold = 0.1f;
 
+    private Animator animator;
+
     private Vector3 moveDirection;
     private Vector3 startPosition;
     private Rigidbody rb;
@@ -35,11 +37,16 @@ public class SC_EnemyMove : SC_EnemyBaceState
             (
             Random.Range(-1f, 1f),0f,Random.Range(-1f, 1f)
             ).normalized;
+
+        animator = Owner.GetComponent<Animator>();
+
+        animator.SetBool("bMove", true);
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Move State Exit");
+        animator.SetBool("bMove", false);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)

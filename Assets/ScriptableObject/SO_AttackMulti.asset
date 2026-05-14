@@ -17,7 +17,7 @@ MonoBehaviour:
   attackStartDelay: 0.5
   bulletSpeed: 10
   fireInterval: 0.2
-  spreadAngle: 180
+  spreadAngle: 20
   spawnForwardOffset: 1.5
   spawnUpOffset: 0.5
   spawnRightOffset: 0

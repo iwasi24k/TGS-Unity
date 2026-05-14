@@ -14,6 +14,8 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
     [Tooltip("上方向オフセット"), SerializeField] private float spawnUpOffset = 0.5f;
     [Tooltip("左右オフセット"), SerializeField] private float spawnRightOffset = 0f;
 
+    private Animator animator;
+
     private float fireTimer;
     private float delayTimer;
     private bool isAttacking;
@@ -25,6 +27,8 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
         delayTimer = 0f;
         isAttacking = true;
         canFire = false;
+        animator = Owner.GetComponent<Animator>();
+        animator.SetTrigger("tAttack");
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)

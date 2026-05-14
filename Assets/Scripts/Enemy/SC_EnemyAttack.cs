@@ -14,6 +14,8 @@ public class SC_EnemyAttack : SC_EnemyBaceState
     [Tooltip("上方向オフセット"), SerializeField] private float spawnUpOffset = 0.5f;
     [Tooltip("左右オフセット"), SerializeField] private float spawnRightOffset = 0f;
 
+    private Animator animator;
+
     private int firedBulletCount;
     private float fireTimer;
     private float delayTimer;
@@ -27,6 +29,7 @@ public class SC_EnemyAttack : SC_EnemyBaceState
         delayTimer = 0f;
         isAttacking = true;
         canFire = false;
+        animator = Owner.GetComponent<Animator>();
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -79,6 +82,7 @@ public class SC_EnemyAttack : SC_EnemyBaceState
             Owner.transform.up * spawnUpOffset +
             Owner.transform.right * spawnRightOffset;
 
+        animator.SetTrigger("tAttack");
         // 弾生成
         GameObject bulletObj = Object.Instantiate(bulletPrefab, spawnPos, rot);
 
