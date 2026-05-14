@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class SC_Field : MonoBehaviour
 {
@@ -219,7 +219,11 @@ public class SC_Field : MonoBehaviour
 
         if (currentStage >= stages.Length)
         {
-            currentStage = 0;
+            Debug.Log("ゲームクリア!");
+
+            SceneManager.LoadScene("Scene_Result");
+
+            yield break;
         }
 
         ResetPlayer();
