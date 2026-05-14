@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,9 @@ public class SC_PlayerTarget : MonoBehaviour
     [Tooltip("フィールド管理"), SerializeField] private SC_Field field;
 
     [Header("Target")]
-    [SerializeField] private float targetReleaseDistance = 15.0f;
+    [Tooltip("ターゲット切り替え距離"), SerializeField] private float targetLockDistance = 15.0f;
+    [Tooltip("ターゲット解除距離"), SerializeField] private float targetReleaseDistance = 20.0f;
+
     // ターゲット中かどうかのフラグ
     private bool isTargeting = false;
 
@@ -81,7 +84,7 @@ public class SC_PlayerTarget : MonoBehaviour
             return;
         }
 
-        enemys = enemyList.ToArray();
+        enemys = enemyList.Where(e => e != null && e.activeInHierarchy).ToArray();
 
         List<GameObject> inViewTargets = GetTargetsInView();
 
@@ -91,10 +94,14 @@ public class SC_PlayerTarget : MonoBehaviour
         }
         else
         {
-            targets = enemys;
+            targets = enemys.Where(e => IsInTargetLockDistance(e)).ToArray();
         }
 
-        if (targetIndex >= targets.Length)
+        if (targets.Length == 0)
+        {
+            targetIndex = 0;
+        }
+        else if (targetIndex >= targets.Length)
         {
             targetIndex = 0;
         }
@@ -122,20 +129,15 @@ public class SC_PlayerTarget : MonoBehaviour
             return;
         }
 
-        
-        // 距離が遠すぎたらターゲット解除
-        //float sqrDistance =
-        //    Vector3.SqrMagnitude(currentTarget.transform.position - transform.position);
-        //
-        //float sqrReleaseDistance = targetReleaseDistance * targetReleaseDistance;
-        //
-        //if (sqrDistance > sqrReleaseDistance)
-        //{
-        //    isTargeting = false;
-        //    currentTarget = null;
-        //    targetIndex = 0;
-        //    return;
-        //}
+
+        // ロック距離ではなく、解除距離で判定する
+        if (IsOutOfTargetReleaseDistance(currentTarget))
+        {
+            isTargeting = false;
+            currentTarget = null;
+            targetIndex = 0;
+            return;
+        }
     }
 
 
@@ -148,6 +150,7 @@ public class SC_PlayerTarget : MonoBehaviour
         {
             currentTarget = null;
             isTargeting = false;
+            targetIndex = 0;
             return;
         }
 
@@ -213,8 +216,10 @@ public class SC_PlayerTarget : MonoBehaviour
                 }
             }
 
-            if (isVisible)
+            if (isVisible && IsInTargetLockDistance(enemy))
+            {
                 inView.Add(enemy);
+            }
         }
 
         // プレイヤーから近い順に並べる
@@ -226,6 +231,29 @@ public class SC_PlayerTarget : MonoBehaviour
         });
 
         return inView;
+    }
+
+
+    private bool IsInTargetLockDistance(GameObject target)
+    {
+        if (target == null)
+            return false;
+
+        float sqrDistance =
+            Vector3.SqrMagnitude(target.transform.position - transform.position);
+
+        return sqrDistance <= targetLockDistance * targetLockDistance;
+    }
+
+    private bool IsOutOfTargetReleaseDistance(GameObject target)
+    {
+        if (target == null)
+            return true;
+
+        float sqrDistance =
+            Vector3.SqrMagnitude(target.transform.position - transform.position);
+
+        return sqrDistance > targetReleaseDistance * targetReleaseDistance;
     }
 
 }
