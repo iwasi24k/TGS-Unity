@@ -1,4 +1,3 @@
-using UnityEditorInternal;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enemy/Move State")]
