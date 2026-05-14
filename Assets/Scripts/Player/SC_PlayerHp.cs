@@ -3,81 +3,104 @@ using UnityEngine.UI;
 
 public class SC_PlayerHP : MonoBehaviour
 {
-    // =========================
+    // =========================================
     // HP設定
-    // =========================
+    // =========================================
 
     [Header("HP Settings")]
 
-    // 最大HP
-    public float maxHP = 100f;
-
-    // 現在HP
-    public float currentHP;
+    [SerializeField] private float maxHP = 100f;
+    [SerializeField] private float currentHP;
 
 
-    // =========================
+    // =========================================
     // UI設定
-    // =========================
+    // =========================================
 
-    [Header("UI")]
+    [Header("UI Settings")]
 
-    // HPバー用Slider
-    public Slider hpSlider;
+    // シーン内のHPスライダー名
+    [SerializeField] private string hpSliderObjectName = "HP_Slider";
+
+    // HPバー
+    private Slider hpSlider;
 
 
-    // =========================
+    // =========================================
     // ダメージ設定
-    // =========================
+    // =========================================
 
     [Header("Damage Settings")]
 
-    // 弾のダメージ量
-    public float bulletDamage = 10f;
+    [SerializeField] private float bulletDamage = 10f;
 
 
-    // =========================
+    // =========================================
     // 初期化
-    // =========================
+    // =========================================
 
-    void Start()
+    private void Start()
     {
-        // 開始時に最大HP
+        // HP初期化
         currentHP = maxHP;
 
-        // Slider設定
-        if (hpSlider != null)
-        {
-            hpSlider.maxValue = maxHP;
-            hpSlider.value = currentHP;
-        }
-    }
-
-
-    // =========================
-    // ダメージ処理
-    // =========================
-
-    public void TakeDamage(float damage)
-    {
-        // HP減少
-        currentHP -= damage;
-
-        // HPを制限
-        currentHP = Mathf.Clamp(currentHP, 0f, maxHP);
+        // HPスライダー取得
+        FindHPSlider();
 
         // UI更新
         UpdateHPUI();
     }
 
 
-    // =========================
-    // UI更新
-    // =========================
+    // =========================================
+    // HPスライダー取得
+    // =========================================
 
-    void UpdateHPUI()
+    private void FindHPSlider()
     {
-        // Slider更新
+        // 名前でオブジェクト検索
+        GameObject sliderObject = GameObject.Find(hpSliderObjectName);
+
+        // 見つかった場合
+        if (sliderObject != null)
+        {
+            hpSlider = sliderObject.GetComponent<Slider>();
+
+            // Slider初期設定
+            hpSlider.maxValue = maxHP;
+            hpSlider.value = currentHP;
+        }
+        else
+        {
+            Debug.LogWarning("HP Slider が見つかりません");
+        }
+    }
+
+
+    // =========================================
+    // ダメージ処理
+    // =========================================
+
+    public void TakeDamage(float damage)
+    {
+        // HP減少
+        currentHP -= damage;
+
+        // HP制限
+        currentHP = Mathf.Clamp(currentHP, 0f, maxHP);
+
+        // UI更新
+        UpdateHPUI();
+
+    }
+
+
+    // =========================================
+    // UI更新
+    // =========================================
+
+    private void UpdateHPUI()
+    {
         if (hpSlider != null)
         {
             hpSlider.value = currentHP;
@@ -85,19 +108,19 @@ public class SC_PlayerHP : MonoBehaviour
     }
 
 
-    // =========================
-    // 弾が当たった時
-    // =========================
+    // =========================================
+    // 弾ヒット処理
+    // =========================================
 
     private void OnTriggerEnter(Collider other)
     {
-        // Bulletタグなら
+        // Bulletタグ確認
         if (other.CompareTag("Bullet"))
         {
             // ダメージ
             TakeDamage(bulletDamage);
 
-            // 弾を削除
+            // 弾削除
             Destroy(other.gameObject);
         }
     }

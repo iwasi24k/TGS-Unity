@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4719691553592487067}
   - component: {fileID: 3578013730304915049}
   m_Layer: 5
-  m_Name: Playerhp
+  m_Name: PF_Playerhp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 8388672765877376437}
   - component: {fileID: 5667766252295083389}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: HP_Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

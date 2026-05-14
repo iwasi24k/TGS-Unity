@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Bullet
   - Setting
+  - ComboManager
   layers:
   - Default
   - TransparentFX
