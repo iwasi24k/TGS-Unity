@@ -61,6 +61,8 @@ public class SC_Field : MonoBehaviour
 
     void Update()
     {
+        SortEnemiesByPlayerDistance();
+
         // 敵全滅でゴール解放
         if (!isGoalActive && GetEnemyCount() <= 0)
         {

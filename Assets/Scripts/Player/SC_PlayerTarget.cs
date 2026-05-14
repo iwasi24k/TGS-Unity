@@ -8,13 +8,16 @@ public class SC_PlayerTarget : MonoBehaviour
     [Tooltip("メインカメラ"), SerializeField] private Camera goMainCamera;
     [Tooltip("ターゲットトグル用入力"), SerializeField] private InputActionReference iaTarget;
     [Tooltip("ターゲット変更用入力"), SerializeField] private InputActionReference iaTargetChange;
+    [Tooltip("フィールド管理"), SerializeField] private SC_Field field;
 
+    [Header("Target")]
+    [SerializeField] private float targetReleaseDistance = 15.0f;
     // ターゲット中かどうかのフラグ
     private bool isTargeting = false;
 
     private GameObject currentTarget;
-    private GameObject[] targets;
-    private GameObject[] enemys;
+    private GameObject[] targets = new GameObject[0];
+    private GameObject[] enemys = new GameObject[0];
     private int targetIndex = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,6 +26,10 @@ public class SC_PlayerTarget : MonoBehaviour
         if (currentTarget != null) currentTarget = null;
         if (goMainCamera == null) goMainCamera = Camera.main;
 
+        if (field == null)
+        {
+            field = FindFirstObjectByType<SC_Field>();
+        }
         if (iaTarget == null)
         {
             Debug.LogError("ターゲットトグル用のInputActionReferenceがアタッチされていません。");
@@ -62,128 +69,101 @@ public class SC_PlayerTarget : MonoBehaviour
 
     private void FixedUpdate()
     {
-        enemys = GameObject.FindGameObjectsWithTag("Enemy");
-        targets = GetTargetsInView() != null ? GetTargetsInView().ToArray() : enemys;
+        if (field == null)
+            return;
+
+        List<GameObject> enemyList = field.GetEnemies();
+
+        if (enemyList == null || enemyList.Count == 0)
+        {
+            enemys = new GameObject[0];
+            targets = new GameObject[0];
+            return;
+        }
+
+        enemys = enemyList.ToArray();
+
+        List<GameObject> inViewTargets = GetTargetsInView();
+
+        if (inViewTargets.Count > 0)
+        {
+            targets = inViewTargets.ToArray();
+        }
+        else
+        {
+            targets = enemys;
+        }
+
+        if (targetIndex >= targets.Length)
+        {
+            targetIndex = 0;
+        }
     }
 
     private void LateUpdate()
     {
-        //ターゲットがいなくなったら、切り替え
-        if (isTargeting)
-        {
-            if (currentTarget == null && targets.Length > 0) 
-            {
-                UpdateEnemys();
-                currentTarget = targets[targetIndex];
-                return;
-            }
-
-            if (targets.Length == 0)
-            {
-                isTargeting = false;
-                currentTarget = null;
-                return;
-            }
-        }
-        else
+        if (!isTargeting)
         {
             currentTarget = null;
-        }
-    }
-
-    private GameObject GetTargetInView()
-    {
-        if (enemys == null || enemys.Length == 0)
-            return null;
-
-        Camera cam = goMainCamera != null ? goMainCamera : Camera.main;
-        Plane[] planes = cam != null ? GeometryUtility.CalculateFrustumPlanes(cam) : null;
-
-        var inView = new System.Collections.Generic.List<GameObject>();
-        Vector3 myPos = transform.position;
-
-        foreach (GameObject enemy in enemys)
-        {
-            if (enemy == null || !enemy.activeInHierarchy)
-                continue;
-
-            bool isVisible = true;
-
-            if (cam != null)
-            {
-                Renderer rend = enemy.GetComponentInChildren<Renderer>();
-                if (rend != null)
-                {
-                    if (!GeometryUtility.TestPlanesAABB(planes, rend.bounds))
-                    {
-                        isVisible = false;
-                    }
-                    else
-                    {
-                        Vector3 vp = cam.WorldToViewportPoint(rend.bounds.center);
-                        if (vp.z <= 0f || vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f)
-                            isVisible = false;
-                    }
-                }
-                else
-                {
-                    Vector3 vp = cam.WorldToViewportPoint(enemy.transform.position);
-                    if (vp.z <= 0f || vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f)
-                        isVisible = false;
-                }
-            }
-
-            if (isVisible)
-                inView.Add(enemy);
+            return;
         }
 
-        if (inView.Count == 0)
-            return null;
-
-        // プレイヤーからの距離で昇順ソート（処理軽量化のため平方距離を使用）
-        inView.Sort((a, b) =>
+        if (targets == null || targets.Length == 0)
         {
-            float da = Vector3.SqrMagnitude(a.transform.position - myPos);
-            float db = Vector3.SqrMagnitude(b.transform.position - myPos);
-            return da.CompareTo(db);
-        });
+            isTargeting = false;
+            currentTarget = null;
+            return;
+        }
 
-        // targetIndex を 0 始まりとして扱う（範囲外なら最後尾にクランプ）
-        int idx = Mathf.Clamp(targetIndex, 0, enemys.Length);
-        return inView[idx];
+        if (currentTarget == null)
+        {
+            targetIndex = 0;
+            currentTarget = targets[targetIndex];
+            return;
+        }
+
+        
+        // 距離が遠すぎたらターゲット解除
+        //float sqrDistance =
+        //    Vector3.SqrMagnitude(currentTarget.transform.position - transform.position);
+        //
+        //float sqrReleaseDistance = targetReleaseDistance * targetReleaseDistance;
+        //
+        //if (sqrDistance > sqrReleaseDistance)
+        //{
+        //    isTargeting = false;
+        //    currentTarget = null;
+        //    targetIndex = 0;
+        //    return;
+        //}
     }
+
 
     public void ChangeTarget(int direction)
     {
-        if (isTargeting)
+        if (!isTargeting)
+            return;
+
+        if (targets == null || targets.Length == 0)
         {
-            targetIndex += direction;
-            if (targetIndex < 0) targetIndex = targets.Length - 1;
-            else if (targetIndex >= targets.Length) targetIndex = 0;
-            currentTarget = targets[targetIndex];
+            currentTarget = null;
+            isTargeting = false;
+            return;
         }
+
+        targetIndex += direction;
+
+        if (targetIndex < 0)
+            targetIndex = targets.Length - 1;
+        else if (targetIndex >= targets.Length)
+            targetIndex = 0;
+
+        currentTarget = targets[targetIndex];
     }
 
     public GameObject GetCurrentTarget()
     {
         return currentTarget;
-    }
-
-    //emenysを更新するための関数
-    private void UpdateEnemys()
-    {
-        if (enemys == null || enemys.Length == 0)
-            return;
-
-        targetIndex = 0;
-
-        //プレイヤーとの距離が近い順にソート  
-        System.Array.Sort(enemys, (a, b) =>
-        {
-            float da = Vector3.SqrMagnitude(a.transform.position - transform.position);
-            float db = Vector3.SqrMagnitude(b.transform.position - transform.position);
-            return da.CompareTo(db);
-        });
     }
 
     //カメラに映っている敵を取得する関数
