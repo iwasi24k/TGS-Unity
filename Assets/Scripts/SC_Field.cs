@@ -27,6 +27,9 @@ public class SC_Field : MonoBehaviour
 
     // 敵管理
     private List<GameObject> enemies = new List<GameObject>();
+    //プレイヤー
+    private GameObject player;
+    private Vector3 playerStartPos;
 
     private Renderer goalRenderer;
     private Vector3 goalDefaultScale;
@@ -218,6 +221,8 @@ public class SC_Field : MonoBehaviour
         {
             currentStage = 0;
         }
+
+        ResetPlayer();
 
         Refresh();
 
