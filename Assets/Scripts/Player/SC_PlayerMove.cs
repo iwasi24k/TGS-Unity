@@ -13,6 +13,7 @@ public class SC_PlayerMove : MonoBehaviour
     [SerializeField] private InputActionReference iaSprint;
     [Tooltip("ターゲット情報")]
     [SerializeField] SC_PlayerTarget scTarget;
+    [Tooltip("Animator") , SerializeField] private Animator animPlayer;
 
     [Header("Settings")]
     [Tooltip("移動速度")]
@@ -36,6 +37,7 @@ public class SC_PlayerMove : MonoBehaviour
         if(goMainCamera == null) goMainCamera = Camera.main;
         if (ccPlayer == null) ccPlayer = GetComponent<CharacterController>();
         if(scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
+        if(animPlayer == null) animPlayer = this.GetComponent<Animator>();
         currentSplintMul = sprintMultiplier;
 
         if(iaMove == null)
@@ -79,7 +81,7 @@ public class SC_PlayerMove : MonoBehaviour
 
         if (moveDir.sqrMagnitude > 0.001f)
         {
-
+            animPlayer.SetBool("bWalk", true);
             if (scTarget.GetCurrentTarget() == null)
             { 
                 Vector3 lookDir = moveDir.normalized;
@@ -90,6 +92,15 @@ public class SC_PlayerMove : MonoBehaviour
             //スプリント
             var sprintInput = iaSprint.action.ReadValue<float>();
             bool isSprint = sprintInput > 0.5f; // スプリント入力があるかどうかを判定
+
+            if (isSprint)
+            {
+                animPlayer.SetBool("bRun", true);
+            }
+            else
+            {
+                animPlayer.SetBool("bRun", false);
+            }
 
             if (isSprint && !wasBlink)
             {//スプリントが開始された瞬間にブリンクを試みる
@@ -105,6 +116,11 @@ public class SC_PlayerMove : MonoBehaviour
 
             //移動
             ccPlayer.Move(moveDir.normalized * (moveSpeed * SprintFactor) * Time.deltaTime);
+        }
+        else
+        {
+            animPlayer.SetBool("bWalk", false);
+            animPlayer.SetBool("bRun", false);
         }
 
         // ブリンクの効果がスプリント倍率を超えている場合、徐々に減少させる

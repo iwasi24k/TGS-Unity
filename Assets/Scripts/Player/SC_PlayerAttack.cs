@@ -19,6 +19,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [Tooltip("ターゲット情報"), SerializeField] SC_PlayerTarget scTarget;
     [Tooltip("キャラクターコントローラー"),SerializeField] CharacterController ccPlayer;
     [Tooltip("ポーズ用オブジェクト"), SerializeField] SC_Setting scSetting;
+    [Tooltip("アニメーター"), SerializeField] private Animator animPlayer;
 
     [Header("Settings")]
     [Tooltip("攻撃のクールダウン時間")]
@@ -117,6 +118,8 @@ public class SC_PlayerAttack : MonoBehaviour
         if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
 
         if(scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
+
+        if(animPlayer == null) animPlayer = this.GetComponent<Animator>();
 
         if (iaWeakAttack == null)
         {
@@ -249,6 +252,17 @@ public class SC_PlayerAttack : MonoBehaviour
 
     private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
+        switch (attackType)
+        { 
+            case AttackType.Weak1:
+            case AttackType.Weak2:
+                animPlayer.SetTrigger("tWeakAttack");
+                break;
+            case AttackType.Strong:
+            case AttackType.Uppercut:
+                animPlayer.SetTrigger("tStrongAttack");
+                break;
+        }
 
         var center = transform.forward * (AreaSize.z * 0.5f) + transform.up * (AreaSize.y * 0.5f) + transform.position;
         int HitCount = Physics.OverlapBoxNonAlloc(

@@ -41,8 +41,8 @@ ModelImporter:
       name: Quickstep_F
       takeName: Quickstep_F
       internalID: -6339999858669016031
-      firstFrame: 3.2
-      lastFrame: 12.2
+      firstFrame: 0
+      lastFrame: 15
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
