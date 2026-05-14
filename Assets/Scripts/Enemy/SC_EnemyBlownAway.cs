@@ -11,6 +11,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("アッパー時の横方向速度"), SerializeField] private float uppercutHorizontalSpeed = 8.0f;
     [Tooltip("アッパー時の上方向速度"), SerializeField] private float uppercutVerticalSpeed = 10.0f;
 
+    private Animator animator;
+
     private AttackType receivedAttackType;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -52,6 +54,9 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         rb.linearVelocity = velocity;
 
         Debug.Log($"Enter velocity={rb.linearVelocity}");
+
+        animator = Owner.GetComponent<Animator>();
+        animator.SetBool("bHit", true);
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -62,6 +67,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         if (rb == null) return;
 
         rb.linearVelocity = Vector3.zero;
+
+        animator.SetBool("bHit", false);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
