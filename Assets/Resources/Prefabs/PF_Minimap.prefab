@@ -316,9 +316,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a86b8f12ccaed40986292913198467, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_Minimap
-  player: {fileID: 0}
   radarRange: 30
   radarUI: {fileID: 3188537093195634751}
   enemyBlipPrefab: {fileID: 3211777430780036563, guid: 9a5c7ded26e6b6f4fb2541d807dac886, type: 3}
+  enemyArrowPrefab: {fileID: 3026778899440460068, guid: 65e95a8eb686bc64aa98f8a5324ac2ca, type: 3}
   blipParent: {fileID: 3213244693319767198}
   playerArrow: {fileID: 6635411758636697582}
