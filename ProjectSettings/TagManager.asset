@@ -8,6 +8,8 @@ TagManager:
   - Goal
   - Enemy
   - Bullet
+  - Setting
+  - ComboManager
   layers:
   - Default
   - TransparentFX

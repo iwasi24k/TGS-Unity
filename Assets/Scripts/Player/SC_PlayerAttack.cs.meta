@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: f84df867b75e5c348bc5af3140bbb266
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - iaWeakAttack: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - iaStrongAttack: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
