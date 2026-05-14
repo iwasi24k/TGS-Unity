@@ -146,37 +146,47 @@ public class SC_Field : MonoBehaviour
         return list;
     }
 
-    public GameObject GetNearestEnemy(Vector3 from)
+    private void SortEnemiesByPlayerDistance()
     {
+        // Playerが見つからない
+        if (player == null) return;
 
         // 消えた敵を削除
         enemies.RemoveAll(e => e == null);
 
-        // 敵を近い順に並び替え
+        // Player座標
+        Vector3 playerPos = player.transform.position;
+
+        // Playerに近い順に並び替え
         enemies.Sort((a, b) =>
         {
-            float distA =
-                Vector3.SqrMagnitude(a.transform.position - from);
+            float distA =Vector3.SqrMagnitude(a.transform.position - playerPos);
 
-            float distB =
-                Vector3.SqrMagnitude(b.transform.position - from);
+            float distB =Vector3.SqrMagnitude(b.transform.position - playerPos);
 
             return distA.CompareTo(distB);
         });
+    }
 
-        //デバッグ用
+    public GameObject GetNearestEnemy()
+    {
+        // 内部でソート
+        SortEnemiesByPlayerDistance();
+
+        // デバッグ確認
         foreach (var enemy in enemies)
         {
             Debug.Log(enemy.name);
         }
 
-        // 敵がいなかったらnull
+        // 敵がいない
         if (enemies.Count == 0)
             return null;
 
         // 一番近い敵
         return enemies[0];
     }
+
 
     // -----------------------------
     // ステージ制御
