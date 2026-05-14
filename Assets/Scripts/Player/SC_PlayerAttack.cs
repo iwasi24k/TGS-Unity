@@ -239,7 +239,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    private void AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
+    private bool AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
         var center = transform.forward * (AreaSize.z * 0.5f) + transform.up * (AreaSize.y * 0.5f) + transform.position;
         int HitCount = Physics.OverlapBoxNonAlloc(
@@ -254,14 +254,17 @@ public class SC_PlayerAttack : MonoBehaviour
         for (int i = 0; i < HitCount; i++)
         {
             var hit = overlapCollision[i];
+
+            if(hit == null) continue;
+
             if (hit.CompareTag("Enemy"))
             {
                 // BlownAway状態の敵にはダメージを与えない
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
-                if (enemy.IsBlownAway())
-                {
-                    continue;
-                }
+                
+                if(enemy==null) continue;
+                
+                if (enemy.IsBlownAway()) continue;
 
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
                 hasHitEnemy = true;
@@ -276,6 +279,8 @@ public class SC_PlayerAttack : MonoBehaviour
         {
             currentAttackCooldown = attackCooldown * 0.5f; // 敵に当たらなかった場合はクールダウンを短くするなどの調整も可能
         }
+
+        return hasHitEnemy;
     }
 
     // Scene上でこのオブジェクトが選択されているときに攻撃範囲を可視化
@@ -347,9 +352,17 @@ public class SC_PlayerAttack : MonoBehaviour
             return;
         }
 
-        ExecuteAttackData(attackData);
+        bool hasHitEnemy = ExecuteAttackData(attackData);
 
-        UpdateComboState(inputType, attackData);
+        //攻撃が当たった時だけコンボ計算
+        if (hasHitEnemy)
+        {
+            UpdateComboState(inputType, attackData);
+        }
+        else
+        {
+            ResetCombo();
+        }
     }
 
     //入力変換
@@ -409,14 +422,16 @@ public class SC_PlayerAttack : MonoBehaviour
     }
 
     //アクション実行
-    private void ExecuteAttackData(AttackData attackData)
+    private bool ExecuteAttackData(AttackData attackData)
     {
         Vector3 jumpInSize = scTarget.GetCurrentTarget() != null
             ? TargetingJumpInAreaSize
             : JumpInAreaSize;
 
         JumpInEnemy(jumpInSize, attackData.areaSize);
-        AttackExe(attackData.damage, attackData.areaSize, attackData.blowAway, attackData.attackType);
+        bool hasHitEnemy = AttackExe(attackData.damage, attackData.areaSize, attackData.blowAway, attackData.attackType);
+
+        return hasHitEnemy;
     }
 
     //コンボ状態更新
