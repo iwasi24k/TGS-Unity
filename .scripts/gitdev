@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+# Check branch name
+if [ -z "$1" ]; then
+  echo "Usage: gitdev <new branch name>"
+  exit 1
+fi
+
+# Update remote references
+git fetch origin
+
+# Check if branch already exists
+if git show-ref --verify --quiet "refs/heads/$1" || \
+   git show-ref --verify --quiet "refs/remotes/origin/$1"; then
+  echo "Branch '$1' already exists."
+  exit 1
+fi
+
+# Switch to develop branch
+git switch develop
+
+# Merge latest changes from develop
+git pull origin develop
+
+# Create and switch to new branch
+git switch -c "$1"
+
+echo "Successfully created and switched to branch '$1'."
