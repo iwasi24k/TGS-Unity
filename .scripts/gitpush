@@ -19,7 +19,8 @@ if [ -z "$current_branch" ] || [ "$current_branch" == "develop" ] || [ "$current
 fi
 
 # Merge latest changes from develop into current branch
-git pull origin develop
+git fetch origin
+git merge origin/develop
 
 # Stage all changes
 git add .

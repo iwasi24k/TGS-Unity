@@ -18,11 +18,23 @@ if git show-ref --verify --quiet "refs/heads/$1" || \
   exit 1
 fi
 
+# Validate branch name format
+if [[ ! "$1" =~ ^(feature|fix|hotfix|refactor)/.+$ ]]; then
+  echo "Branch name must start with feature/, fix/, hotfix/, or refactor/ followed by a descriptive name."
+  exit 1
+fi
+
+# Check for uncommitted changes
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Working tree is not clean."
+  exit 1
+fi
+
 # Switch to develop branch
 git switch develop
 
-# Merge latest changes from develop
-git pull origin develop
+# Update develop branch
+git reset --hard origin/develop
 
 # Create and switch to new branch
 git switch -c "$1"
