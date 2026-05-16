@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+# Check commit message
+if [ -z "$1" ]; then
+  echo "Usage: gitpush <commit message>"
+  exit 1
+fi
+
+# Get current branch
+current_branch=$(git branch --show-current)
+
+# Prevent direct execution on protected branches
+if [ -z "$current_branch" ] || [ "$current_branch" == "develop" ] || [ "$current_branch" == "main" ]; then
+  echo "You are currently on the '$current_branch' branch."
+  echo "Please switch to a feature branch before running this script."
+  exit 1
+fi
+
+# Merge latest changes from develop into current branch
+git pull origin develop
+
+# Stage all changes
+git add .
+
+# Check staged changes
+if git diff --cached --quiet; then
+  echo "No changes to commit."
+  exit 0
+fi
+
+# Commit
+git commit -m "$1"
+
+# Push current branch
+git push -u origin "$current_branch"
+
+echo "Successfully pushed branch '$current_branch' with commit message: '$1'."
