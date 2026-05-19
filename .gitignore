@@ -109,7 +109,10 @@ Assets/Textures
 Assets/Models
 Assets/Audio
 
-# meta files for user-specific assets
-!Assets/Textures.meta
-!Assets/Models.meta
-!Assets/Audio.meta
+Assets/Textures.meta
+Assets/Models.meta
+Assets/Audio.meta
+
+# local space files
+Assets/LocalSpace/
+Assets/LocalSpace.meta
