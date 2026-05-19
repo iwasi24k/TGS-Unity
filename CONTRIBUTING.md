@@ -56,6 +56,51 @@ feature/* → develop → main
 
 ---
 
+# シェルスクリプトによる実行
+
+## ブランチの作成
+
+どのブランチからでも実行可能です。  
+最新の `develop` を取得し、新しいブランチを作成して切り替えます。
+```bash
+./scripts/gitdev <new branch name>
+```
+
+### ブランチ命名規則
+
+以下のプレフィックスを使用してください。
+
+- `feature/`
+- `fix/`
+- `hotfix/`
+- `refactor/`
+
+例:
+
+```bash
+./scripts/gitdev feature/player-move
+./scripts/gitdev fix/enemy-spawn
+```
+
+注意事項
+- 同名ブランチが存在する場合は作成できません。
+- Working Tree に未コミットの変更が存在する場合は実行できません。
+- develop ブランチは origin/develop の最新状態に同期されます。
+
+
+## ブランチの更新とPush
+現在のローカルブランチへ最新の develop を取り込み、commit と push を実行します。
+```bash
+./scripts/gitpush "commit message"
+```
+
+注意事項
+- main / develop ブランチでは実行できません。
+- 変更ファイルは自動で stage (git add .) されます。
+- develop 取り込み時に conflict が発生した場合は処理が停止します。
+
+---
+
 # 作業開始前
 
 作業開始前に `develop` を最新状態にする
