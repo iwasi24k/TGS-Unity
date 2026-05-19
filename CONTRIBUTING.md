@@ -275,6 +275,7 @@ Build/
 Assets/Textues
 Assets/Models
 Assets/Audio
+Assets/Local/
 ```
 
 `.gitignore` により自動で除外されます。
