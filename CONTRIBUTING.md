@@ -331,7 +331,7 @@ Unity asset symlinks
 さい。
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\setup-links.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup-links.ps1
 ```
 
 ---
