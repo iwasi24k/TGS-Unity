@@ -17,7 +17,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [Tooltip("攻撃用インプットアクション(強)")]
     [SerializeField] private InputActionReference iaStrongAttack;
     [Tooltip("ターゲット情報"), SerializeField] SC_PlayerTarget scTarget;
-    [Tooltip("キャラクターコントローラー"),SerializeField] CharacterController ccPlayer;
+    [Tooltip("キャラクターコントローラー"), SerializeField] CharacterController ccPlayer;
     [Tooltip("ポーズ用オブジェクト"), SerializeField] SC_Setting scSetting;
     [Tooltip("アニメーター"), SerializeField] private Animator animPlayer;
 
@@ -28,7 +28,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [SerializeField] private int weakAttackDamage = 10;
     [Tooltip("攻撃のダメージ量(強)")]
     [SerializeField] private int strongAttackDamage = 20;
-    [Tooltip("攻撃範囲"), SerializeField] private Vector3 AttackAreaSize = new Vector3(2f,2f,3f);
+    [Tooltip("攻撃範囲"), SerializeField] private Vector3 AttackAreaSize = new Vector3(2f, 2f, 3f);
     [Tooltip("飛びつきの範囲")]
     [SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
     [Tooltip("ターゲット時の飛びつきの範囲")]
@@ -117,15 +117,15 @@ public class SC_PlayerAttack : MonoBehaviour
 
         if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
 
-        if(scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
+        if (scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
 
-        if(animPlayer == null) animPlayer = this.GetComponent<Animator>();
+        if (animPlayer == null) animPlayer = this.GetComponent<Animator>();
 
         if (iaWeakAttack == null)
         {
             Debug.LogError("弱攻撃のInputActionReferenceがアタッチされていません。");
         }
-        if (iaStrongAttack == null) 
+        if (iaStrongAttack == null)
         {
             Debug.LogError("強攻撃のInputActionReferenceがアタッチされていません。");
         }
@@ -134,7 +134,7 @@ public class SC_PlayerAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(scSetting != null && scSetting.IsPaused())
+        if (scSetting != null && scSetting.IsPaused())
         {
             return; // ポーズ中は攻撃できないようにする
         }
@@ -253,7 +253,7 @@ public class SC_PlayerAttack : MonoBehaviour
     private bool AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
         switch (attackType)
-        { 
+        {
             case AttackType.Weak1:
             case AttackType.Weak2:
                 animPlayer.SetTrigger("tWeakAttack");
@@ -278,15 +278,15 @@ public class SC_PlayerAttack : MonoBehaviour
         {
             var hit = overlapCollision[i];
 
-            if(hit == null) continue;
+            if (hit == null) continue;
 
             if (hit.CompareTag("Enemy"))
             {
                 // BlownAway状態の敵にはダメージを与えない
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
-                
-                if(enemy==null) continue;
-                
+
+                if (enemy == null) continue;
+
                 if (enemy.IsBlownAway()) continue;
 
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
@@ -297,6 +297,12 @@ public class SC_PlayerAttack : MonoBehaviour
         if (hasHitEnemy && currentAttackCooldown <= 0f)
         {
             currentAttackCooldown = attackCooldown;
+
+            // 弱攻撃はヒットストップ、強攻撃はスロー
+            if (attackType == AttackType.Weak1 || attackType == AttackType.Weak2)
+                SC_HitStop.Instance?.Trigger();
+            else
+                SC_DisplaySlow.Instance?.Enter(0.5f);
         }
         else
         {

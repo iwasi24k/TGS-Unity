@@ -1179,6 +1179,35 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 36
   m_CollisionDetection: 0
+--- !u!114 &1249823935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036482752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a92a38ebeebf0d74b8b7923385e817ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_DisplaySlow
+  slowFactor: 0.15
+  enterSmoothTime: 0.05
+  exitSmoothTime: 0.01
+--- !u!114 &1249823936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036482752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4deb5346334ff3418cf80972379eaf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_HitStop
+  defaultDuration: 0.1
+  freezeTimeScale: 0.09
 --- !u!1001 &1330755379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1494,6 +1523,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6050779772031455837, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1249823925}
+    - targetCorrespondingSourceObject: {fileID: 6050779772031455837, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1249823936}
+    - targetCorrespondingSourceObject: {fileID: 6050779772031455837, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1249823935}
   m_SourcePrefab: {fileID: 100100000, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
