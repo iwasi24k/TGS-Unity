@@ -28,6 +28,7 @@ feature/ui-system
 ```
 feature/* → develop → main
 ```
+
 1. Issueを作成
 2. `develop` から `feature` ブランチを作成
 3. 機能開発
@@ -41,10 +42,10 @@ feature/* → develop → main
 
 ```
 ## 内容
-- 
+-
 
 ## 変更箇所
-- 
+-
 
 ## 完了条件
 -[ ]
@@ -52,6 +53,7 @@ feature/* → develop → main
 ## 担当者
 @github-name
 ```
+
 変更箇所には、変更するファイルなどを必ず記載してください。
 
 ---
@@ -62,6 +64,7 @@ feature/* → develop → main
 
 どのブランチからでも実行可能です。  
 最新の `develop` を取得し、新しいブランチを作成して切り替えます。
+
 ```bash
 ./scripts/gitdev <new branch name>
 ```
@@ -83,18 +86,21 @@ feature/* → develop → main
 ```
 
 注意事項
+
 - 同名ブランチが存在する場合は作成できません。
 - Working Tree に未コミットの変更が存在する場合は実行できません。
 - develop ブランチは origin/develop の最新状態に同期されます。
 
-
 ## ブランチの更新とPush
+
 現在のローカルブランチへ最新の develop を取り込み、commit と push を実行します。
+
 ```bash
 ./scripts/gitpush "commit message"
 ```
 
 注意事項
+
 - main / develop ブランチでは実行できません。
 - 変更ファイルは自動で stage (git add .) されます。
 - develop 取り込み時に conflict が発生した場合は処理が停止します。
@@ -161,6 +167,7 @@ git restore main.cpp # main.cpp の変更を破棄
 ```
 
 ---
+
 # featureブランチ削除
 
 featureブランチはマージ後に削除する。
@@ -193,23 +200,23 @@ git diff           # 変更差分を確認
 
 ## feature → develop
 
-* 開発者が Pull Request を作成
-* 承認後マージ
+- 開発者が Pull Request を作成
+- 承認後マージ
 
 ## develop → main
 
-* リリース前に作成
-* 最低1人のレビュー
-* 承認後マージ
+- リリース前に作成
+- 最低1人のレビュー
+- 承認後マージ
 
 ---
 
 # Pull Request ルール
 
-* レビュー承認が必要
-* 未解決コメントがある場合はマージ禁止
-* 新しいコミット追加時は再レビュー
-* 可能な限り小さな変更単位でPRを作成
+- レビュー承認が必要
+- 未解決コメントがある場合はマージ禁止
+- 新しいコミット追加時は再レビュー
+- 可能な限り小さな変更単位でPRを作成
 
 ---
 
@@ -246,11 +253,11 @@ chore     : ビルド・設定変更
 
 # 禁止事項
 
-* `main` への直接 push
-* `develop` への直接 push
-* `force push`
-* `feature → main` の直接マージ
-* Unityの `Library` フォルダのコミット
+- `main` への直接 push
+- `develop` への直接 push
+- `force push`
+- `feature → main` の直接マージ
+- Unityの `Library` フォルダのコミット
 
 ---
 
@@ -272,10 +279,10 @@ Temp/
 Logs/
 Obj/
 Build/
-Assets/Textues
-Assets/Models
-Assets/Audio
-Assets/Local/
+Assets/Textues/
+Assets/Models/
+Assets/Audio/
+Assets/LocalSpace/
 ```
 
 `.gitignore` により自動で除外されます。
@@ -297,9 +304,9 @@ UnityのSceneファイルはコンフリクトが発生しやすいため注意�
 
 ルール
 
-* Sceneを編集する場合はチームに共有
-* 同じSceneの同時編集を避ける
-* 大きなScene変更は小さく分割してPR
+- Sceneを編集する場合はチームに共有
+- 同じSceneの同時編集を避ける
+- 大きなScene変更は小さく分割してPR
 
 ---
 
@@ -316,6 +323,16 @@ feature → main
 ```
 
 は禁止。
+
+---
+
+Unity asset symlinks
+管理者権限のPowerShellでUnityのディレクトリ移動後以下を実行してくだ
+さい。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup-links.ps1
+```
 
 ---
 
