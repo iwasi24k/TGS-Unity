@@ -12,8 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e230353cf528e9b419e39e41e3916914, type: 3}
   m_Name: SO_BlownAway
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyBlownAway
-  blownAwayPower: 35
-  blownAwayDirection: {x: 0.9316322, y: 0, z: 0.36340252}
+  blownAwayPower: 15
+  blownAwayDirection: {x: -0.05445677, y: 0, z: 0.99851614}
   endSpeed: 0.1
   decaySpeed: 2
-  uppercutPower: 5
+  uppercutHorizontalSpeed: 8
+  uppercutVerticalSpeed: 10
+  rotateInitialSpeed: 40
+  rotateRightRate: 1
+  rotateLeftAcceleration: 60
+  rotateSelfAngularSpeed: 15
+  rotateDecaySpeed: 25
+  wallBounceMultiplier: 3
+  minBounceSpeed: 6
+  maxBounceSpeed: 30
+  wallBounceCooldown: 0.1
