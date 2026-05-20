@@ -6,7 +6,8 @@ public enum AttackType
     Weak1,
     Weak2,
     Strong,
-    Uppercut
+    Uppercut,
+    Rotate,
 }
 
 public class SC_PlayerAttack : MonoBehaviour
@@ -103,6 +104,16 @@ public class SC_PlayerAttack : MonoBehaviour
     {
         attackType = AttackType.Strong,
         damage = 20,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = true
+    };
+
+    [Tooltip("Weak ¨ Strong ‚Ì‰ñ“]UŒ‚")]
+    [SerializeField]
+    private AttackData rotateComboAttack = new AttackData
+    {
+        attackType = AttackType.Rotate,
+        damage = 15,
         areaSize = new Vector3(2f, 2f, 3f),
         blowAway = true
     };
@@ -434,13 +445,20 @@ public class SC_PlayerAttack : MonoBehaviour
     //Strong“ü—ÍŽž‚Ì•ªŠò
     private AttackData GetAttackDataByStrongInput()
     {
+
         if (weakComboCount >= 2)
         {
             Debug.Log("PlayerAttack:Uppercut");
             return uppercutComboAttack;
         }
 
-        Debug.Log("PlayerAttack:1‰ñ–Ú‚ÌStrong");
+        if (weakComboCount == 1)
+        {
+            Debug.Log("PlayerAttack:Rotate");
+            return rotateComboAttack;
+        }
+
+        Debug.Log("PlayerAttack:Strong");
         return normalStrongAttack;
     }
 

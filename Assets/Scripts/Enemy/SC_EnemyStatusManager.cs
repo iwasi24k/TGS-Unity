@@ -31,7 +31,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
-
+    
     void Start()
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
@@ -63,6 +63,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         UpdateEnemyCollisionTimers();
 
         currentState.UpdateState(this.gameObject, this);
+    }
+
+    private void FixedUpdate()
+    {
+        if (currentState != null)
+        {    
+            currentState.FixedUpdateState(this.gameObject, this);
+        }
     }
 
     void OnDestroy()
@@ -125,10 +133,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
         if (!IsBlownAway())
         {
-            Debug.Log("吹っ飛び状態に移行\n" + "power : " + power);
-            {
-                currentState.Exit(this.gameObject, this);
-            }
+            currentState.Exit(this.gameObject, this);
 
             Vector3 initialBlowDirection = (this.transform.position - attackerPosition).normalized;
             initialBlowDirection.y = 0.0f;
@@ -147,8 +152,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void ReturnFromBlownAway()
     {
-        Debug.Log("吹っ飛び状態から復帰");
-
         //もしHPが0以下なら、消滅する
         if(HP <= 0)
         {
@@ -195,14 +198,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         
         if(closestEnemy != null)
         {
-            Debug.Log("サーチで敵を見つけました : " + closestEnemy.name);
+            //Debug.Log("サーチで敵を見つけました : " + closestEnemy.name);
 
             Vector3 blowDirection = (closestEnemy.transform.position - this.transform.position).normalized;
             return blowDirection;
         }
         else
         {
-            Debug.Log("サーチで敵が見つかりませんでした。");
+            //Debug.Log("サーチで敵が見つかりませんでした。");
             return direction; 
         }
     }
@@ -233,8 +236,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             RegisterEnemyCollision(otherEnemy);
 
-            Debug.Log("敵同士が衝突");
-
             int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
 
             TransitionToBlownAway(myPower, otherEnemy.transform.position, 0);
@@ -253,12 +254,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
     }
 
 
-
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if (currentState != null)
         {
-            Debug.Log("Playerと衝突");
+            currentState.OnCollisionEnterState(this.gameObject, this, collision);
         }
     }
 
@@ -339,4 +339,5 @@ public class SC_EnemyStatusManager : MonoBehaviour
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
 
+    
 }
