@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: SO_BlownAway
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyBlownAway
   blownAwayPower: 15
-  blownAwayDirection: {x: 0.9426961, y: 0, z: 0.33365262}
+  blownAwayDirection: {x: -0.05445677, y: 0, z: 0.99851614}
   endSpeed: 0.1
   decaySpeed: 2
   uppercutHorizontalSpeed: 8
   uppercutVerticalSpeed: 10
-  rotateInitialSpeed: 30
+  rotateInitialSpeed: 40
   rotateRightRate: 1
-  rotateLeftAcceleration: 50
+  rotateLeftAcceleration: 60
   rotateSelfAngularSpeed: 15
   rotateDecaySpeed: 25
   wallBounceMultiplier: 3
