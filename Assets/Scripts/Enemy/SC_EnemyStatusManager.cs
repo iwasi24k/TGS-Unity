@@ -2,6 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//ダメージの種類
+public enum EnemyDamageSource
+{
+    PlayerAttack,
+    EnemyCollision
+}
+
 public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]
@@ -24,6 +31,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
+
+    //----------------------------------------------------------
+    [Header("Boss / Special Setting")]
+    [Tooltip("この敵が吹っ飛び状態になるかどうか"),SerializeField] private bool canBlownAway = true;
+
+    [Header("Boss Down")]
+    [Tooltip("ボスがDownするStateのStateList番号"), SerializeField] private int bossDownStateIndex = 6;
+    [Tooltip("この敵がボスDownを使うか"), SerializeField] private bool useBossDown = false;
+    [Tooltip("Down中だけPlayer攻撃のダメージを受けるか"), SerializeField] private bool onlyTakePlayerDamageWhileDown = false;
+    //----------------------------------------------------------
 
     // 相手ごとの再ヒット可能時間
     private Dictionary<GameObject, float> enemyCollisionTimers = new Dictionary<GameObject, float>();
@@ -48,7 +65,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         //全ステートのインスタンス化し、アセットを直接いじらない形に変更
         for (int i = 0; i < stateList.Length; i++)
         {
-            Debug.Log("StateListの" + i + "番目のStateをインスタンス化" + "StateName : " + stateList[i].name);
+            //Debug.Log("StateListの" + i + "番目のStateをインスタンス化" + "StateName : " + stateList[i].name);
             SC_EnemyBaceState newState = Instantiate(stateList[i]);
             localStateList[i] = newState;
         }
@@ -100,17 +117,34 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return MaxHP;
     }
 
-    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0)
+    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0, EnemyDamageSource damageSource = EnemyDamageSource.PlayerAttack)
     {
+        // Boss用：Down中以外はPlayer攻撃のダメージを無効化
+        if (onlyTakePlayerDamageWhileDown &&
+            damageSource == EnemyDamageSource.PlayerAttack &&
+            !IsBossDown())
+        {
+            Debug.Log("BossはDown中ではないため、Player攻撃ダメージを無効化");
+            return;
+        }
 
         CollisionDamage(damage);
 
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(damage, AttackerPosition, attackType);
+            if (canBlownAway)
+            {
+                TransitionToBlownAway(damage, AttackerPosition, attackType);
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
+
+            return;
         }
-        else if (isBlowAway)
+        else if (isBlowAway && canBlownAway) 
         {
             TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
@@ -130,7 +164,10 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     private void TransitionToBlownAway(float power,Vector3 attackerPosition, AttackType attackType)
     {
+        if (!canBlownAway) return;
+
         SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
+
         if (!IsBlownAway())
         {
             currentState.Exit(this.gameObject, this);
@@ -282,7 +319,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private void CollisionDamage(int damage)
     {
         HP -= damage;
-        hpSlider.value = HP;
+
+        if (hpSlider != null)
+        {
+            hpSlider.value = HP;
+        }
     }
 
     //もし敵がBlownAway状態の時に、tureを返す関数
@@ -339,5 +380,48 @@ public class SC_EnemyStatusManager : MonoBehaviour
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
 
-    
+    public void SetHP(int hp)
+    {
+        HP = hp;
+        MaxHP = hp;
+
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = MaxHP;
+            hpSlider.value = HP;
+        }
+    }
+
+    //Stateを変更する関数、StateListの配列番号で指定
+    public void ChangeState(int stateIndex)
+    {
+        if (stateIndex < 0 || stateIndex >= localStateList.Length)
+        {
+            Debug.LogError("存在しないState番号です : " + stateIndex);
+            return;
+        }
+
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+
+        currentStateIndex = stateIndex;
+        currentState = localStateList[currentStateIndex];
+        currentState.Enter(this.gameObject, this);
+    }
+
+    // BossDown状態に移行する関数
+    public void TriggerBossDown()
+    {
+        if (!useBossDown) return;
+
+        ChangeState(bossDownStateIndex);
+    }
+
+    // BossDown状態かどうかを返す関数
+    public bool IsBossDown()
+    {
+        return currentState is SC_BossDownState;
+    }
 }
