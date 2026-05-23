@@ -75,7 +75,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     void OnDestroy()
     {
-        SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
         if (currentState != null)
         {
             currentState.Exit(this.gameObject, this);
@@ -157,6 +156,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if(HP <= 0)
         {
             Debug.Log("HP‚ª0ˆÈ‰º‚Ì‚½‚ßA“G‚ðÁ–Å‚³‚¹‚Ü‚·B");
+            SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
             Destroy(this.gameObject);
             return;
         }
