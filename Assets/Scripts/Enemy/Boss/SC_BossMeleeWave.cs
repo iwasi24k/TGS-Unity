@@ -29,7 +29,7 @@ public class SC_BossMeleeWaveState : SC_EnemyBaceState
 
         if (timer >= endDelay)
         {
-            Manager.ChangeState(0);
+            Manager.ChangeNextBossAttackInList();
         }
     }
 
@@ -43,29 +43,44 @@ public class SC_BossMeleeWaveState : SC_EnemyBaceState
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
-        if (boss.GetMeleeWavePrefab() != null)
+        GameObject meleeWavePrefab = boss.GetMeleeWavePrefab();
+        if (meleeWavePrefab != null)
         {
-            Instantiate(boss.GetMeleeWavePrefab(), Owner.transform.position, Quaternion.identity);
+            Vector3 spawnPos = Owner.transform.position + Vector3.up * 0.1f;
+
+            GameObject effectObj = Instantiate(
+                meleeWavePrefab,
+                spawnPos,
+                Quaternion.identity
+            );
+
+            SC_MeleeWave effect =
+                effectObj.GetComponent<SC_MeleeWave>();
+
+            if (effect != null)
+            {
+                effect.SetRadius(boss.GetMeleeWaveRadius());
+            }
         }
 
-        Collider[] hits = Physics.OverlapSphere(
-            Owner.transform.position,
-            boss.GetMeleeWaveRadius()
-        );
+        //Collider[] hits = Physics.OverlapSphere(
+        //    Owner.transform.position,
+        //    boss.GetMeleeWaveRadius()
+        //);
 
-        foreach (Collider hit in hits)
-        {
-            if (!hit.CompareTag("Player")) continue;
-
-            Rigidbody playerRb = hit.GetComponent<Rigidbody>();
-            if (playerRb == null) continue;
-
-            Vector3 dir = hit.transform.position - Owner.transform.position;
-            dir.y = 0f;
-            dir.Normalize();
-
-            //playerRb.linearVelocity = Vector3.zero;
-            //playerRb.AddForce(dir * boss.GetMeleeKnockBackPower(), ForceMode.Impulse);
-        }
+        //foreach (Collider hit in hits)
+        //{
+        //    if (!hit.CompareTag("Player")) continue;
+        //
+        //    Rigidbody playerRb = hit.GetComponent<Rigidbody>();
+        //    if (playerRb == null) continue;
+        //
+        //    Vector3 dir = hit.transform.position - Owner.transform.position;
+        //    dir.y = 0f;
+        //    dir.Normalize();
+        //
+        //    //playerRb.linearVelocity = Vector3.zero;
+        //    //playerRb.AddForce(dir * boss.GetMeleeKnockBackPower(), ForceMode.Impulse);
+        //}
     }
 }

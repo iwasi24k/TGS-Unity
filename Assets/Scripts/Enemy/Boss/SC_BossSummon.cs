@@ -29,7 +29,7 @@ public class SC_BossSummonState : SC_EnemyBaceState
 
         if (timer >= endDelay)
         {
-            Manager.ChangeState(0);
+            Manager.ChangeNextBossAttackInList();
         }
     }
 

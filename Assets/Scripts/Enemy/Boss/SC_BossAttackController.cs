@@ -23,12 +23,16 @@ public class SC_BossAttackController : MonoBehaviour
     [Tooltip("ミサイルが落下するまでの時間"), SerializeField] private float fallingTime = 2.0f;
     [Tooltip("落下型ミサイルを出す間隔"), SerializeField] private float fallingInterval = 0.3f;
     [Tooltip("ボスを中心とした落下地点のランダム範囲"), SerializeField] private float stageRadius = 10.0f;
+    [Tooltip("落下型ミサイルが落ちない中心範囲。ボス周辺に落としたくない場合に使う"), SerializeField] private float fallingMissileMinRadius = 5.0f;
 
     [Header("Summon")]
     [Tooltip("召喚する雑魚敵のPrefab"), SerializeField] private GameObject smallEnemyPrefab;
     [Tooltip("一度に召喚する雑魚敵の数"), SerializeField] private int summonCount = 3;
     [Tooltip("ボスからどれくらい離れた位置に召喚するか"), SerializeField] private float summonRadius = 3.0f;
 
+    [Header("Attack Pattern")]
+    [Tooltip("ボスが使用する攻撃パターンリスト"), SerializeField] private BossAttackPattern[] attackPatternList;
+    
     public Transform GetPlayer()
     {
         return player;
@@ -99,6 +103,11 @@ public class SC_BossAttackController : MonoBehaviour
         return stageRadius;
     }
 
+    public float GetFallingMissileMinRadius()
+    {
+        return fallingMissileMinRadius;
+    }
+
     public GameObject GetSmallEnemyPrefab()
     {
         return smallEnemyPrefab;
@@ -112,5 +121,10 @@ public class SC_BossAttackController : MonoBehaviour
     public float GetSummonRadius()
     {
         return summonRadius;
+    }
+
+    public BossAttackPattern[] GetAttackPatternList()
+    {
+        return attackPatternList;
     }
 }

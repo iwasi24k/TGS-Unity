@@ -10,6 +10,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("吹き飛ばされる方向"), SerializeField] private Vector3 blownAwayDirection = new Vector3(0, 0, 0);
     [Tooltip("この速度以下で終了"), SerializeField] private float endSpeed = 0.1f;
     [Tooltip("力の減衰速度"), SerializeField] private float decaySpeed = 5f;
+    [Tooltip("最低でもBlownAway状態を維持する時間"), SerializeField] private float minBlownAwayTime = 0.3f;
 
     [Header("Uppercut Blow Away")]
     [Tooltip("アッパー時の横方向速度"), SerializeField] private float uppercutHorizontalSpeed = 8.0f;
@@ -32,6 +33,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     private Vector3 rotateLeftDirection;
     private float rotateCurrentPower = 0f;
     private float wallBounceCooldownTimer = 0f;
+    private float timer;
 
     private Animator animator;
 
@@ -39,6 +41,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
+        timer = 0f;
+
         if (ComboManager.Instance != null)
         {
             ComboManager.Instance.AddCombo();
@@ -119,6 +123,13 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         else
         {
             rb.linearVelocity = Vector3.zero;
+        }
+
+        timer += Time.deltaTime;
+
+        if (timer < minBlownAwayTime)
+        {
+            return;
         }
 
         // ほぼ止まったら終了

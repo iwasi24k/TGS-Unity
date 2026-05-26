@@ -1,37 +1,63 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enemy/Boss/Attack Select State")]
 public class SC_BossAttackSelectState : SC_EnemyBaceState
 {
-    [Tooltip("近接波動攻撃StateのStateList番号"), SerializeField] private int meleeStateIndex = 2;
-    [Tooltip("追従型ミサイル攻撃StateのStateList番号"), SerializeField] private int homingMissileStateIndex = 3;
-    [Tooltip("落下型ミサイル攻撃StateのStateList番号"), SerializeField] private int fallingMissileStateIndex = 4;
-    [Tooltip("雑魚敵召喚StateのStateList番号"), SerializeField] private int summonStateIndex = 5;
-
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Boss Attack Select State Enter");
+        SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
 
-        int random = Random.Range(0, 2);
-
-        switch (random)
+        if (boss == null)
         {
-            case 0:
-                Manager.ChangeState(meleeStateIndex);
-                break;
-
-            case 1:
-                Manager.ChangeState(homingMissileStateIndex);
-                break;
-
-            case 2:
-                Manager.ChangeState(fallingMissileStateIndex);
-                break;
-
-            case 3:
-                Manager.ChangeState(summonStateIndex);
-                break;
+            Manager.ChangeState(0);
+            return;
         }
+
+        BossAttackPattern[] attackPatternList = boss.GetAttackPatternList();
+
+        if (attackPatternList == null || attackPatternList.Length == 0)
+        {
+            Debug.LogWarning("Bossの攻撃パターンリストが設定されていません。");
+            Manager.ChangeState(0);
+            return;
+        }
+
+        List<BossAttackPattern> usablePatternList = new List<BossAttackPattern>();
+
+        for (int i = 0; i < attackPatternList.Length; i++)
+        {
+            if (attackPatternList[i] == null) continue;
+            if (!attackPatternList[i].GetUsePattern()) continue;
+
+            BossAttackStateType[] stateList = attackPatternList[i].GetStateList();
+            if (stateList == null || stateList.Length == 0) continue;
+
+            usablePatternList.Add(attackPatternList[i]);
+        }
+
+        if (usablePatternList.Count == 0)
+        {
+            Debug.LogWarning("使用可能なBoss攻撃パターンがありません。");
+            Manager.ChangeState(0);
+            return;
+        }
+
+        // ランダムに攻撃パターンを選択
+        int randomIndex = Random.Range(0, usablePatternList.Count);
+        BossAttackPattern selectedPattern = usablePatternList[randomIndex];
+
+        Debug.Log("Boss Attack Pattern : " + selectedPattern.GetPatternName());
+
+        BossAttackStateType[] selectedStateList = selectedPattern.GetStateList();
+        int[] attackIndexList = new int[selectedStateList.Length];
+
+        for (int i = 0; i < selectedStateList.Length; i++)
+        {
+            attackIndexList[i] = (int)selectedStateList[i];
+        }
+
+        Manager.StartBossAttackList(attackIndexList);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)

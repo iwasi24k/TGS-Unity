@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6856034328774344419
+--- !u!1 &15538130619336969
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7845815494372057181}
-  - component: {fileID: 8659522131116964351}
-  - component: {fileID: 7359624837755402461}
-  - component: {fileID: 1753037454948158322}
-  - component: {fileID: 1147340355176952137}
+  - component: {fileID: 1120166767171153515}
+  - component: {fileID: 6917380103862841402}
+  - component: {fileID: 3012240393737527177}
+  - component: {fileID: 1320085536479238173}
+  - component: {fileID: 7419078021862614503}
   m_Layer: 0
-  m_Name: PF_HomingMissile
+  m_Name: PF_MeleeWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7845815494372057181
+--- !u!4 &1120166767171153515
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856034328774344419}
+  m_GameObject: {fileID: 15538130619336969}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.70841, y: 0.21857, z: 18.39492}
+  m_LocalPosition: {x: -0.43316, y: 0, z: 10.52642}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8659522131116964351
+--- !u!33 &6917380103862841402
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856034328774344419}
+  m_GameObject: {fileID: 15538130619336969}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7359624837755402461
+--- !u!23 &3012240393737527177
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856034328774344419}
+  m_GameObject: {fileID: 15538130619336969}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a3d2c1f60cae16141b391db3af880857, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,13 +92,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1753037454948158322
+--- !u!135 &1320085536479238173
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856034328774344419}
+  m_GameObject: {fileID: 15538130619336969}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -107,22 +107,25 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1147340355176952137
+--- !u!114 &7419078021862614503
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856034328774344419}
+  m_GameObject: {fileID: 15538130619336969}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a797e4152e237c4caacff66a69e7975, type: 3}
+  m_Script: {fileID: 11500000, guid: ff86497c86ed43f489e2e52be21e924a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SC_HomingMissile
-  startDelay: 0.5
+  m_EditorClassIdentifier: Assembly-CSharp::SC_MeleeWave
+  expandTime: 0.3
+  fadeTime: 0.2
+  targetRadius: 5
+  startAlpha: 0.35

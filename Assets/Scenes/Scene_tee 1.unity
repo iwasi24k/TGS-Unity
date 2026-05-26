@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 4970335}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 30968295}
   m_Layer: 0
   m_Name: Cube (3)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1068,7 +1068,7 @@ MonoBehaviour:
   initialStateNum: 0
   blowAwayState: {fileID: 0}
   collisionCenter: {x: 0, y: 0, z: 0}
-  collisionRadius: 0.5
+  collisionRadius: 2.6
   blowAwayPowerOnCollision: 0.5
   searchAngleThreshold: 30
   minCollisionSpeed: 1
@@ -1090,8 +1090,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossAttackController
   player: {fileID: 1249823934}
-  meleeWavePrefab: {fileID: 0}
-  meleeWaveRadius: 5
+  meleeWavePrefab: {fileID: 15538130619336969, guid: a3ab2d0ba1cafc2449592a4e030514a6, type: 3}
+  meleeWaveRadius: 10
   meleeKnockBackPower: 10
   homingMissilePrefab: {fileID: 6856034328774344419, guid: b50cd744d34cc4d49bc5ab84397a9b98, type: 3}
   homingMissileCount: 5
@@ -1099,13 +1099,27 @@ MonoBehaviour:
   homingMissileSpeed: 8
   fallingMissilePrefab: {fileID: 7585042685050592574, guid: ef213fa8a23389d418c5ec42d860ee8f, type: 3}
   warningMarkPrefab: {fileID: 6247528478477274410, guid: b7cf405b069495a4e884908a4fc34ce1, type: 3}
-  fallingMissileCount: 5
-  fallingTime: 2
-  fallingInterval: 0.3
+  fallingMissileCount: 10
+  fallingTime: 1
+  fallingInterval: 0.1
   stageRadius: 10
+  fallingMissileMinRadius: 5
   smallEnemyPrefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
   summonCount: 3
-  summonRadius: 3
+  summonRadius: 5
+  attackPatternList:
+  - usePattern: 0
+    patternName: Full
+    stateList: 02000000030000000400000005000000
+  - usePattern: 0
+    patternName: MissileParty
+    stateList: 03000000040000000300000004000000
+  - usePattern: 0
+    patternName: Summom
+    stateList: 05000000050000000500000005000000
+  - usePattern: 0
+    patternName: Melee Wave
+    stateList: 02000000
 --- !u!1 &398898818
 GameObject:
   m_ObjectHideFlags: 0
@@ -1238,7 +1252,7 @@ GameObject:
   - component: {fileID: 1097688756}
   m_Layer: 0
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1522,7 +1536,7 @@ GameObject:
   - component: {fileID: 1735311569}
   m_Layer: 0
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

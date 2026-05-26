@@ -75,7 +75,7 @@ public class SC_HomingMissile : MonoBehaviour
 
                 rb.AddForce(dir * 8.0f, ForceMode.Impulse);
             }
-
+            
             Destroy(gameObject);
         }
 

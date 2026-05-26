@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Boss/Falling Missile State")]
 public class SC_BossFallingMissileState : SC_EnemyBaceState
 {
-    [Tooltip("攻撃Stateを終了してIdleに戻るまでの時間"), SerializeField] private float endDelay = 4.0f;
+    [Tooltip("攻撃Stateを終了してIdleに戻るまでの時間"), SerializeField] private float endDelay = 2.0f;
     [Tooltip("ミサイルを落下させる開始高度"), SerializeField] private float fallHeight = 10.0f;
 
     private float timer;
@@ -39,7 +39,7 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
 
         if (timer >= endDelay)
         {
-            Manager.ChangeState(0);
+            Manager.ChangeNextBossAttackInList();
         }
     }
 
@@ -52,13 +52,23 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
     {
         if (boss.GetFallingMissilePrefab() == null) return;
 
-        Vector2 randomCircle = Random.insideUnitCircle * boss.GetStageRadius();
+        float minRadius = boss.GetFallingMissileMinRadius();
+        float maxRadius = boss.GetStageRadius();
 
-        Vector3 targetPos = Owner.transform.position + new Vector3(
-            randomCircle.x,
-            0.0f,
-            randomCircle.y
-        );
+        if (maxRadius < minRadius)
+        {
+            float temp = maxRadius;
+            maxRadius = minRadius;
+            minRadius = temp;
+        }
+
+        float angle = Random.Range(0f, 360f);
+        float radius = Random.Range(minRadius, maxRadius);
+
+        Vector3 offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * radius;
+
+        Vector3 targetPos = Owner.transform.position + offset;
+        targetPos.y = Owner.transform.position.y;
 
         targetPos.y = 0.0f;
 
