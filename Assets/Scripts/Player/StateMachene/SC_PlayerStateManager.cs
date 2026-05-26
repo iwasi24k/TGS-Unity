@@ -1,14 +1,35 @@
+using Unity.IO.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
+public struct PlayerState
+{
+    public SC_PlayerBaseState Idle;
+    public SC_PlayerBaseState Move;
+    public SC_PlayerBaseState WeakAttack;
+    public SC_PlayerBaseState StrongAttack;
+}
 
 public class SC_PlayerStateManager : MonoBehaviour
 {
+    [Header("References")]
     [field: SerializeField] public CharacterController cController { get; private set; }
     [field: SerializeField] public Animator animator { get; private set; }
 
+    [Header("Input Actions")]
+    [field: SerializeField] public InputActionReference moveInput { get; private set; }
+    [field: SerializeField] public InputActionReference weakAttackInput { get; private set; }
+    [field: SerializeField] public InputActionReference strongAttackInput { get; private set; }
+    [field: SerializeField] public InputActionReference sprintInput { get; private set; }
+
     [Header("State Settings")]
-    [SerializeField] private SC_PlayerBaseState idleState;
-    [SerializeField] private SC_PlayerBaseState walkState;
-    [SerializeField] private SC_PlayerBaseState attackState;
+    [SerializeField] private SC_PlayerBaseState idle;
+    [SerializeField] private SC_PlayerBaseState move;
+    [SerializeField] private SC_PlayerBaseState weakAttack;
+    [SerializeField] private SC_PlayerBaseState strongAttack;
+
+    private PlayerState stateList;
 
     private SC_PlayerBaseState _currentState;
 
@@ -19,31 +40,39 @@ public class SC_PlayerStateManager : MonoBehaviour
         if(cController == null) cController = GetComponent<CharacterController>();
         if(animator == null) animator = GetComponent<Animator>();
 
-        // Instance the defined states.
-
+        stateList.Idle = idle;
+        stateList.Move = move;
+        stateList.WeakAttack = weakAttack;
+        stateList.StrongAttack = strongAttack;
     }
 
     private void Start()
     {
-        //ChangeState();
+        ChangeState(stateList.Idle);
     }
 
     private void Update()
     {
-        _currentState.Update();
+        _currentState.UpdateState(this.gameObject,stateList);
     }
 
     private void FixedUpdate()
     {
-        _currentState.FixedUpdate();
+        _currentState.FixedUpdateState(this.gameObject,stateList);
     }
 
     public void ChangeState(SC_PlayerBaseState next)
     {
-        if(_currentState == next) return;
+        if(next == null)
+        {
+            Debug.LogError("Next state is null.");
+            return;
+        }
 
-        _currentState?.Exit();
+        if (_currentState == next) return;
+
+        _currentState?.Exit(this.gameObject,stateList);
         _currentState = next;
-        _currentState.Enter();
+        _currentState.Enter(this.gameObject,stateList);
     }
 }

@@ -1,2 +1,20 @@
 fileFormatVersion: 2
 guid: 3c10dfa51bca30445be3fc9546912012
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - <cController>k__BackingField: {instanceID: 0}
+  - <animator>k__BackingField: {instanceID: 0}
+  - <moveInput>k__BackingField: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - <weakAttackInput>k__BackingField: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - <strongAttackInput>k__BackingField: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - <sprintInput>k__BackingField: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - idleState: {instanceID: 0}
+  - walkState: {instanceID: 0}
+  - attackState: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
