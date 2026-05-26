@@ -345,5 +345,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
 
-    
+    public void ResetEnemyStatus()
+    {
+        HP = MaxHP;
+
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = MaxHP;
+            hpSlider.value = HP;
+        }
+    }
 }

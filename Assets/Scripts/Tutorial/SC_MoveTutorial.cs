@@ -18,6 +18,9 @@ public class SC_MoveTutorial : MonoBehaviour
     [Header("Attack Tutorial")]
     [SerializeField] private GameObject tutorialEnemy;
 
+    // 後で作る攻撃チュートリアル管理オブジェクト
+    [SerializeField] private GameObject attackTutorialManager;
+
     [Header("Messages")]
 
     [TextArea]
@@ -30,10 +33,6 @@ public class SC_MoveTutorial : MonoBehaviour
     private string dashTutorial =
         "Shiftでダッシュしよう！\n前方のラインまで到達しよう！";
 
-    [TextArea]
-    [SerializeField]
-    private string weakAttackTutorial =
-        "左クリックで敵を攻撃しよう！";
 
     private int currentStep;
 
@@ -45,6 +44,11 @@ public class SC_MoveTutorial : MonoBehaviour
 
         dashPoint.SetActive(false);
         tutorialEnemy.SetActive(false);
+
+        if (attackTutorialManager != null)
+        {
+            attackTutorialManager.SetActive(false);
+        }
     }
 
     private void Update()
@@ -79,13 +83,8 @@ public class SC_MoveTutorial : MonoBehaviour
 
     public void DashTutorialComplete()
     {
-        Debug.Log("DashTutorialComplete呼び出し");
-
         if (currentStep != 1)
-        {
-            Debug.Log("currentStepが1ではない");
             return;
-        }
 
         currentStep = 2;
 
@@ -93,20 +92,21 @@ public class SC_MoveTutorial : MonoBehaviour
 
         tutorialEnemy.SetActive(true);
 
-        tutorialText.text = weakAttackTutorial;
 
-        Debug.Log("弱攻撃チュートリアルへ移行");
+        if (attackTutorialManager != null)
+        {
+            attackTutorialManager.SetActive(true);
+        }
+
+        Debug.Log("ダッシュチュートリアル完了");
     }
 
-    public void WeakAttackTutorialComplete()
+    public void TutorialComplete()
     {
-        if (currentStep != 2)
-            return;
+        currentStep = 999;
 
-        currentStep = 3;
+        tutorialText.text = "チュートリアル完了！";
 
-        tutorialText.text = "攻撃成功！";
-
-        Debug.Log("弱攻撃チュートリアル完了");
+        Debug.Log("全チュートリアル完了");
     }
 }

@@ -13,6 +13,6 @@ public class SC_TutorialEnemy : MonoBehaviour
 
         completed = true;
 
-        tutorialManager.WeakAttackTutorialComplete();
+        //tutorialManager.WeakAttackTutorialComplete();
     }
 }
