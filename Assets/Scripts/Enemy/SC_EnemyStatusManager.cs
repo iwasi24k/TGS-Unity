@@ -102,6 +102,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0)
     {
+        SC_TutorialEnemy tutorialEnemy =
+            GetComponent<SC_TutorialEnemy>();
+
+        if (tutorialEnemy != null)
+        {
+            tutorialEnemy.WeakAttackHit();
+        }
 
         CollisionDamage(damage);
 
@@ -114,7 +121,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
-
     }
 
     public void TransitionToNext()
