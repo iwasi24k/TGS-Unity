@@ -5,7 +5,7 @@ using UnityEngine;
 public class SC_HitStop : MonoBehaviour
 {
     public static SC_HitStop Instance { get; private set; }
-    public static bool IsActive { get; private set; } // SC_DisplaySlow ‚ªQÆ‚·‚é
+    public static bool IsActive { get; private set; }
 
     [Tooltip("’â~ŠÔi•bj")]
     [SerializeField] private float defaultDuration = 0.08f;

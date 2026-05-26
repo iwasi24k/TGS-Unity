@@ -298,11 +298,10 @@ public class SC_PlayerAttack : MonoBehaviour
         {
             currentAttackCooldown = attackCooldown;
 
-            // 弱攻撃はヒットストップ、強攻撃はスロー
             if (attackType == AttackType.Weak1 || attackType == AttackType.Weak2)
-                SC_HitStop.Instance?.Trigger();
+                SC_BeatEffectTrigger.Instance?.OnWeakHit();
             else
-                SC_DisplaySlow.Instance?.Enter(0.5f);
+                SC_BeatEffectTrigger.Instance?.OnStrongHit();
         }
         else
         {
