@@ -27,6 +27,9 @@ public class SC_PlayerMove : MonoBehaviour
     [Tooltip("ブリンククールダウン時間")]
     [SerializeField] private float blinkCooldown = 5f;
 
+    //モーションブラー
+    [SerializeField] private SC_AfterImage afterImage;
+
     private bool wasBlink = false;
     private float currentSplintMul = 1f;
     private float BlinkTimer = 0f;
@@ -96,10 +99,16 @@ public class SC_PlayerMove : MonoBehaviour
             if (isSprint)
             {
                 animPlayer.SetBool("bRun", true);
+
+                if (afterImage != null)
+                    afterImage.StartTrail();
             }
             else
             {
                 animPlayer.SetBool("bRun", false);
+
+                if (afterImage != null)
+                    afterImage.StopTrail();
             }
 
             if (isSprint && !wasBlink)

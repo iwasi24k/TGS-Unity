@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 4970337}
   - component: {fileID: 4970336}
   - component: {fileID: 4970335}
+  - component: {fileID: 4970339}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -184,7 +185,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9bc87f8a25864aa409aceadda65facd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -231,6 +232,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4970339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4970334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba20859f1b400945a0265bb0213f911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraWallFade
 --- !u!1 &30968294
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,6 +256,7 @@ GameObject:
   - component: {fileID: 30968297}
   - component: {fileID: 30968296}
   - component: {fileID: 30968295}
+  - component: {fileID: 30968299}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Untagged
@@ -296,7 +310,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9bc87f8a25864aa409aceadda65facd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -343,6 +357,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &30968299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30968294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba20859f1b400945a0265bb0213f911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraWallFade
 --- !u!1001 &131885598
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1209,6 +1235,7 @@ GameObject:
   - component: {fileID: 1097688758}
   - component: {fileID: 1097688757}
   - component: {fileID: 1097688756}
+  - component: {fileID: 1097688760}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Untagged
@@ -1262,7 +1289,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9bc87f8a25864aa409aceadda65facd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1309,6 +1336,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1097688760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097688755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba20859f1b400945a0265bb0213f911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraWallFade
 --- !u!54 &1249823925
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1365,6 +1404,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_HitStop
   defaultDuration: 0.1
   freezeTimeScale: 0.09
+--- !u!114 &1249823946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036482752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f40bfa8d45572f149a6df8397dc98eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_AfterImage
+  spawnInterval: 0.05
+  lifeTime: 0.15
+  skinnedMeshRenderer: {fileID: 1718132010}
+  ghostMaterial: {fileID: 2100000, guid: 7d4f2af7cba0cdc408abf92a0300581e, type: 2}
+  startAlpha: 0.2
 --- !u!1001 &1330755379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1505,6 +1561,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &1718132010 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6050779772045057793, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+  m_PrefabInstance: {fileID: 2198599413758104075}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1735311568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1517,6 +1578,7 @@ GameObject:
   - component: {fileID: 1735311571}
   - component: {fileID: 1735311570}
   - component: {fileID: 1735311569}
+  - component: {fileID: 1735311573}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -1570,7 +1632,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9bc87f8a25864aa409aceadda65facd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1617,6 +1679,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1735311573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735311568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba20859f1b400945a0265bb0213f911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraWallFade
 --- !u!1001 &2198599413758104075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1628,6 +1702,46 @@ PrefabInstance:
     - target: {fileID: 1165073060944779635, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: dashFOV
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: fovSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: targetFOV
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: tiltSpeed
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: tiltAmount
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: CameraMoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: awareEnemyBlend
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: cameraShakeDecay
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: CameraRotateSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: DashCameraMoveSpeed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: TargetCameraOffset.x
@@ -1642,8 +1756,24 @@ PrefabInstance:
       value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: obstacleLayer.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: NonTargetCameraOffset.z
       value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548919794712746144, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: TargetingCameraMoveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4561692037113048475, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: afterImage
+      value: 
+      objectReference: {fileID: 1249823946}
+    - target: {fileID: 4561692037113048475, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      propertyPath: animPlayer
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6050779772031225471, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1702,6 +1832,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6050779772031455837, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1249823935}
+    - targetCorrespondingSourceObject: {fileID: 6050779772031455837, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1249823946}
   m_SourcePrefab: {fileID: 100100000, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

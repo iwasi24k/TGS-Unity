@@ -33,6 +33,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
     [Tooltip("ターゲット時の飛びつきの範囲")]
     [SerializeField] private Vector3 TargetingJumpInAreaSize = new Vector3(3f, 2f, 10f);
+    [SerializeField] private SC_PlayerCamera scCamera;
 
     private float currentAttackCooldown = 0f;
     private readonly Collider[] overlapCollision = new Collider[32];
@@ -120,6 +121,8 @@ public class SC_PlayerAttack : MonoBehaviour
         if (scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
 
         if (animPlayer == null) animPlayer = this.GetComponent<Animator>();
+
+        if (scCamera == null) scCamera = GetComponent<SC_PlayerCamera>();
 
         if (iaWeakAttack == null)
         {
@@ -299,9 +302,16 @@ public class SC_PlayerAttack : MonoBehaviour
             currentAttackCooldown = attackCooldown;
 
             if (attackType == AttackType.Weak1 || attackType == AttackType.Weak2)
+            {
+
                 SC_BeatEffectTrigger.Instance?.OnWeakHit();
+                scCamera?.TriggerCameraShake(0.3f); // 弱攻撃：カメラシェイク
+            }
             else
+            {
                 SC_BeatEffectTrigger.Instance?.OnStrongHit();
+            }
+            
         }
         else
         {
