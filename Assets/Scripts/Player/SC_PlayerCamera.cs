@@ -10,7 +10,8 @@ public class SC_PlayerCamera : MonoBehaviour
     private const float EULER_FLIP = 180f;    // eulerAngles折り返し判定
 
     [Header("Ref")]
-    [SerializeField] private Camera goMainCamera;
+    private Camera goMainCamera;
+    [Tooltip("プレイヤーのTransform"), SerializeField] private Transform playerTransform;
     [Tooltip("ターゲット情報"), SerializeField] private SC_PlayerTarget scTarget;
     [Tooltip("移動入力"), SerializeField] private InputActionReference iaMove;
 
@@ -64,12 +65,16 @@ public class SC_PlayerCamera : MonoBehaviour
 
     void Start()
     {
+        goMainCamera = GetComponent<Camera>();
         if (goMainCamera == null) goMainCamera = Camera.main;
-        if (scTarget == null) scTarget = GetComponent<SC_PlayerTarget>();
+        if (scTarget == null) scTarget = FindFirstObjectByType<SC_PlayerTarget>();
+        if (playerTransform == null && scTarget != null) playerTransform = scTarget.transform;
         if (field == null) field = FindFirstObjectByType<SC_Field>();
 
         if (iaMove == null)
             Debug.LogError("移動用のInputActionReferenceがアタッチされていません。");
+        if (playerTransform == null)
+            Debug.LogError("playerTransformがアタッチされていません。");
 
         currentFOV = normalFOV;
         goMainCamera.fieldOfView = normalFOV;
@@ -77,6 +82,8 @@ public class SC_PlayerCamera : MonoBehaviour
 
     void Update()
     {
+        if (playerTransform == null) return;
+
         Vector2 inputVal = iaMove.action.ReadValue<Vector2>();
         GameObject target = scTarget.GetCurrentTarget();
 
@@ -89,7 +96,7 @@ public class SC_PlayerCamera : MonoBehaviour
         UpdateDynamicZoom(enemies);
 
         Vector3 zoomedOffset = NonTargetCameraOffset + new Vector3(0f, 0f, -currentZoomOffset);
-        Vector3 normalDesiredPos = AvoidObstacle(transform.position + zoomedOffset);
+        Vector3 normalDesiredPos = AvoidObstacle(playerTransform.position + zoomedOffset);
         Vector3 targetDesiredPos = isTargeting ? CalcTargetCameraPos(inputVal, target) : normalDesiredPos;
         Vector3 desiredPos = Vector3.Lerp(normalDesiredPos, targetDesiredPos, targetingBlend);
 
@@ -101,13 +108,13 @@ public class SC_PlayerCamera : MonoBehaviour
             goMainCamera.transform.position, desiredPos, currentSpeed * Time.deltaTime);
 
         // 注視点の計算
-        Vector3 playerLookAt = transform.position + Vector3.up * LOOK_HEIGHT;
+        Vector3 playerLookAt = playerTransform.position + Vector3.up * LOOK_HEIGHT;
         Vector3 lookTarget;
 
         if (isTargeting)
         {
             // ターゲット時：プレイヤーと敵の中間を注視
-            lookTarget = (transform.position + target.transform.position) * 0.5f + Vector3.up * LOOK_HEIGHT;
+            lookTarget = (playerTransform.position + target.transform.position) * 0.5f + Vector3.up * LOOK_HEIGHT;
         }
         else
         {
@@ -116,8 +123,7 @@ public class SC_PlayerCamera : MonoBehaviour
             lookTarget = awareEnemy != null
                 ? Vector3.Lerp(
                     playerLookAt,
-                    (transform.position + awareEnemy.transform.position) * 0.5f + Vector3.up * LOOK_HEIGHT,
-                    awareEnemyBlend)
+                    (playerTransform.position + awareEnemy.transform.position) * 0.5f + Vector3.up * LOOK_HEIGHT,awareEnemyBlend)
                 : playerLookAt;
         }
 
@@ -141,7 +147,7 @@ public class SC_PlayerCamera : MonoBehaviour
             foreach (GameObject enemy in enemies)
             {
                 if (enemy == null || !enemy.activeInHierarchy) continue;
-                float sqrDist = (enemy.transform.position - transform.position).sqrMagnitude;
+                float sqrDist = (enemy.transform.position - playerTransform.position).sqrMagnitude;
                 if (sqrDist < closestSqrDist) closestSqrDist = sqrDist;
             }
 
@@ -160,14 +166,14 @@ public class SC_PlayerCamera : MonoBehaviour
         Vector3 moveoffset = TargetCameraOffset + new Vector3(inputVal.x * CameraHorizontalOffset, 0f, 0f);
 
         Vector3 dirFromTarget = Vector3.ProjectOnPlane(
-            transform.position - target.transform.position, Vector3.up);
+            playerTransform.position - target.transform.position, Vector3.up);
 
-        if (dirFromTarget.sqrMagnitude < ZERO_THRESHOLD) dirFromTarget = -transform.forward;
+        if (dirFromTarget.sqrMagnitude < ZERO_THRESHOLD) dirFromTarget = -playerTransform.forward;
         dirFromTarget.Normalize();
 
         Vector3 camRight = Vector3.Cross(Vector3.up, dirFromTarget).normalized;
 
-        return transform.position
+        return playerTransform.position
             + camRight * moveoffset.x
             + Vector3.up * moveoffset.y
             + dirFromTarget * Mathf.Abs(moveoffset.z);
@@ -194,7 +200,7 @@ public class SC_PlayerCamera : MonoBehaviour
         {
             if (enemy == null || !enemy.activeInHierarchy) continue;
 
-            Vector3 toEnemy = enemy.transform.position - transform.position;
+            Vector3 toEnemy = enemy.transform.position - playerTransform.position;
             float sqrDist = toEnemy.sqrMagnitude;
 
             if (sqrDist > sqrAwareDist) continue;
@@ -243,7 +249,7 @@ public class SC_PlayerCamera : MonoBehaviour
     //障害物回避(ターゲット時のみ)
     private Vector3 AvoidObstacle(Vector3 desiredPos)
     {
-        Vector3 origin = transform.position + Vector3.up * LOOK_HEIGHT;
+        Vector3 origin = playerTransform.position + Vector3.up * LOOK_HEIGHT;
         Vector3 dir = desiredPos - origin;
         float dist = dir.magnitude;
 

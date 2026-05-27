@@ -122,7 +122,7 @@ public class SC_PlayerAttack : MonoBehaviour
 
         if (animPlayer == null) animPlayer = this.GetComponent<Animator>();
 
-        if (scCamera == null) scCamera = GetComponent<SC_PlayerCamera>();
+        if (scCamera == null) scCamera = FindFirstObjectByType<SC_PlayerCamera>();
 
         if (iaWeakAttack == null)
         {
@@ -305,7 +305,9 @@ public class SC_PlayerAttack : MonoBehaviour
             {
 
                 SC_BeatEffectTrigger.Instance?.OnWeakHit();
-                scCamera?.TriggerCameraShake(0.3f); // 弱攻撃：カメラシェイク
+    
+                if (scCamera == null) scCamera = FindFirstObjectByType<SC_PlayerCamera>();
+                scCamera?.TriggerCameraShake(0.3f);// 弱攻撃：カメラシェイク
             }
             else
             {

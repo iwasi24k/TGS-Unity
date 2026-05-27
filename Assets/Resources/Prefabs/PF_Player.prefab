@@ -79,9 +79,6 @@ PrefabInstance:
       addedObject: {fileID: 1840963492316204745}
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1548919794712746144}
-    - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4561692037113048475}
     - targetCorrespondingSourceObject: {fileID: 100092, guid: 4835a6657e57ded45b7a7fe2c2d62822, type: 3}
       insertIndex: -1
@@ -158,27 +155,9 @@ MonoBehaviour:
   goMainCamera: {fileID: 0}
   iaTarget: {fileID: -6262009582006012348, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   iaTargetChange: {fileID: 5088705261531595010, guid: 052faaac586de48259a63d0c4782560b, type: 3}
---- !u!114 &1548919794712746144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6050779772031455837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64abec90cb684264d99ef92e76942263, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerCamera
-  goMainCamera: {fileID: 0}
-  scTarget: {fileID: 0}
-  iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  NonTargetCameraOffset: {x: 0, y: 10, z: -6}
-  TargetCameraOffset: {x: 0, y: 2, z: -2}
-  CameraMoveSpeed: 5
-  TargetingCameraMoveSpeed: 5
-  CameraRotateSpeed: 8
-  CameraHorizontalOffset: 1.5
+  field: {fileID: 0}
+  targetLockDistance: 15
+  targetReleaseDistance: 20
 --- !u!114 &4561692037113048475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,11 +175,13 @@ MonoBehaviour:
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   iaSprint: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   scTarget: {fileID: 0}
+  animPlayer: {fileID: 0}
   moveSpeed: 5
   rotationSpeed: 10
   sprintMultiplier: 2
   blinkPower: 5
   blinkCooldown: 5
+  afterImage: {fileID: 0}
 --- !u!114 &4987308906888708760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,12 +199,40 @@ MonoBehaviour:
   scTarget: {fileID: 0}
   ccPlayer: {fileID: 0}
   scSetting: {fileID: 0}
+  animPlayer: {fileID: 0}
   attackCooldown: 1
   weakAttackDamage: 10
   strongAttackDamage: 20
   AttackAreaSize: {x: 1.4, y: 2, z: 2}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
   TargetingJumpInAreaSize: {x: 3, y: 2, z: 10}
+  scCamera: {fileID: 0}
+  comboResetTime: 2
+  weak1Attack:
+    attackType: 0
+    damage: 10
+    areaSize: {x: 2, y: 2, z: 3}
+    blowAway: 0
+  weak2Attack:
+    attackType: 1
+    damage: 10
+    areaSize: {x: 2, y: 2, z: 3}
+    blowAway: 0
+  strongComboAttack:
+    attackType: 2
+    damage: 20
+    areaSize: {x: 2, y: 2, z: 3}
+    blowAway: 1
+  uppercutComboAttack:
+    attackType: 3
+    damage: 35
+    areaSize: {x: 2, y: 2, z: 3}
+    blowAway: 1
+  normalStrongAttack:
+    attackType: 2
+    damage: 20
+    areaSize: {x: 2, y: 2, z: 3}
+    blowAway: 1
 --- !u!114 &9222720908445434421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,5 +247,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerHP
   maxHP: 100
   currentHP: 0
-  hpSlider: {fileID: 0}
+  hpSliderObjectName: HP_Slider
   bulletDamage: 10

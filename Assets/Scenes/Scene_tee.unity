@@ -390,6 +390,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6708606193856132364, guid: 15535d27cbce2c24c8e4661fe85d51ef, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6708606193856132364, guid: 15535d27cbce2c24c8e4661fe85d51ef, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
@@ -450,6 +454,7 @@ GameObject:
   - component: {fileID: 133846804}
   - component: {fileID: 133846803}
   - component: {fileID: 133846806}
+  - component: {fileID: 133846807}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -575,6 +580,49 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &133846807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133846802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64abec90cb684264d99ef92e76942263, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerCamera
+  playerTransform: {fileID: 1249823955}
+  scTarget: {fileID: 1249823951}
+  iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  NonTargetCameraOffset: {x: 0, y: 10, z: -6}
+  TargetCameraOffset: {x: -6, y: 8, z: -5}
+  CameraMoveSpeed: 1
+  DashCameraMoveSpeed: 1
+  TargetingCameraMoveSpeed: 5
+  CameraRotateSpeed: 2
+  CameraHorizontalOffset: 1.5
+  targetBlendSpeed: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  cameraRadius: 0.3
+  cameraShakeDecay: 8
+  tiltAmount: 0.1
+  tiltSpeed: 0.01
+  normalFOV: 60
+  targetFOV: 70
+  dashFOV: 80
+  fovSpeed: 1
+  field: {fileID: 0}
+  awareEnemyAngle: 60
+  awareEnemyDistance: 10
+  awareEnemyBlend: 1
+  minPitch: 10
+  maxPitch: 50
+  zoomOutDistance: 3
+  zoomTriggerDistance: 8
+  zoomSpeed: 2
 --- !u!1 &147397538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1421,6 +1469,22 @@ MonoBehaviour:
   skinnedMeshRenderer: {fileID: 1718132010}
   ghostMaterial: {fileID: 2100000, guid: 7d4f2af7cba0cdc408abf92a0300581e, type: 2}
   startAlpha: 0.2
+--- !u!114 &1249823951 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1840963492316204745, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+  m_PrefabInstance: {fileID: 2198599413758104075}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036482752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44f2507305109534db7d471a0feee483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerTarget
+--- !u!4 &1249823955 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6050779772031225471, guid: 78182a2a8c6e46e4c980f52ec0460063, type: 3}
+  m_PrefabInstance: {fileID: 2198599413758104075}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1330755379
 PrefabInstance:
   m_ObjectHideFlags: 0
