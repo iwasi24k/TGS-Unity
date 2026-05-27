@@ -5,7 +5,6 @@ public class SC_AttackTutorial : MonoBehaviour
 {
     public enum AttackTutorialStep
     {
-        Targeting,      // ★追加
         WeakAttack,
         StrongAttack,
         RotateCombo,
@@ -15,13 +14,13 @@ public class SC_AttackTutorial : MonoBehaviour
     }
 
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI tutorialText;
+    [SerializeField] private TextMeshProUGUI TutorialText;
 
     [Header("Enemy Reset")]
     [SerializeField] private SC_TutorialEnemyReset enemyReset;
 
     [Header("Tutorial Manager")]
-    [SerializeField] private SC_MoveTutorial moveTutorial;
+    private SC_MoveTutorial MoveTutorial;
 
     [Header("Timing Settings")]
     [SerializeField] private float successNextStepDelay = 0.6f;
@@ -32,7 +31,6 @@ public class SC_AttackTutorial : MonoBehaviour
     [SerializeField] private GameObject chainTutorialRoot;
 
     [Header("Messages")]
-    [TextArea][SerializeField] private string targetingMessage = "ターゲットをロックオンしよう！";
     [TextArea][SerializeField] private string weakAttackMessage = "左クリックで敵を攻撃しよう！";
     [TextArea][SerializeField] private string strongAttackMessage = "右クリックで強攻撃しよう！";
     [TextArea][SerializeField] private string rotateComboMessage = "弱攻撃 → 強攻撃を成功させよう！";
@@ -42,9 +40,22 @@ public class SC_AttackTutorial : MonoBehaviour
     private AttackTutorialStep currentStep;
     private bool destroyEnemyOnReset = false;
 
+    private void Start()
+    {
+        // =========================
+        // MoveTutorial を名前で自動取得
+        // =========================
+        if (TutorialText == null)
+        {
+            var go = GameObject.Find("TutorialText");
+            if (go != null)
+                TutorialText = go.GetComponent<TextMeshProUGUI>();
+        }
+    }
+
     private void OnEnable()
     {
-        currentStep = AttackTutorialStep.Targeting;
+        currentStep = AttackTutorialStep.WeakAttack;
 
         if (chainTutorialRoot != null)
             chainTutorialRoot.SetActive(false);
@@ -56,49 +67,33 @@ public class SC_AttackTutorial : MonoBehaviour
     {
         switch (currentStep)
         {
-            case AttackTutorialStep.Targeting:
-                tutorialText.text = targetingMessage;
-                break;
-
             case AttackTutorialStep.WeakAttack:
-                tutorialText.text = weakAttackMessage;
+                TutorialText.text = weakAttackMessage;
                 break;
 
             case AttackTutorialStep.StrongAttack:
-                tutorialText.text = strongAttackMessage;
+                TutorialText.text = strongAttackMessage;
                 break;
 
             case AttackTutorialStep.RotateCombo:
-                tutorialText.text = rotateComboMessage;
+                TutorialText.text = rotateComboMessage;
                 break;
 
             case AttackTutorialStep.UppercutCombo:
-                tutorialText.text = uppercutComboMessage;
+                TutorialText.text = uppercutComboMessage;
                 break;
 
             case AttackTutorialStep.ChainTutorial:
-                tutorialText.text = chainTutorialMessage;
+                TutorialText.text = chainTutorialMessage;
                 break;
 
             case AttackTutorialStep.Complete:
-                tutorialText.text = "攻撃チュートリアル完了！";
+                TutorialText.text = "攻撃チュートリアル完了！";
                 break;
         }
     }
 
     public AttackTutorialStep GetCurrentStep() => currentStep;
-
-    // =========================
-    // ターゲット成功通知（外部から呼ぶ）
-    // =========================
-    public void OnTargetingSuccess()
-    {
-        if (currentStep != AttackTutorialStep.Targeting)
-            return;
-
-        currentStep = AttackTutorialStep.WeakAttack;
-        ShowCurrentTutorial();
-    }
 
     public void OnAttackHit(AttackType attackType)
     {
@@ -107,7 +102,6 @@ public class SC_AttackTutorial : MonoBehaviour
         switch (currentStep)
         {
             case AttackTutorialStep.WeakAttack:
-
                 if (attackType == AttackType.Weak1)
                 {
                     currentStep = AttackTutorialStep.StrongAttack;
@@ -118,7 +112,6 @@ public class SC_AttackTutorial : MonoBehaviour
                 break;
 
             case AttackTutorialStep.StrongAttack:
-
                 if (attackType == AttackType.Strong)
                 {
                     currentStep = AttackTutorialStep.RotateCombo;
@@ -129,7 +122,6 @@ public class SC_AttackTutorial : MonoBehaviour
                 break;
 
             case AttackTutorialStep.RotateCombo:
-
                 if (attackType == AttackType.Rotate)
                 {
                     currentStep = AttackTutorialStep.UppercutCombo;
@@ -140,7 +132,6 @@ public class SC_AttackTutorial : MonoBehaviour
                 break;
 
             case AttackTutorialStep.UppercutCombo:
-
                 if (attackType == AttackType.Uppercut)
                 {
                     Invoke(nameof(StartChainTutorial), successNextStepDelay);
@@ -194,6 +185,6 @@ public class SC_AttackTutorial : MonoBehaviour
         currentStep = AttackTutorialStep.Complete;
         ShowCurrentTutorial();
 
-        moveTutorial?.TutorialComplete();
+        MoveTutorial?.TutorialComplete();
     }
 }

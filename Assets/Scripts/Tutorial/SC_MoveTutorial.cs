@@ -18,37 +18,92 @@ public class SC_MoveTutorial : MonoBehaviour
     [Header("Attack Tutorial")]
     [SerializeField] private GameObject tutorialEnemy;
 
-    // 後で作る攻撃チュートリアル管理オブジェクト
     [SerializeField] private GameObject attackTutorialManager;
 
     [Header("Messages")]
-
     [TextArea]
-    [SerializeField]
-    private string moveTutorial =
-        "WASDで移動しよう！";
+    [SerializeField] private string moveTutorial = "WASDで移動しよう！";
 
     [TextArea]
     [SerializeField]
     private string dashTutorial =
         "Shiftでダッシュしよう！\n前方のラインまで到達しよう！";
 
-
     private int currentStep;
 
     private void Start()
     {
+        // =========================
+        // UI（名前で取得）
+        // =========================
+        if (tutorialText == null)
+        {
+            var go = GameObject.Find("TutorialText");
+            if (go != null)
+                tutorialText = go.GetComponent<TextMeshProUGUI>();
+        }
+
+        // =========================
+        // Moveポイント（名前管理）
+        // =========================
+        Front = Front != null ? Front : GameObject.Find("Front");
+        Back = Back != null ? Back : GameObject.Find("Back");
+        Left = Left != null ? Left : GameObject.Find("Left");
+        Right = Right != null ? Right : GameObject.Find("Right");
+
+        dashPoint = dashPoint != null ? dashPoint : GameObject.Find("DashPoint");
+
+        // =========================
+        // Prefabロード（確実版）
+        // =========================
+        if (tutorialEnemy == null)
+        {
+            GameObject prefab = Resources.Load<GameObject>("PF_TutorialEnemy");
+
+            if (prefab != null)
+            {
+                tutorialEnemy = Instantiate(prefab);
+                tutorialEnemy.name = "PF_TutorialEnemy";
+                tutorialEnemy.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("PF_TutorialEnemy がResourcesに存在しません");
+            }
+        }
+
+        if (attackTutorialManager == null)
+        {
+            GameObject prefab = Resources.Load<GameObject>("PF_AttackTutorialManager");
+
+            if (prefab != null)
+            {
+                attackTutorialManager = Instantiate(prefab);
+                attackTutorialManager.name = "PF_AttackTutorialManager";
+                attackTutorialManager.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("PF_AttackTutorialManager がResourcesに存在しません");
+            }
+        }
+
+        // =========================
+        // 初期化
+        // =========================
         currentStep = 0;
 
-        tutorialText.text = moveTutorial;
+        if (tutorialText != null)
+            tutorialText.text = moveTutorial;
 
-        dashPoint.SetActive(false);
-        tutorialEnemy.SetActive(false);
+        if (dashPoint != null)
+            dashPoint.SetActive(false);
+
+        if (tutorialEnemy != null)
+            tutorialEnemy.SetActive(false);
 
         if (attackTutorialManager != null)
-        {
             attackTutorialManager.SetActive(false);
-        }
     }
 
     private void Update()
@@ -91,12 +146,7 @@ public class SC_MoveTutorial : MonoBehaviour
         dashPoint.SetActive(false);
 
         tutorialEnemy.SetActive(true);
-
-
-        if (attackTutorialManager != null)
-        {
-            attackTutorialManager.SetActive(true);
-        }
+        attackTutorialManager.SetActive(true);
 
         Debug.Log("ダッシュチュートリアル完了");
     }
@@ -104,9 +154,7 @@ public class SC_MoveTutorial : MonoBehaviour
     public void TutorialComplete()
     {
         currentStep = 999;
-
         tutorialText.text = "チュートリアル完了！";
-
         Debug.Log("全チュートリアル完了");
     }
 }
