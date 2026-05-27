@@ -2,6 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//ダメージの種類
+public enum EnemyDamageSource
+{
+    PlayerAttack,
+    EnemyCollision
+}
+
 public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]
@@ -16,6 +23,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("Stateのリスト"),SerializeField] private SC_EnemyBaceState[] stateList;
     [Tooltip("初期状態のStateの配列番号"),SerializeField] private int initialStateNum;
     [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
+    private SC_EnemyBaceState localBlowAwayState;
 
     [Header("衝突判定円")]
     [Tooltip("敵同士の衝突判定円中心"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
@@ -24,6 +32,21 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
+
+    //----------------------------------------------------------
+    [Header("Boss / Special Setting")]
+    [Tooltip("この敵が吹っ飛び状態になるかどうか"),SerializeField] private bool canBlownAway = true;
+
+    [Header("Boss Down")]
+    [Tooltip("ボスがDownするStateのStateList番号"), SerializeField] private int bossDownStateIndex = 6;
+    [Tooltip("この敵がボスDownを使うか"), SerializeField] private bool useBossDown = false;
+    [Tooltip("Down中だけPlayer攻撃のダメージを受けるか"), SerializeField] private bool onlyTakePlayerDamageWhileDown = false;
+
+    //攻撃リスト
+    private int[] currentBossAttackList;
+    private int currentBossAttackListIndex;
+
+    //----------------------------------------------------------
 
     // 相手ごとの再ヒット可能時間
     private Dictionary<GameObject, float> enemyCollisionTimers = new Dictionary<GameObject, float>();
@@ -48,9 +71,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         //全ステートのインスタンス化し、アセットを直接いじらない形に変更
         for (int i = 0; i < stateList.Length; i++)
         {
-            Debug.Log("StateListの" + i + "番目のStateをインスタンス化" + "StateName : " + stateList[i].name);
+            //Debug.Log("StateListの" + i + "番目のStateをインスタンス化" + "StateName : " + stateList[i].name);
             SC_EnemyBaceState newState = Instantiate(stateList[i]);
             localStateList[i] = newState;
+        }
+
+        if (blowAwayState != null)
+        {
+            localBlowAwayState = Instantiate(blowAwayState);
         }
 
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
@@ -75,17 +103,22 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (currentState != null)
+        currentState = null;
+
+        if (localStateList != null)
         {
-            currentState.Exit(this.gameObject, this);
+            for (int i = 0; i < localStateList.Length; i++)
+            {
+                if (localStateList[i] != null)
+                {
+                    Destroy(localStateList[i]);
+                }
+            }
         }
 
-        for(int i = 0; i < localStateList.Length; i++)
+        if (localBlowAwayState != null)
         {
-            if (localStateList[i] != null)
-            {
-                Destroy(localStateList[i]);
-            }
+            Destroy(localBlowAwayState);
         }
     }
 
@@ -100,17 +133,34 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return MaxHP;
     }
 
-    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0)
+    public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0, EnemyDamageSource damageSource = EnemyDamageSource.PlayerAttack)
     {
+        // Boss用：Down中以外はPlayer攻撃のダメージを無効化
+        if (onlyTakePlayerDamageWhileDown &&
+            damageSource == EnemyDamageSource.PlayerAttack &&
+            !IsBossDown())
+        {
+            Debug.Log("BossはDown中ではないため、Player攻撃ダメージを無効化");
+            return;
+        }
 
         CollisionDamage(damage);
 
         if (HP < 0)
         {
             HP = 0;
-            TransitionToBlownAway(damage, AttackerPosition, attackType);
+            if (canBlownAway)
+            {
+                TransitionToBlownAway(damage, AttackerPosition, attackType);
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
+
+            return;
         }
-        else if (isBlowAway)
+        else if (isBlowAway && canBlownAway) 
         {
             TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
@@ -130,10 +180,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     private void TransitionToBlownAway(float power,Vector3 attackerPosition, AttackType attackType)
     {
-        SC_EnemyBlownAway blownAway = blowAwayState as SC_EnemyBlownAway;
+        if (!canBlownAway) return;
+
+        SC_EnemyBlownAway blownAway = localBlowAwayState as SC_EnemyBlownAway;
+
         if (!IsBlownAway())
         {
-            currentState.Exit(this.gameObject, this);
+            if (currentState != null)
+            {
+                currentState.Exit(this.gameObject, this);
+            }
 
             Vector3 initialBlowDirection = (this.transform.position - attackerPosition).normalized;
             initialBlowDirection.y = 0.0f;
@@ -145,8 +201,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             blownAway.SetBlownAway(power, blowDirection, attackType);
 
-            blownAway.Enter(this.gameObject, this);
             currentState = blownAway;
+            blownAway.Enter(this.gameObject, this);
         }
     }
 
@@ -282,13 +338,17 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private void CollisionDamage(int damage)
     {
         HP -= damage;
-        hpSlider.value = HP;
+
+        if (hpSlider != null)
+        {
+            hpSlider.value = HP;
+        }
     }
 
     //もし敵がBlownAway状態の時に、tureを返す関数
     public bool IsBlownAway()
     {
-        return currentState == blowAwayState;
+        return currentState is SC_EnemyBlownAway;
     }
 
     //タイマー更新
@@ -339,5 +399,86 @@ public class SC_EnemyStatusManager : MonoBehaviour
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
 
-    
+    public void SetHP(int hp)
+    {
+        HP = hp;
+        MaxHP = hp;
+
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = MaxHP;
+            hpSlider.value = HP;
+        }
+    }
+
+    //Stateを変更する関数、StateListの配列番号で指定
+    public void ChangeState(int stateIndex)
+    {
+        if (stateIndex < 0 || stateIndex >= localStateList.Length)
+        {
+            Debug.LogError("存在しないState番号です : " + stateIndex);
+            return;
+        }
+
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+
+        currentStateIndex = stateIndex;
+        currentState = localStateList[currentStateIndex];
+        currentState.Enter(this.gameObject, this);
+    }
+
+    // BossDown状態に移行する関数
+    public void TriggerBossDown()
+    {
+        if (!useBossDown) return;
+
+        ChangeState(bossDownStateIndex);
+    }
+
+    // BossDown状態かどうかを返す関数
+    public bool IsBossDown()
+    {
+        return currentState is SC_BossDownState;
+    }
+
+    // Bossの攻撃リストを開始する関数
+    public void StartBossAttackList(int[] attackList)
+    {
+        if (attackList == null || attackList.Length == 0)
+        {
+            ChangeState(0);
+            return;
+        }
+
+        currentBossAttackList = attackList;
+        currentBossAttackListIndex = 0;
+
+        ChangeState(currentBossAttackList[currentBossAttackListIndex]);
+    }
+
+    // Bossの攻撃リストの次の攻撃に移行する関数
+    public void ChangeNextBossAttackInList()
+    {
+        if (currentBossAttackList == null || currentBossAttackList.Length == 0)
+        {
+            ChangeState(0);
+            return;
+        }
+
+        currentBossAttackListIndex++;
+
+        if (currentBossAttackListIndex >= currentBossAttackList.Length)
+        {
+            currentBossAttackList = null;
+            currentBossAttackListIndex = 0;
+
+            ChangeState(0);
+            return;
+        }
+
+        ChangeState(currentBossAttackList[currentBossAttackListIndex]);
+    }
 }

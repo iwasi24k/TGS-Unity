@@ -548,10 +548,14 @@ MonoBehaviour:
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 1
+  blowAwayPowerOnCollision: 2
   searchAngleThreshold: 15
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
+  canBlownAway: 1
+  bossDownStateIndex: 6
+  useBossDown: 0
+  onlyTakePlayerDamageWhileDown: 0
 --- !u!4 &2421892717064628887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
