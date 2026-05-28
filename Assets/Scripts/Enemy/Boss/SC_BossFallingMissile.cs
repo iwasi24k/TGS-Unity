@@ -50,7 +50,8 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
 
     private void SpawnFallingMissile(GameObject Owner, SC_BossAttackController boss)
     {
-        if (boss.GetFallingMissilePrefab() == null) return;
+        SC_ObjectPool fallingPool = boss.GetFallingMissilePool();
+        if (fallingPool == null) return;
 
         float minRadius = boss.GetFallingMissileMinRadius();
         float maxRadius = boss.GetStageRadius();
@@ -65,27 +66,39 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
         float angle = Random.Range(0f, 360f);
         float radius = Random.Range(minRadius, maxRadius);
 
-        Vector3 offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * radius;
+        Vector3 offset =
+            Quaternion.Euler(0f, angle, 0f) *
+            Vector3.forward *
+            radius;
 
         Vector3 targetPos = Owner.transform.position + offset;
-        targetPos.y = Owner.transform.position.y;
 
         targetPos.y = 0.0f;
 
-        GameObject missileObj = Instantiate(
-            boss.GetFallingMissilePrefab(),
-            targetPos + Vector3.up * fallHeight,
+        Vector3 spawnPos =
+            targetPos +
+            Vector3.up * fallHeight;
+
+        GameObject missileObj = fallingPool.GetObject(
+            spawnPos,
             Quaternion.identity
         );
 
-        SC_FallingMissile missile = missileObj.GetComponent<SC_FallingMissile>();
+        if (missileObj == null) return;
+
+        SC_FallingMissile missile =
+            missileObj.GetComponent<SC_FallingMissile>();
+
         if (missile != null)
         {
+            missile.SetPool(fallingPool);
+            missile.SetWarningPool(boss.GetWarningCirclePool());
+            missile.OnGetFromPool();
+
             missile.Init(
                 targetPos,
                 fallHeight,
-                boss.GetFallingTime(),
-                boss.GetWarningMarkPrefab()
+                boss.GetFallingTime()
             );
         }
     }

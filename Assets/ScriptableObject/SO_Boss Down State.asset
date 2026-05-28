@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bcab35c6377af44aaf86cf76befbd88, type: 3}
   m_Name: SO_Boss Down State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossDownState
-  downTime: 3
+  downTime: 100
   meleeWaveStateIndex: 2
   stopVelocityOnEnter: 1

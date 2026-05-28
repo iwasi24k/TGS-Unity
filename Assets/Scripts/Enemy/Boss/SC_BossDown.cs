@@ -9,10 +9,14 @@ public class SC_BossDownState : SC_EnemyBaceState
 
     private float timer;
 
+
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Down State Entered");
+
         timer = 0f;
+
+        Manager.BeginBossDownDamageLimit();
 
         if (stopVelocityOnEnter)
         {
@@ -29,6 +33,14 @@ public class SC_BossDownState : SC_EnemyBaceState
     {
         timer += Time.deltaTime;
 
+        // 1ゲージ分削れたらdownTimeを待たずに復帰
+        if (Manager.IsRequestEndBossDown())
+        {
+            Manager.ClearRequestEndBossDown();
+            Manager.ChangeState(meleeWaveStateIndex);
+            return;
+        }
+
         if (timer >= downTime)
         {
             Manager.ChangeState(meleeWaveStateIndex);
@@ -38,5 +50,10 @@ public class SC_BossDownState : SC_EnemyBaceState
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Down State Exited");
+
+        Manager.ResetBossShield();
+
+        // Down後は前の攻撃パターンを破棄する
+        Manager.ClearBossAttackList();
     }
 }

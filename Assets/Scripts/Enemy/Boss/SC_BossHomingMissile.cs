@@ -43,27 +43,47 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
     {
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
-        if (boss.GetHomingMissilePrefab() == null) return;
-        if (boss.GetPlayer() == null) return;
 
-        for (int i = 0; i < boss.GetHomingMissileCount(); i++)
+        SC_ObjectPool pool = boss.GetHomingMissilePool();
+        if (pool == null) return;
+
+        Transform player = boss.GetPlayer();
+        if (player == null) return;
+
+        int missileCount = boss.GetHomingMissileCount();
+        if (missileCount <= 0) return;
+
+        for (int i = 0; i < missileCount; i++)
         {
-            float angle = 360f / boss.GetHomingMissileCount() * i;
-            Vector3 offset = Quaternion.Euler(0, angle, 0) * Vector3.forward * spawnRadius;
+            float angle = 360f / missileCount * i;
 
-            Vector3 spawnPos = Owner.transform.position + offset + Vector3.up * spawnHeight;
+            Vector3 offset =
+                Quaternion.Euler(0f, angle, 0f) *
+                Vector3.forward *
+                spawnRadius;
 
-            GameObject missileObj = Instantiate(
-                boss.GetHomingMissilePrefab(),
+            Vector3 spawnPos =
+                Owner.transform.position +
+                offset +
+                Vector3.up * spawnHeight;
+
+            GameObject missileObj = pool.GetObject(
                 spawnPos,
                 Quaternion.identity
             );
 
-            SC_HomingMissile missile = missileObj.GetComponent<SC_HomingMissile>();
+            if (missileObj == null) continue;
+
+            SC_HomingMissile missile =
+                missileObj.GetComponent<SC_HomingMissile>();
+
             if (missile != null)
             {
+                missile.SetPool(pool);
+                missile.OnGetFromPool();
+
                 missile.Init(
-                    boss.GetPlayer(),
+                    player,
                     boss.GetHomingMissileSpeed(),
                     boss.GetHomingTime()
                 );

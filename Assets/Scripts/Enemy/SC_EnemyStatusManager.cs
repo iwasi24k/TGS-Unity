@@ -17,7 +17,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
-    private int MaxHP = 100; //最大HPを定数で定義
+    private int MaxHP;
 
     [Header("State")]
     [Tooltip("Stateのリスト"),SerializeField] private SC_EnemyBaceState[] stateList;
@@ -41,10 +41,24 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("ボスがDownするStateのStateList番号"), SerializeField] private int bossDownStateIndex = 6;
     [Tooltip("この敵がボスDownを使うか"), SerializeField] private bool useBossDown = false;
     [Tooltip("Down中だけPlayer攻撃のダメージを受けるか"), SerializeField] private bool onlyTakePlayerDamageWhileDown = false;
-
-    //攻撃リスト
+    [Tooltip("1回のDown中に削れるHP量を制限するか"), SerializeField] private bool useBossDownDamageLimit = true;
+    [Tooltip("ボスHPを何分割するか。4なら1回のDownで最大HPの1/4まで削れる"), SerializeField] private int bossHpPartCount = 4;
+    
+    [Header("Boss Shield")]
+    [Tooltip("ボスシールドを使うか"), SerializeField] private bool useBossShield = false;
+    [Tooltip("ボスシールドの表示オブジェクト"), SerializeField] private GameObject bossShieldObject;
+    [Tooltip("ボスシールドの最大値"), SerializeField] private int maxBossShield = 3;
+    [Tooltip("現在のボスシールド値"), SerializeField] private int currentBossShield = 3;
+    [Tooltip("シールドが0になった時にDownするか"), SerializeField] private bool downWhenShieldBreak = true;
+    
+    // 攻撃リスト
     private int[] currentBossAttackList;
     private int currentBossAttackListIndex;
+
+    // BossDown中のダメージ制限用
+    private int bossDownStartHP;
+    private int bossDownHpLimit;
+    private bool requestEndBossDown;
 
     //----------------------------------------------------------
 
@@ -84,6 +98,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
         currentState = localStateList[initialStateNum];
         currentState.Enter(this.gameObject,this);
+
+        //HPの初期値をMaxHPに設定
+        MaxHP = HP;
+
+        // Boss Shieldの初期値を設定
+        if (useBossShield)
+        {
+            currentBossShield = maxBossShield;
+            SetBossShieldVisible(true);
+        }
     }
 
     void Update()
@@ -135,20 +159,25 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0, EnemyDamageSource damageSource = EnemyDamageSource.PlayerAttack)
     {
-        // Boss用：Down中以外はPlayer攻撃のダメージを無効化
-        if (onlyTakePlayerDamageWhileDown &&
-            damageSource == EnemyDamageSource.PlayerAttack &&
-            !IsBossDown())
+        // Boss用：Player攻撃の場合
+        if (damageSource == EnemyDamageSource.PlayerAttack)
         {
-            Debug.Log("BossはDown中ではないため、Player攻撃ダメージを無効化");
-            return;
+            // Down中以外はHPダメージ無効
+            if (onlyTakePlayerDamageWhileDown && !IsBossDown())
+            {
+                Debug.Log("BossはDown中ではないため、Player攻撃ダメージを無効化");
+                return;
+            }
         }
 
         CollisionDamage(damage);
 
-        if (HP < 0)
+        CheckBossDownDamageLimit();
+
+        if (HP <= 0)
         {
             HP = 0;
+
             if (canBlownAway)
             {
                 TransitionToBlownAway(damage, AttackerPosition, attackType);
@@ -160,7 +189,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             return;
         }
-        else if (isBlowAway && canBlownAway) 
+
+        if (isBlowAway && canBlownAway) 
         {
             TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
@@ -267,7 +297,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
     }
 
 
-
     //敵同士の衝突判定
     public void CheckCollisionWithOtherEnemies()
     {
@@ -290,22 +319,62 @@ public class SC_EnemyStatusManager : MonoBehaviour
             // 同じ敵に連続ヒットしないようにする
             if (!CanHitEnemyCollision(otherEnemy)) continue;
 
-            RegisterEnemyCollision(otherEnemy);
+            SC_EnemyStatusManager otherStatusManager = otherEnemy.GetComponent<SC_EnemyStatusManager>();
 
+            if (otherStatusManager == null) continue;
+
+            RegisterEnemyCollision(otherEnemy);
+            otherStatusManager.RegisterEnemyCollision(this.gameObject);
+         
             int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
 
+            // 相手がシールド持ちボス
+            if (otherStatusManager.UseBossShield())
+            {
+                // シールドが残っているならシールドダメージ
+                if (otherStatusManager.HasBossShield())
+                {
+                    otherStatusManager.TakeBossShieldDamage(myPower);
+                }
+
+                // シールドが無く、Down中ならHPダメージ
+                else if (otherStatusManager.IsBossDown())
+                {
+                    otherStatusManager.TakeDamage(
+                        myPower,
+                        this.transform.position,
+                        false,
+                        0,
+                        EnemyDamageSource.EnemyCollision
+                    );
+                }
+
+                // ボスは吹っ飛ばさない
+                // 飛ばされた自分だけ衝突後の処理
+                TransitionToBlownAway(
+                    myPower,
+                    otherEnemy.transform.position,
+                    0
+                );
+
+                CollisionDamage(myPower);
+
+                continue;
+            }
+
+
+            // ここから普通の敵同士の衝突処理
             TransitionToBlownAway(myPower, otherEnemy.transform.position, 0);
             CollisionDamage(myPower);
 
-            SC_EnemyStatusManager otherStatusManager = otherEnemy.GetComponent<SC_EnemyStatusManager>();
-            if (otherStatusManager != null)
-            {
-                // 相手側にも、自分との衝突を登録しておく
-                otherStatusManager.RegisterEnemyCollision(this.gameObject);
+            otherStatusManager.TransitionToBlownAway(
+                myPower,
+                this.transform.position,
+                0
+            );
 
-                otherStatusManager.TransitionToBlownAway(myPower, this.transform.position, 0);
-                otherStatusManager.CollisionDamage(myPower);
-            }
+            otherStatusManager.CollisionDamage(myPower);
+
         }
     }
 
@@ -481,4 +550,134 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         ChangeState(currentBossAttackList[currentBossAttackListIndex]);
     }
+
+    // Bossの攻撃リストをクリアする関数
+    public void ClearBossAttackList()
+    {
+        currentBossAttackList = null;
+        currentBossAttackListIndex = 0;
+    }
+
+    // Bossシールドにダメージを与える関数
+    public void TakeBossShieldDamage(int damage)
+    {
+        if (!useBossShield) return;
+        if (damage <= 0) return;
+
+        // すでにDown中ならシールドは減らさない
+        if (IsBossDown()) return;
+
+        currentBossShield -= damage;
+
+        if (currentBossShield < 0)
+        {
+            currentBossShield = 0;
+        }
+
+        Debug.Log("Boss Shield : " + currentBossShield + " / " + maxBossShield);
+
+        if (currentBossShield <= 0)
+        {
+            SetBossShieldVisible(false);
+            OnBossShieldBreak();
+        }
+    }
+
+    // Bossシールドが0になったときの処理
+    private void OnBossShieldBreak()
+    {
+        if (!downWhenShieldBreak) return;
+
+        TriggerBossDown();
+    }
+
+    // Bossシールドをリセットする関数
+    public void ResetBossShield()
+    {
+        if (!useBossShield) return;
+
+        currentBossShield = maxBossShield;
+
+        SetBossShieldVisible(true);
+
+        Debug.Log("Boss Shield Reset : " + currentBossShield);
+    }
+
+    // Bossシールドを使うかどうかを返す関数
+    public bool UseBossShield()
+    {
+        return useBossShield;
+    }
+
+    // Bossシールドが現在有効かどうかを返す関数
+    public bool HasBossShield()
+    {
+        return useBossShield && currentBossShield > 0;
+    }
+
+    // Bossシールドの表示オブジェクトの表示・非表示を切り替える関数
+    public void SetBossShieldVisible(bool visible)
+    {
+        if (bossShieldObject == null) return;
+
+        bossShieldObject.SetActive(visible);
+    }
+
+    // BossDown中のダメージ上限を開始する関数
+    public void BeginBossDownDamageLimit()
+    {
+        if (!useBossDownDamageLimit) return;
+
+        bossHpPartCount = Mathf.Max(1, bossHpPartCount);
+
+        bossDownStartHP = HP;
+
+        int damageLimit = Mathf.CeilToInt((float)MaxHP / bossHpPartCount);
+
+        bossDownHpLimit = bossDownStartHP - damageLimit;
+
+        if (bossDownHpLimit < 0)
+        {
+            bossDownHpLimit = 0;
+        }
+
+        requestEndBossDown = false;
+
+        Debug.Log("Down中ダメージ上限 HP : " + bossDownStartHP + " -> " + bossDownHpLimit);
+    }
+
+    // BossDown中のダメージ上限をチェックする関数。上限を超えていたら、trueを返す
+    public bool IsRequestEndBossDown()
+    {
+        return requestEndBossDown;
+    }
+
+    // BossDown中のダメージ上限をチェックして、必要ならフラグを立てる関数
+    public void ClearRequestEndBossDown()
+    {
+        requestEndBossDown = false;
+    }
+
+    // BossDown中のダメージ上限をチェックして、HPを制限する関数
+    private void CheckBossDownDamageLimit()
+    {
+        if (!useBossDownDamageLimit) return;
+        if (!IsBossDown()) return;
+
+        if (HP <= bossDownHpLimit)
+        {
+            HP = bossDownHpLimit;
+
+            if (hpSlider != null)
+            {
+                hpSlider.value = HP;
+            }
+
+            requestEndBossDown = true;
+
+            Debug.Log("Down中の1ゲージ分ダメージ到達。Downを終了します");
+        }
+    }
+
+
 }
