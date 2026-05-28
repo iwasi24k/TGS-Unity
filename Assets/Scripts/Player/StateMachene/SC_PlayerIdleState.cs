@@ -21,26 +21,6 @@ public class SC_PlayerIdleState : SC_PlayerBaseState
             Manager.ChangeState(stateList.Move);
             return;
         }
-
-
-        var attackIA = Manager.weakAttackInput;
-        var attackValue = attackIA.action.ReadValue<float>();
-
-        if (attackValue > 0.1f)
-        {
-            Manager.ChangeState(stateList.WeakAttack);
-            return;
-        }
-
-
-        var strongAttackIA = Manager.strongAttackInput;
-        var strongAttackValue = strongAttackIA.action.ReadValue<float>();
-
-        if (strongAttackValue > 0.1f)
-        {
-            Manager.ChangeState(stateList.StrongAttack);
-            return;
-        }
     }
 
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
