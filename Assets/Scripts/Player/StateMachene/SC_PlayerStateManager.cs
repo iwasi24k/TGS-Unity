@@ -10,6 +10,7 @@ public struct PlayerState
     public SC_PlayerBaseState WeakAttack;
     public SC_PlayerBaseState StrongAttack;
     public SC_PlayerBaseState JumpIn;
+    public SC_PlayerBaseState ChargeAttack;
 }
 
 public class SC_PlayerStateManager : MonoBehaviour
@@ -33,11 +34,14 @@ public class SC_PlayerStateManager : MonoBehaviour
     [SerializeField] private SC_PlayerBaseState weakAttack;
     [SerializeField] private SC_PlayerBaseState strongAttack;
     [SerializeField] private SC_PlayerBaseState jumpIn;
+    [SerializeField] private SC_PlayerBaseState chargeAttack;
     [SerializeField,Tooltip("チャージ攻撃に必要なボタンの押下時間")] private float requiredAttackPressDuration = 1.0f;
 
     private PlayerState stateList;
 
     private SC_PlayerBaseState _currentState;
+
+    private float _strongPressStartTime;
 
     // Describe the getter for each state pattern.
 
@@ -53,22 +57,29 @@ public class SC_PlayerStateManager : MonoBehaviour
         stateList.WeakAttack = weakAttack;
         stateList.StrongAttack = strongAttack;
         stateList.JumpIn = jumpIn;
+        stateList.ChargeAttack = chargeAttack;
     }
 
     private void OnEnable()
     {
         if(weakAttackInput != null && weakAttackInput.action != null)
             weakAttackInput.action.canceled += OnWeakAttackReleased;
-        if(strongAttackInput != null && strongAttackInput.action != null)
+        if (strongAttackInput != null && strongAttackInput.action != null)
+        {
+            strongAttackInput.action.started += OnStrongAttackStart;
             strongAttackInput.action.canceled += OnStrongAttackReleased;
+        }
     }
 
     private void OnDisable()
     {
         if(weakAttackInput != null && weakAttackInput.action != null)
             weakAttackInput.action.canceled -= OnWeakAttackReleased;
-        if(strongAttackInput != null && strongAttackInput.action != null)
+        if (strongAttackInput != null && strongAttackInput.action != null)
+        {
+            strongAttackInput.action.started -= OnStrongAttackStart;
             strongAttackInput.action.canceled -= OnStrongAttackReleased;
+        }
     }
 
     private void Start()
@@ -90,21 +101,40 @@ public class SC_PlayerStateManager : MonoBehaviour
     {
         if (!_currentState) return;
 
-        if(_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
-        {
-            attackManager.AttackTransitionCheck(stateList, false);
-            return;
-        }
+        if (_currentState == stateList.WeakAttack ||
+            _currentState == stateList.StrongAttack ||
+            _currentState == stateList.JumpIn) return;
+
+        attackManager.AttackTransitionCheck(stateList, false);
+        return;
+    }
+
+    private void OnStrongAttackStart(InputAction.CallbackContext context)
+    {
+        _strongPressStartTime = Time.time;
     }
 
     private void OnStrongAttackReleased(InputAction.CallbackContext context)
     {
         if (!_currentState) return;
-        if(_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
-        {
-            attackManager.AttackTransitionCheck(stateList, true);
-            return;
+
+        if (_currentState == stateList.WeakAttack ||
+            _currentState == stateList.StrongAttack ||
+            _currentState == stateList.JumpIn ||
+            _currentState == stateList.ChargeAttack) return;
+
+        var pressDuration = Time.time - _strongPressStartTime;
+        if (pressDuration > 0) {
+            if (pressDuration >= requiredAttackPressDuration)
+            {
+                // チャージ攻撃のトリガー
+                ChangeState(stateList.ChargeAttack);
+                return;
+            }
         }
+
+        attackManager.AttackTransitionCheck(stateList, true);
+        return;
     }
 
     public void ChangeState(SC_PlayerBaseState next)

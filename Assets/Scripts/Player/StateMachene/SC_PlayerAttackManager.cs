@@ -14,17 +14,17 @@ public class SC_PlayerAttackManager : MonoBehaviour
     [SerializeField] private float jumpInSpeed = 2f;
     [SerializeField] private float snapDistance = 0.5f;
 
+    [Header("Damage Settings")]
     [SerializeField] private int weakDamage = 1;
     public int GetWeakDamage() => weakDamage;
-
     [SerializeField] private int straightDamage = 3;
     public int GetStraightDamage() => straightDamage;
-
     [SerializeField] private int rotateDamage = 4;
     public int GetRotateDamage() => rotateDamage;
-
     [SerializeField] private int uppercutDamage = 5;
     public int GetUppercutDamage() => uppercutDamage;
+    [SerializeField] private int chargeDamage = 5;
+    public int GetChargeDamage() => chargeDamage;
 
     [SerializeField, Tooltip("コンボのリセット時間（秒）")] private float comboResetTime = 2f;
 
