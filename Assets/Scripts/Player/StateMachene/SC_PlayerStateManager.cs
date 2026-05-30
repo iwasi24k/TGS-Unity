@@ -26,7 +26,6 @@ public class SC_PlayerStateManager : MonoBehaviour
     [field: SerializeField] public InputActionReference weakAttackInput { get; private set; }
     [field: SerializeField] public InputActionReference strongAttackInput { get; private set; }
     [field: SerializeField] public InputActionReference sprintInput { get; private set; }
-    [field: SerializeField] public InputActionReference testInput { get; private set; }
 
     [Header("State Settings")]
     [SerializeField] private SC_PlayerBaseState idle;
@@ -63,13 +62,6 @@ public class SC_PlayerStateManager : MonoBehaviour
     private void Update()
     {
         _currentState.UpdateState(this.gameObject, stateList);
-
-        var testIA = testInput;
-        var testValue = testIA.action.ReadValue<float>();
-        if (testValue != 0f)
-        {
-            knockback.AddKnockback(-transform.forward, 10f, 0.5f);
-        }
 
 
         if (_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
