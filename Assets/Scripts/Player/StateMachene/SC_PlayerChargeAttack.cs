@@ -15,7 +15,6 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
     {
         _startPosition = owner.transform.position;
         _isCharging = true;
-        Debug.Log("Entered Charge Attack State");
     }
 
     public override void UpdateState(GameObject owner, PlayerState stateList)

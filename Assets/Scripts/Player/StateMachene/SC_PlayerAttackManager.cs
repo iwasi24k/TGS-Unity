@@ -97,7 +97,7 @@ public class SC_PlayerAttackManager : MonoBehaviour
         }
     }
 
-    //　飛びつき行動も合わせたGetter
+    // タグで攻撃範囲内のオブジェクトを取得するメソッド
     public GameObject[] GetInAreaObjectByTag(string tag)
     {
         int count = SerchInArea(AttackAreaSize);
@@ -269,11 +269,13 @@ public class SC_PlayerAttackManager : MonoBehaviour
     {
         currentComboCount++;
         currentComboTime = comboResetTime; // コンボリセットのタイマーをリセット
+        Debug.Log("Combo : " + currentComboCount);
     }
 
     public void ResetCombo()
     {
         currentComboCount = 0;
+        Debug.Log("Combo Reset");
     }
 
     public int GetCurrentComboCount()
