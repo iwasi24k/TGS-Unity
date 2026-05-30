@@ -19,12 +19,14 @@ public class SC_PlayerStateManager : MonoBehaviour
     [field: SerializeField] public Animator animator { get; private set; }
     [field: SerializeField] public ComboManager comboManager { get; private set; }
     [field: SerializeField] public SC_PlayerAttackManager attackManager { get; private set; }
+    [field: SerializeField] public SC_PlayerKnockback knockback { get; private set; }
 
     [Header("Input Actions")]
     [field: SerializeField] public InputActionReference moveInput { get; private set; }
     [field: SerializeField] public InputActionReference weakAttackInput { get; private set; }
     [field: SerializeField] public InputActionReference strongAttackInput { get; private set; }
     [field: SerializeField] public InputActionReference sprintInput { get; private set; }
+    [field: SerializeField] public InputActionReference testInput { get; private set; }
 
     [Header("State Settings")]
     [SerializeField] private SC_PlayerBaseState idle;
@@ -45,6 +47,7 @@ public class SC_PlayerStateManager : MonoBehaviour
         if(animator == null) animator = GetComponent<Animator>();
         if(comboManager == null) comboManager = GameObject.FindGameObjectWithTag("ComboManager").GetComponent<ComboManager>();
         if(attackManager == null) attackManager = GetComponent<SC_PlayerAttackManager>();
+        if(knockback == null) knockback = GetComponent<SC_PlayerKnockback>();
         stateList.Idle = idle;
         stateList.Move = move;
         stateList.WeakAttack = weakAttack;
@@ -60,6 +63,14 @@ public class SC_PlayerStateManager : MonoBehaviour
     private void Update()
     {
         _currentState.UpdateState(this.gameObject, stateList);
+
+        var testIA = testInput;
+        var testValue = testIA.action.ReadValue<float>();
+        if (testValue != 0f)
+        {
+            knockback.AddKnockback(-transform.forward, 10f, 0.5f);
+        }
+
 
         if (_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
         {
