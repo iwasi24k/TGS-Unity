@@ -33,6 +33,7 @@ public class SC_PlayerStateManager : MonoBehaviour
     [SerializeField] private SC_PlayerBaseState weakAttack;
     [SerializeField] private SC_PlayerBaseState strongAttack;
     [SerializeField] private SC_PlayerBaseState jumpIn;
+    [SerializeField,Tooltip("チャージ攻撃に必要なボタンの押下時間")] private float requiredAttackPressDuration = 1.0f;
 
     private PlayerState stateList;
 
@@ -54,6 +55,22 @@ public class SC_PlayerStateManager : MonoBehaviour
         stateList.JumpIn = jumpIn;
     }
 
+    private void OnEnable()
+    {
+        if(weakAttackInput != null && weakAttackInput.action != null)
+            weakAttackInput.action.canceled += OnWeakAttackReleased;
+        if(strongAttackInput != null && strongAttackInput.action != null)
+            strongAttackInput.action.canceled += OnStrongAttackReleased;
+    }
+
+    private void OnDisable()
+    {
+        if(weakAttackInput != null && weakAttackInput.action != null)
+            weakAttackInput.action.canceled -= OnWeakAttackReleased;
+        if(strongAttackInput != null && strongAttackInput.action != null)
+            strongAttackInput.action.canceled -= OnStrongAttackReleased;
+    }
+
     private void Start()
     {
         ChangeState(stateList.Idle);
@@ -62,32 +79,32 @@ public class SC_PlayerStateManager : MonoBehaviour
     private void Update()
     {
         _currentState.UpdateState(this.gameObject, stateList);
-
-
-        if (_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
-        {
-            // State transition check
-            var attackIA = weakAttackInput;
-            var attackValue = attackIA.action.ReadValue<float>();
-            if (attackValue > 0.1f)
-            {
-                attackManager.AttackTransitionCheck(stateList, false);
-                return;
-            }
-
-            var strongAttackIA = strongAttackInput;
-            var strongAttackValue = strongAttackIA.action.ReadValue<float>();
-            if (strongAttackValue > 0.1f)
-            {
-                attackManager.AttackTransitionCheck(stateList, true);
-                return;
-            }
-        }
     }
 
     private void FixedUpdate()
     {
         _currentState.FixedUpdateState(this.gameObject,stateList);
+    }
+
+    private void OnWeakAttackReleased(InputAction.CallbackContext context)
+    {
+        if (!_currentState) return;
+
+        if(_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
+        {
+            attackManager.AttackTransitionCheck(stateList, false);
+            return;
+        }
+    }
+
+    private void OnStrongAttackReleased(InputAction.CallbackContext context)
+    {
+        if (!_currentState) return;
+        if(_currentState != stateList.WeakAttack && _currentState != stateList.StrongAttack && _currentState != stateList.JumpIn)
+        {
+            attackManager.AttackTransitionCheck(stateList, true);
+            return;
+        }
     }
 
     public void ChangeState(SC_PlayerBaseState next)
