@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8848985582804138985}
   - component: {fileID: 1164973824796174598}
   - component: {fileID: 7101841934294198423}
+  - component: {fileID: 7491795758519945043}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -90,6 +91,26 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7491795758519945043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475018771120973243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31cd1de4f4e91e4280e43051a7e5a97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  targetRenderer: {fileID: 0}
+  lightningSpeedPropertyName: _LightningSpeed1
+  lightningSpeedBPropertyName: _LightningSpeed2
+  useSecondSpeed: 1
+  normalSpeed1: -1
+  normalSpeed2: -2
+  hitSpeed: -5
+  recoverSpeed: 1
 --- !u!1 &8487347958724102371
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,7 +142,7 @@ Transform:
   m_GameObject: {fileID: 8487347958724102371}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5463397, y: 2.08, z: 11.323583}
+  m_LocalPosition: {x: -1.7233943, y: 2.61, z: 11.515918}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -281,9 +302,10 @@ MonoBehaviour:
   bossHpPartCount: 4
   useBossShield: 1
   bossShieldObject: {fileID: 3475018771120973243}
-  maxBossShield: 3
-  currentBossShield: 3
+  maxBossShield: 50
+  currentBossShield: 50
   downWhenShieldBreak: 1
+  shieldLightningEffect: {fileID: 0}
 --- !u!114 &5880420886448220101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,7 +363,7 @@ MonoBehaviour:
   warningSectorPoolObjectName: PF_WarningSector Pool
   warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
-  - usePattern: 1
+  - usePattern: 0
     patternName: Full
     stateList: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
   - usePattern: 0
@@ -353,3 +375,6 @@ MonoBehaviour:
   - usePattern: 0
     patternName: Summon
     stateList: 05000000
+  - usePattern: 1
+    patternName: hom
+    stateList: 0300000003000000
