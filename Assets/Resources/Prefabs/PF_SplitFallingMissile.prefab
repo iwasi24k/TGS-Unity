@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 34889f73a26cbe941bb9dbf889dcdce1, type: 2}
+  - {fileID: 2100000, guid: d974f30c0686671418e79e28bbcfcbe3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -134,3 +134,4 @@ MonoBehaviour:
   childWarningLength: 10
   childWarningHeightOffset: 0.01
   childMissileSpawnHeight: 1.5
+  playerDamage: 1

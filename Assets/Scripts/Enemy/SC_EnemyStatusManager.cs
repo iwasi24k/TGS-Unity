@@ -50,6 +50,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("ボスシールドの最大値"), SerializeField] private int maxBossShield = 3;
     [Tooltip("現在のボスシールド値"), SerializeField] private int currentBossShield = 3;
     [Tooltip("シールドが0になった時にDownするか"), SerializeField] private bool downWhenShieldBreak = true;
+    [Tooltip("シールドの稲妻演出"), SerializeField]
+    private SC_ShieldLightningEffect shieldLightningEffect;
     
     // 攻撃リスト
     private int[] currentBossAttackList;
@@ -107,6 +109,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             currentBossShield = maxBossShield;
             SetBossShieldVisible(true);
+
+            if (shieldLightningEffect == null && bossShieldObject != null)
+            {
+                shieldLightningEffect =
+                    bossShieldObject.GetComponentInChildren<SC_ShieldLightningEffect>();
+            }
         }
     }
 
@@ -295,7 +303,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
             return direction; 
         }
     }
-
 
     //敵同士の衝突判定
     public void CheckCollisionWithOtherEnemies()
@@ -572,6 +579,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (currentBossShield < 0)
         {
             currentBossShield = 0;
+        }
+
+        if (shieldLightningEffect != null)
+        {
+            shieldLightningEffect.PlayHitEffect();
         }
 
         Debug.Log("Boss Shield : " + currentBossShield + " / " + maxBossShield);
