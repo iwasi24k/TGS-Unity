@@ -118,6 +118,10 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = true
     };
 
+    [Header("Tutorial")]
+    [SerializeField]
+    private SC_AttackTutorial attackTutorial;
+
     private int weakComboCount = 0;
     private float comboTimer = 0f;
 
@@ -302,16 +306,13 @@ public class SC_PlayerAttack : MonoBehaviour
 
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
                 hasHitEnemy = true;
-            }
-        }
 
-        if (hasHitEnemy && currentAttackCooldown <= 0f)
-        {
-            currentAttackCooldown = attackCooldown;
-        }
-        else
-        {
-            currentAttackCooldown = attackCooldown * 0.5f; // 敵に当たらなかった場合はクールダウンを短くするなどの調整も可能
+                if (attackTutorial != null)
+                {
+                    Debug.Log("AttackTutorial通知");
+                    attackTutorial.OnAttackHit(attackType);
+                }
+            }
         }
 
         return hasHitEnemy;
@@ -497,5 +498,13 @@ public class SC_PlayerAttack : MonoBehaviour
         Debug.Log("PlayerAttack:コンボリセット");
         weakComboCount = 0;
         comboTimer = 0f;
+    }
+
+    public void TutorialResetCombo()
+    {
+        weakComboCount = 0;
+        comboTimer = 0f;
+
+        Debug.Log("TutorialResetCombo");
     }
 }
