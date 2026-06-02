@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 584363b866830c74885cfaad89b4c953
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - player: {instanceID: 0}
+  - meleeWavePrefab: {instanceID: 0}
+  - homingMissilePrefab: {instanceID: 0}
+  - fallingMissilePrefab: {instanceID: 0}
+  - warningMarkPrefab: {instanceID: 0}
+  - smallEnemyPrefab: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

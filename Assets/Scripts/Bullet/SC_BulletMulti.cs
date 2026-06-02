@@ -1,106 +1,198 @@
 ﻿using UnityEngine;
 
-public class SC_BulletMulti : MonoBehaviour
+public class SC_BulletMulti : MonoBehaviour, SC_IPoolObject
 {
-    public float lifeTime = 3f;
+    [Tooltip("生存時間"), SerializeField]
+    private float lifeTime = 3f;
 
-    public float spreadMoveTime = 0.3f; // 拡散移動の時間
-    public float spreadSpeed = 10f;     // 拡散移動の速度
-    public float straightSpeed = 15f;   // 直進移動の速度
+    [Tooltip("拡散移動の時間"), SerializeField]
+    private float spreadMoveTime = 0.3f;
 
-    private float timer = 0f;
+    [Tooltip("拡散移動の速度"), SerializeField]
+    private float spreadSpeed = 10f;
+
+    [Tooltip("直進移動の速度"), SerializeField]
+    private float straightSpeed = 15f;
+
+    private SC_ObjectPool ownerPool;
+
+    private float timer;
     private Vector3 initialDirection;
     private Vector3 straightDirection;
-    private bool straightDirectionSet = false;
+    private bool straightDirectionSet;
 
     private Transform player;
     private Transform owner;
 
-    // すでにヒットしたかどうか
-    private bool hasHit = false;
+    private bool hasHit;
+    private bool initialized;
 
-    public void SetOwner(Transform t)
+    public void SetPool(SC_ObjectPool pool)
     {
-        owner = t;
+        ownerPool = pool;
     }
 
-    void Start()
+    public void OnGetFromPool()
     {
-        initialDirection = transform.forward;
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-            player = playerObj.transform;
+        timer = 0f;
 
-        Destroy(gameObject, lifeTime);
+        initialDirection = transform.forward;
+        straightDirection = transform.forward;
+        straightDirectionSet = false;
+
+        player = null;
+        owner = null;
+
+        hasHit = false;
+        initialized = false;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
+
+    public void Init(Transform ownerTransform, Transform playerTransform)
+    {
+        owner = ownerTransform;
+        player = playerTransform;
+
+        timer = 0f;
+        hasHit = false;
+        straightDirectionSet = false;
+        initialized = true;
+
+        // Poolから出した時点の向きを初期拡散方向にする
+        initialDirection = transform.forward;
+        straightDirection = transform.forward;
     }
 
     private void Update()
     {
+        if (!initialized) return;
+
         timer += Time.deltaTime;
 
-        if(timer < spreadMoveTime)
+        if (timer >= lifeTime)
         {
-            // 拡散移動
-            transform.position += initialDirection * spreadSpeed * Time.deltaTime;
+            ReturnToPool();
+            return;
+        }
+
+        if (timer < spreadMoveTime)
+        {
+            transform.position +=
+                initialDirection *
+                spreadSpeed *
+                Time.deltaTime;
+
+            return;
+        }
+
+        if (!straightDirectionSet)
+        {
+            SetStraightDirection();
+        }
+
+        transform.position +=
+            straightDirection *
+            straightSpeed *
+            Time.deltaTime;
+    }
+
+    private void SetStraightDirection()
+    {
+        if (owner != null && player != null)
+        {
+            straightDirection =
+                player.position -
+                owner.position;
+
+            if (straightDirection.sqrMagnitude <= 0.0001f)
+            {
+                straightDirection = transform.forward;
+            }
         }
         else
         {
-            // プレイヤー方向へ直進
-            if (!straightDirectionSet)
-            {
-                if (owner != null && player != null)
-                {
-                    straightDirection = (player.position - owner.position).normalized;
-                }
-                else
-                {
-                    straightDirection = transform.forward;
-                }
-                straightDirectionSet = true;
-            }
-            transform.position += straightDirection * straightSpeed * Time.deltaTime;
+            straightDirection = transform.forward;
         }
 
+        straightDirection.Normalize();
+        straightDirectionSet = true;
+
+        if (straightDirection.sqrMagnitude > 0.0001f)
+        {
+            transform.rotation = Quaternion.LookRotation(straightDirection);
+        }
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        // すでに当たっていたら何もしない
         if (hasHit) return;
 
-        // プレイヤーに当たった場合
-        if (collision.gameObject.CompareTag("Player"))
+        if (ShouldIgnore(collision.gameObject))
         {
-            //体力を減らす処理
+            return;
         }
 
-        // ヒット済みにする（これが重要）
-        hasHit = true;
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // TODO: プレイヤー体力を減らす処理
+        }
 
-        // 弾を削除
-        Destroy(gameObject);
+        hasHit = true;
+        ReturnToPool();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // すでに当たっていたら何もしない
         if (hasHit) return;
 
-        if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Bullet") || other.gameObject.CompareTag("Field"))
+        if (ShouldIgnore(other.gameObject))
         {
             return;
         }
-        // プレイヤーに当たった場合
+
         if (other.gameObject.CompareTag("Player"))
         {
-            //体力を減らす処理
-
+            // TODO: プレイヤー体力を減らす処理
         }
 
-        // ヒット済みにする（これが重要）
+        hasHit = true;
+        ReturnToPool();
+    }
+
+    private bool ShouldIgnore(GameObject obj)
+    {
+        if (obj.CompareTag("Enemy")) return true;
+        if (obj.CompareTag("Bullet")) return true;
+        if (obj.CompareTag("Field")) return true;
+
+        return false;
+    }
+
+    public void ReturnToPool()
+    {
+        initialized = false;
         hasHit = true;
 
-        // 弾を削除
-        Destroy(gameObject);
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        if (ownerPool != null)
+        {
+            ownerPool.ReturnObject(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

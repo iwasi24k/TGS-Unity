@@ -43,6 +43,11 @@ public class SC_EnemyMove : SC_EnemyBaceState
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         animator.SetBool("bMove", false);
+
+        if (rb != null)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
