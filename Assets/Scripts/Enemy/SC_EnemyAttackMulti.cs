@@ -131,17 +131,19 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
 
             if (bulletObj == null) continue;
 
-            SC_BulletMulti bullet =
-                bulletObj.GetComponent<SC_BulletMulti>();
+            SC_StraightMissile bullet =
+                bulletObj.GetComponent<SC_StraightMissile>();
 
             if (bullet != null)
             {
                 bullet.SetPool(bulletPool);
                 bullet.OnGetFromPool();
 
+                Vector3 dir = rot * Vector3.forward;
+
                 bullet.Init(
-                    Owner.transform,
-                    player
+                    dir,
+                    bulletSpeed
                 );
             }
 

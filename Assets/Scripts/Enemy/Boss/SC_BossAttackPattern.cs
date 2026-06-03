@@ -4,23 +4,32 @@ using UnityEngine;
 // ボスの攻撃Stateの種類を定義するEnum
 public enum BossAttackStateType
 {
-    MeleeWave = 2,
     HomingMissile = 3,
     FallingMissile = 4,
-    Summon = 5,
+    MeleeWave = 5,
 
     RapidMissile = 6,
     MachineGun = 7,
     SplitFallingMissile = 8,
 
-    CircleBarrage = 9,
-    CircleBarrageBack = 10,
-    CircleBarrageFront = 11,
-    CircleBarrageFrontBack = 12,
-    CircleBarrageLeft = 13,
-    CircleBarrageRight = 14,
-    CircleBarrageRightLeft = 15,
+    CircleBarrageStraight = 9,
+    CircleBarrageBackStraight = 10,
+    CircleBarrageFrontStraight = 11,
+    CircleBarrageFrontBackStraight = 12,
+    CircleBarrageLeftStraight = 13,
+    CircleBarrageRightStraight = 14,
+    CircleBarrageRightLeftStraight = 15,
+    CircleBarrageReflectable = 16,
+    CircleBarrageBackReflectable = 17,
+    CircleBarrageFrontReflectable = 18,
+    CircleBarrageFrontBackReflectable = 19,
+    CircleBarrageLeftReflectable = 20,
+    CircleBarrageRightReflectable = 21,
+    CircleBarrageRightLeftReflectable = 22,
 
+    SummonAll = 23,
+    SummonRandom = 24,
+    SummonByIndex = 25
 }
 
 // ボスの攻撃パターンを定義するクラス

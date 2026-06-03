@@ -5,7 +5,6 @@ public class SC_EnemyAttack : SC_EnemyBaceState
 {
     [Header("Settings")]
     [Tooltip("弾数"), SerializeField] private int bulletNum = 3;
-    [Tooltip("弾プレハブ"), SerializeField] private GameObject bulletPrefab;
     [Tooltip("発射までのディレイ"), SerializeField] private float attackStartDelay = 0.5f;
     [Tooltip("弾速"), SerializeField] private float bulletSpeed = 10f;
     [Tooltip("発射間隔"), SerializeField] private float fireInterval = 0.2f;
@@ -15,6 +14,8 @@ public class SC_EnemyAttack : SC_EnemyBaceState
     [Tooltip("左右オフセット"), SerializeField] private float spawnRightOffset = 0f;
 
     private Animator animator;
+    private Rigidbody rb;
+    private Quaternion startRotation;
 
     private int firedBulletCount;
     private float fireTimer;
@@ -29,12 +30,30 @@ public class SC_EnemyAttack : SC_EnemyBaceState
         delayTimer = 0f;
         isAttacking = true;
         canFire = false;
+        rb = Owner.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
+        startRotation = Owner.transform.rotation;
+
         animator = Owner.GetComponent<Animator>();
+        if (animator != null)
+        {
+            // Root Motionで勝手に回転する場合の対策
+            animator.applyRootMotion = false;
+            animator.SetTrigger("tAttack");
+        }
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         isAttacking = false;
+
+        if (rb != null)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -42,8 +61,23 @@ public class SC_EnemyAttack : SC_EnemyBaceState
         // 攻撃終了なら何もしない
         if (!isAttacking) return;
 
-        // プレハブ未設定なら何もしない
-        if (bulletPrefab == null) return;
+        SC_EnemyAttackPoolProvider poolProvider = Owner.GetComponent<SC_EnemyAttackPoolProvider>();
+
+        if (poolProvider == null)
+        {
+            isAttacking = false;
+            Manager.TransitionToNext();
+            return;
+        }
+
+        SC_ObjectPool bulletPool = poolProvider.GetBulletMultiPool();
+
+        if (bulletPool == null)
+        {
+            isAttacking = false;
+            Manager.TransitionToNext();
+            return;
+        }
 
         // 発射ディレイを進める
         if (!canFire)
@@ -83,8 +117,28 @@ public class SC_EnemyAttack : SC_EnemyBaceState
             Owner.transform.right * spawnRightOffset;
 
         animator.SetTrigger("tAttack");
-        // 弾生成
-        GameObject bulletObj = Object.Instantiate(bulletPrefab, spawnPos, rot);
+        GameObject bulletObj = bulletPool.GetObject(
+            spawnPos,
+            rot
+         );
+
+        if (bulletObj == null) return;
+
+        SC_ReflectableMissile bullet =
+            bulletObj.GetComponent<SC_ReflectableMissile>();
+
+        if (bullet != null)
+        {
+            bullet.SetPool(bulletPool);
+            bullet.OnGetFromPool();
+
+            Vector3 dir = rot * Vector3.forward;
+
+            bullet.Init(
+                dir,
+                bulletSpeed
+            );
+        }
 
         // 敵と弾の衝突を無視
         Collider ownerCol = Owner.GetComponent<Collider>();

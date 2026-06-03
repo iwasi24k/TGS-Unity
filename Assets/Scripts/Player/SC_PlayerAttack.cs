@@ -284,12 +284,28 @@ public class SC_PlayerAttack : MonoBehaviour
         );
 
         bool hasHitEnemy = false;
+        bool hasReflectedMissile = false;
 
         for (int i = 0; i < HitCount; i++)
         {
             var hit = overlapCollision[i];
 
             if(hit == null) continue;
+
+            SC_ReflectableMissile reflectableMissile = hit.GetComponent<SC_ReflectableMissile>();
+
+            if (reflectableMissile == null)
+            {
+                reflectableMissile =
+                    hit.GetComponentInParent<SC_ReflectableMissile>();
+            }
+
+            if (reflectableMissile != null)
+            {
+                reflectableMissile.ReflectByPlayer(transform);
+                hasReflectedMissile = true;
+                continue;
+            }
 
             if (hit.CompareTag("Enemy"))
             {
@@ -305,7 +321,7 @@ public class SC_PlayerAttack : MonoBehaviour
             }
         }
 
-        if (hasHitEnemy && currentAttackCooldown <= 0f)
+        if ((hasHitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
         {
             currentAttackCooldown = attackCooldown;
         }
@@ -314,7 +330,7 @@ public class SC_PlayerAttack : MonoBehaviour
             currentAttackCooldown = attackCooldown * 0.5f; // 敵に当たらなかった場合はクールダウンを短くするなどの調整も可能
         }
 
-        return hasHitEnemy;
+        return hasHitEnemy || hasReflectedMissile;
     }
 
     // Scene上でこのオブジェクトが選択されているときに攻撃範囲を可視化

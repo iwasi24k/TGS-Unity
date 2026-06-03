@@ -23,11 +23,6 @@ public class SC_BossAttackController : MonoBehaviour
     [Tooltip("ボスを中心とした落下地点のランダム範囲"), SerializeField] private float stageRadius = 10.0f;
     [Tooltip("落下型ミサイルが落ちない中心範囲。ボス周辺に落としたくない場合に使う"), SerializeField] private float fallingMissileMinRadius = 5.0f;
 
-    [Header("Summon")]
-    [Tooltip("召喚する雑魚敵のPrefab"), SerializeField] private GameObject smallEnemyPrefab;
-    [Tooltip("一度に召喚する雑魚敵の数"), SerializeField] private int summonCount = 3;
-    [Tooltip("ボスからどれくらい離れた位置に召喚するか"), SerializeField] private float summonRadius = 3.0f;
-
     [Header("Rapid Missile")]
     [Tooltip("快速ミサイルを同時に発射する数"), SerializeField] private int rapidMissileCount = 5;
     [Tooltip("生成後、発射まで停止する時間"), SerializeField] private float rapidMissileStartDelay = 0.5f;
@@ -62,6 +57,9 @@ public class SC_BossAttackController : MonoBehaviour
     [Tooltip("直進ミサイル用Pool"), SerializeField]
     private SC_ObjectPool straightMissilePool;
 
+    [Tooltip("反射ミサイル用Pool"), SerializeField]
+    private SC_ObjectPool reflectableMissilePool;
+
     [Header("Warning Pool")]
     [Tooltip("円形警告用Pool"), SerializeField]
     private SC_ObjectPool warningCirclePool;
@@ -87,6 +85,9 @@ public class SC_BossAttackController : MonoBehaviour
 
     [Tooltip("直進ミサイルPoolのScene上の名前"), SerializeField]
     private string straightMissilePoolObjectName = "PF_StraightMissile Pool";
+
+    [Tooltip("反射ミサイルPoolのScene上の名前"), SerializeField]
+    private string reflectableMissilePoolObjectName = "PF_ReflectableMissile Pool";
 
     [Tooltip("円形Warning PoolのScene上の名前"), SerializeField]
     private string warningCirclePoolObjectName = "PF_WarningCircle Pool";
@@ -170,21 +171,6 @@ public class SC_BossAttackController : MonoBehaviour
     public float GetFallingMissileMinRadius()
     {
         return fallingMissileMinRadius;
-    }
-
-    public GameObject GetSmallEnemyPrefab()
-    {
-        return smallEnemyPrefab;
-    }
-
-    public int GetSummonCount()
-    {
-        return summonCount;
-    }
-
-    public float GetSummonRadius()
-    {
-        return summonRadius;
     }
 
 
@@ -298,6 +284,11 @@ public class SC_BossAttackController : MonoBehaviour
             straightMissilePool = FindPool(straightMissilePoolObjectName);
         }
 
+        if(reflectableMissilePool== null)
+        {
+            reflectableMissilePool = FindPool(reflectableMissilePoolObjectName);
+        }
+
         if (warningCirclePool == null)
         {
             warningCirclePool = FindPool(warningCirclePoolObjectName);
@@ -363,6 +354,11 @@ public class SC_BossAttackController : MonoBehaviour
     public SC_ObjectPool GetStraightMissilePool()
     {
         return straightMissilePool;
+    }
+
+    public SC_ObjectPool GetReflectableMissilePool()
+    {
+        return reflectableMissilePool;
     }
 
     public SC_ObjectPool GetWarningCirclePool()
