@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SO_Boss Down State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossDownState
   downTime: 100
-  meleeWaveStateIndex: 2
+  meleeWaveStateIndex: 5
   stopVelocityOnEnter: 1
