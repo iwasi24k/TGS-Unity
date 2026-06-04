@@ -1,5 +1,12 @@
 using System;
+using System.Reflection;
 using UnityEngine;
+
+public enum BarrageMissileType
+{
+    Straight,
+    Reflectable
+}
 
 [CreateAssetMenu(menuName = "Enemy/Boss/Circle Barrage State")]
 public class SC_BossCircleBarrageState : SC_EnemyBaceState
@@ -34,6 +41,9 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     [Tooltip("攻撃終了後の待ち時間"), SerializeField]
     private float endDelay = 0.5f;
+
+    [Header("Missile Type")]
+    [Tooltip("ミサイルの種類"), SerializeField] private BarrageMissileType missileType = BarrageMissileType.Straight;
 
     [Header("Warning")]
     [Tooltip("攻撃前に円形警告を表示するか"), SerializeField]
@@ -140,8 +150,10 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     )
     {
         if (bulletCount <= 0) return;
+        if (boss == null) return;
 
-        SC_ObjectPool pool = boss.GetStraightMissilePool();
+        SC_ObjectPool pool = GetMissilePool(boss);
+
         if (pool == null) return;
 
         float rotateOffset =
@@ -260,10 +272,13 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     }
 
     private void FireOneMissile(
-        GameObject Owner,
-        SC_ObjectPool pool,
-        float angle)
+    GameObject Owner,
+    SC_ObjectPool pool,
+    float angle)
     {
+        if (Owner == null) return;
+        if (pool == null) return;
+
         Vector3 dir =
             Quaternion.Euler(0f, angle, 0f) *
             Owner.transform.forward;
@@ -273,14 +288,15 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         if (dir.sqrMagnitude <= 0.0001f)
         {
             dir = Owner.transform.forward;
+            dir.y = 0f;
         }
 
         dir.Normalize();
 
         Vector3 spawnPos = Owner.transform.position + dir * spawnDistance;
-        spawnPos.y = 0.0f;
-        spawnPos += Vector3.up * spawnHeight;
 
+        // 地面基準にしたいならこっち
+        spawnPos.y = spawnHeight;
 
         GameObject missileObj = pool.GetObject(
             spawnPos,
@@ -289,22 +305,48 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         if (missileObj == null) return;
 
-        SC_StraightMissile missile =
-            missileObj.GetComponent<SC_StraightMissile>();
-
-        if (missile != null)
+        switch (missileType)
         {
-            missile.SetPool(pool);
-            missile.OnGetFromPool();
+            case BarrageMissileType.Straight:
+                {
+                    SC_StraightMissile straightMissile =
+                        missileObj.GetComponent<SC_StraightMissile>();
 
-            missile.Init(
-                dir,
-                missileSpeed,
-                0f
-            );
+                    if (straightMissile != null)
+                    {
+                        straightMissile.SetPool(pool);
+                        straightMissile.OnGetFromPool();
+
+                        straightMissile.Init(
+                            dir,
+                            missileSpeed,
+                            0f
+                        );
+                    }
+
+                    break;
+                }
+
+            case BarrageMissileType.Reflectable:
+                {
+                    SC_ReflectableMissile reflectableMissile =
+                        missileObj.GetComponent<SC_ReflectableMissile>();
+
+                    if (reflectableMissile != null)
+                    {
+                        reflectableMissile.SetPool(pool);
+                        reflectableMissile.OnGetFromPool();
+
+                        reflectableMissile.Init(
+                            dir,
+                            missileSpeed
+                        );
+                    }
+
+                    break;
+                }
         }
     }
-
 
     private void ShowWarning(GameObject Owner)
     {
@@ -434,5 +476,22 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         }
 
         return false;
+    }
+
+
+    private SC_ObjectPool GetMissilePool(SC_BossAttackController boss)
+    {
+        if (boss == null) return null;
+
+        switch (missileType)
+        {
+            case BarrageMissileType.Straight:
+                return boss.GetStraightMissilePool();
+
+            case BarrageMissileType.Reflectable:
+                return boss.GetReflectableMissilePool();
+        }
+
+        return null;
     }
 }

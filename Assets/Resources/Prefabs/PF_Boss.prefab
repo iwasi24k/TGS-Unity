@@ -271,10 +271,10 @@ MonoBehaviour:
   stateList:
   - {fileID: 11400000, guid: 1cada7607adc0fd4795d9bb0e2af0aa9, type: 2}
   - {fileID: 11400000, guid: 2cb6f9ec46ea3f9408c6bc6552ba933a, type: 2}
-  - {fileID: 11400000, guid: a025ac3cbdaf21c4eb707c1c7bd11b66, type: 2}
+  - {fileID: 11400000, guid: d5f8bad7f16156743a970286d200be9a, type: 2}
   - {fileID: 11400000, guid: df1c09b2e77a76d46adff402adb5ab2e, type: 2}
   - {fileID: 11400000, guid: 26552f9021dae0940b084817a8b59475, type: 2}
-  - {fileID: 11400000, guid: 37ea93d67d6b08a439622412ed828743, type: 2}
+  - {fileID: 11400000, guid: a025ac3cbdaf21c4eb707c1c7bd11b66, type: 2}
   - {fileID: 11400000, guid: c64aa230c34361e45a563e49119e92e7, type: 2}
   - {fileID: 11400000, guid: 68672d53ca2c6ac42b8d34dae61c4687, type: 2}
   - {fileID: 11400000, guid: 6623c4042c3128e49baa875fc45233ca, type: 2}
@@ -285,7 +285,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6bdbe8e4cdec4a64aa96dda4f68e5ec4, type: 2}
   - {fileID: 11400000, guid: f01cf940936aa4445801067b9f88077e, type: 2}
   - {fileID: 11400000, guid: 0f6accd3c5fe4274e871c717397c802d, type: 2}
-  - {fileID: 11400000, guid: d5f8bad7f16156743a970286d200be9a, type: 2}
+  - {fileID: 11400000, guid: f17ca5ace61e5f940b5a7390cc80ab6b, type: 2}
+  - {fileID: 11400000, guid: b4ed3e69a1053104e874876ee02e9297, type: 2}
+  - {fileID: 11400000, guid: 9e6a9d5abd54c0d418e9d0c09562fbc9, type: 2}
+  - {fileID: 11400000, guid: 10451b486015dc245ba619edafc52b6d, type: 2}
+  - {fileID: 11400000, guid: d5ae506f64b118a48adc9382245e59bd, type: 2}
+  - {fileID: 11400000, guid: 12d2e65a47619374cbc1c0a6b608f4d0, type: 2}
+  - {fileID: 11400000, guid: 0a35e8d6e5883c4419f4e2f32b74211f, type: 2}
+  - {fileID: 11400000, guid: 37ea93d67d6b08a439622412ed828743, type: 2}
+  - {fileID: 11400000, guid: e0fb4af9e545820478a5975d7f19bc7e, type: 2}
+  - {fileID: 11400000, guid: 31b7664534220be418ae89fa71ddaf2d, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 0}
   collisionCenter: {x: 0, y: 0, z: 0}
@@ -295,7 +304,7 @@ MonoBehaviour:
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
   canBlownAway: 0
-  bossDownStateIndex: 16
+  bossDownStateIndex: 2
   useBossDown: 1
   onlyTakePlayerDamageWhileDown: 1
   useBossDownDamageLimit: 1
@@ -331,9 +340,6 @@ MonoBehaviour:
   fallingInterval: 0.1
   stageRadius: 10
   fallingMissileMinRadius: 5
-  smallEnemyPrefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
-  summonCount: 3
-  summonRadius: 5
   rapidMissileCount: 5
   rapidMissileStartDelay: 0.5
   rapidMissileSpeed: 18
@@ -351,6 +357,7 @@ MonoBehaviour:
   splitFallingMissilePool: {fileID: 0}
   rapidMissilePool: {fileID: 0}
   straightMissilePool: {fileID: 0}
+  reflectableMissilePool: {fileID: 0}
   warningCirclePool: {fileID: 0}
   warningSectorPool: {fileID: 0}
   warningRectanglePool: {fileID: 0}
@@ -359,22 +366,20 @@ MonoBehaviour:
   splitFallingMissilePoolObjectName: PF_SplitFallingMissile Pool
   rapidMissilePoolObjectName: PF_RapidMissile Pool
   straightMissilePoolObjectName: PF_StraightMissile Pool
+  reflectableMissilePoolObjectName: PF_ReflectableMissile Pool
   warningCirclePoolObjectName: PF_WarningCircle Pool
   warningSectorPoolObjectName: PF_WarningSector Pool
   warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
   - usePattern: 0
     patternName: Full
-    stateList: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
+    stateList: 05000000030000000400000017000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
   - usePattern: 0
     patternName: war
     stateList: 040000000700000008000000090000000c0000000f000000
   - usePattern: 0
     patternName: Circle
-    stateList: 09000000
-  - usePattern: 0
-    patternName: Summon
-    stateList: 05000000
+    stateList: 09000000100000000a000000110000000b000000120000000c000000130000000d000000140000000e000000150000000f00000016000000
   - usePattern: 1
-    patternName: hom
-    stateList: 0300000003000000
+    patternName: Summon
+    stateList: 170000001800000019000000
