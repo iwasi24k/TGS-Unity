@@ -9,7 +9,7 @@ public class SC_PlayerTarget : MonoBehaviour
     [Tooltip("メインカメラ"), SerializeField] private Camera goMainCamera;
     [Tooltip("ターゲットトグル用入力"), SerializeField] private InputActionReference iaTarget;
     [Tooltip("ターゲット変更用入力"), SerializeField] private InputActionReference iaTargetChange;
-    [Tooltip("フィールド管理"), SerializeField] private SC_Field field;
+    [Tooltip("EnemyManager"), SerializeField] private SC_EnemyManager enemyManager;
 
     [Header("Target")]
     [Tooltip("ターゲット切り替え距離"), SerializeField] private float targetLockDistance = 15.0f;
@@ -29,10 +29,7 @@ public class SC_PlayerTarget : MonoBehaviour
         if (currentTarget != null) currentTarget = null;
         if (goMainCamera == null) goMainCamera = Camera.main;
 
-        if (field == null)
-        {
-            field = FindFirstObjectByType<SC_Field>();
-        }
+      
         if (iaTarget == null)
         {
             Debug.LogError("ターゲットトグル用のInputActionReferenceがアタッチされていません。");
@@ -72,12 +69,13 @@ public class SC_PlayerTarget : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (field == null)
+        if (enemyManager == null)
             return;
 
-        List<GameObject> enemyList = field.GetEnemies();
+        List<GameObject> enemyList = enemyManager.GetEnemies();
 
-        if (enemyList == null || enemyList.Count == 0)
+        if (enemyList == null ||
+            enemyList.Count == 0)
         {
             enemys = new GameObject[0];
             targets = new GameObject[0];
