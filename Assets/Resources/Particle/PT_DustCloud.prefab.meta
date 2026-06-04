@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Resources/Particle/PT_DustCloud.prefab.meta
 guid: 0a78ad568c6805b47918a89b39782b2b
 PrefabImporter:
+========
+guid: 879a867a2fab2234f8a0f7df65701d88
+DefaultImporter:
+>>>>>>>> develop:Assets/Scenes/Scene_tee 1.unity.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

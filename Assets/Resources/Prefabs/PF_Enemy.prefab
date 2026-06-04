@@ -470,6 +470,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7631034152841764430}
+    - targetCorrespondingSourceObject: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8829026737922510304}
   m_SourcePrefab: {fileID: 100100000, guid: 860793eb3324391468f1c120a75ec049, type: 3}
 --- !u!1 &2421892717064337079 stripped
 GameObject:
@@ -543,15 +546,41 @@ MonoBehaviour:
   stateList:
   - {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
   - {fileID: 11400000, guid: 7d905cb2d6927144a9f24beb8b066f2e, type: 2}
-  - {fileID: 11400000, guid: dd0328389a50e5d49b615d1dec56ab3e, type: 2}
+  - {fileID: 11400000, guid: e17a1d3593bf67044a4e58f8eef0d402, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
-  blowAwayPowerOnCollision: 1
+  blowAwayPowerOnCollision: 2
   searchAngleThreshold: 15
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
+  canBlownAway: 1
+  bossDownStateIndex: 6
+  useBossDown: 0
+  onlyTakePlayerDamageWhileDown: 0
+  useBossDownDamageLimit: 0
+  bossHpPartCount: 4
+  useBossShield: 0
+  bossShieldObject: {fileID: 0}
+  maxBossShield: 3
+  currentBossShield: 3
+  downWhenShieldBreak: 0
+  shieldLightningEffect: {fileID: 0}
+--- !u!114 &-8829026737922510304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2421892717064337079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4a16120eb3478b48a0d8c7992fbe4a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttackPoolProvider
+  bulletMultiPool: {fileID: 0}
+  bulletMultiPoolObjectName: PF_ReflectableMissile Pool
 --- !u!4 &2421892717064628887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
