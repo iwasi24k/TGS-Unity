@@ -268,7 +268,7 @@ public class SC_PlayerAttack : MonoBehaviour
     private bool AttackExe(int AttackDamage, Vector3 AreaSize, bool BlowAway, AttackType attackType)
     {
         switch (attackType)
-        { 
+        {
             case AttackType.Weak1:
             case AttackType.Weak2:
                 animPlayer.SetTrigger("tWeakAttack");
@@ -294,7 +294,7 @@ public class SC_PlayerAttack : MonoBehaviour
         {
             var hit = overlapCollision[i];
 
-            if(hit == null) continue;
+            if (hit == null) continue;
 
             SC_ReflectableMissile reflectableMissile = hit.GetComponent<SC_ReflectableMissile>();
 
@@ -315,28 +315,29 @@ public class SC_PlayerAttack : MonoBehaviour
             {
                 // BlownAway状態の敵にはダメージを与えない
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
-                
-                if(enemy==null) continue;
-                
+
+                if (enemy == null) continue;
+
                 if (enemy.IsBlownAway()) continue;
 
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
                 hasHitEnemy = true;
 
-　　　　　　　　　if ((hitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
-　　　　　　　　　{
- 　　　　　　　　　   currentAttackCooldown = attackCooldown;
-　　　　　　　　　}
-　　　　　　　　　else
-　　　　　　　　　{
- 　　　　　　　　　   currentAttackCooldown = attackCooldown * 0.5f;
-　　　　　　　　　}
+                if ((hasHitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
+                {
+                    currentAttackCooldown = attackCooldown;
+                }
+                else
+                {
+                    currentAttackCooldown = attackCooldown * 0.5f;
+                }
 
-　　　　　　　　　if (attackTutorial != null)
-　　　　　　　　　{
- 　　　　　　　　　   Debug.Log("AttackTutorial通知");
-  　　　　　　　　　  attackTutorial.OnAttackHit(attackType);
-　　　　　　　　　}
+                if (attackTutorial != null)
+                {
+                    Debug.Log("AttackTutorial通知");
+                    attackTutorial.OnAttackHit(attackType);
+                }
+            }
         }
 
         return hasHitEnemy || hasReflectedMissile;
