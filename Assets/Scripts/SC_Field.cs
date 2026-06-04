@@ -23,172 +23,99 @@ public class SC_Field : MonoBehaviour
     [SerializeField] private StageData[] stages;
     [SerializeField] private int currentStage = 0;
 
-    private List<GameObject> objects = new List<GameObject>();
+    // 生成したObject管理
+    private List<GameObject> objects =
+        new List<GameObject>();
 
-    // 敵管理
-    private List<GameObject> enemies = new List<GameObject>();
-    //プレイヤー
+    //==================================================
+    // EnemyManager
+    //==================================================
+    [SerializeField]
+    private SC_EnemyManager enemyManager;
+
+    //==================================================
+    // Goal
+    //==================================================
+    [SerializeField]
+    private SC_Goal goal;
+
+    //==================================================
+    // Player
+    //==================================================
     private GameObject player;
-    private Vector3 playerStartPos;
 
-    private Renderer goalRenderer;
-    private Vector3 goalDefaultScale;
-    private bool isGoalActive = false;
+    private Vector3 playerStartPos;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player =
+            GameObject.FindGameObjectWithTag("Player");
 
         if (player != null)
         {
-            playerStartPos = player.transform.position;
+            playerStartPos =
+                player.transform.position;
         }
 
-        // ゴール見た目取得
-        goalRenderer = GetComponent<Renderer>();
-
-        // 元の大きさ保存
-        goalDefaultScale = transform.localScale;
-
-        // 最初は灰色
-        if (goalRenderer != null)
-        {
-            goalRenderer.material.color = Color.gray;
-        }
+        // Goal初期化
+        goal.Setup(this);
 
         GenerateStage(currentStage);
     }
 
     void Update()
     {
-        SortEnemiesByPlayerDistance();
-
         // 敵全滅でゴール解放
-        if (!isGoalActive && GetEnemyCount() <= 0)
+        if (enemyManager.GetEnemyCount() <= 0)
         {
-            ActivateGoal();
+            goal.ActivateGoal();
         }
-    }
-
-    void ActivateGoal()
-    {
-        if (isGoalActive) return;
-
-        isGoalActive = true;
-
-        Debug.Log("ゴール解放！");
-
-        // 黄色にする
-        if (goalRenderer != null)
-        {
-            goalRenderer.material.color = Color.yellow;
-        }
-
-        // 少し大きくする
-        transform.localScale =
-            goalDefaultScale * 1.3f;
     }
 
     void GenerateStage(int stageIndex)
     {
-        if (stages == null || stages.Length == 0) return;
-        if (stageIndex < 0 || stageIndex >= stages.Length) return;
+        if (stages == null ||
+            stages.Length == 0)
+        {
+            return;
+        }
 
-        enemies.Clear();
+        if (stageIndex < 0 ||
+            stageIndex >= stages.Length)
+        {
+            return;
+        }
+
+        // Enemy初期化
+        enemyManager.ClearEnemies();
 
         StageData stage = stages[stageIndex];
 
         foreach (ObjData data in stage.objects)
         {
-            Vector3 pos = transform.position + data.position;
+            Vector3 pos =
+                transform.position +
+                data.position;
 
-            GameObject obj = Instantiate(data.prefab, pos, Quaternion.Euler(data.rotation), transform);
+            GameObject obj =
+                Instantiate(
+                    data.prefab,
+                    pos,
+                    Quaternion.Euler(data.rotation),
+                    transform);
 
-            obj.transform.localScale = data.scale;
+            obj.transform.localScale =
+                data.scale;
 
             objects.Add(obj);
 
-            // Enemyタグで自動登録
+            // Enemy登録
             if (obj.CompareTag("Enemy"))
             {
-                enemies.Add(obj);
+                enemyManager.AddEnemy(obj);
             }
         }
     }
-
-    // -----------------------------
-    // 敵管理API
-    // -----------------------------
-
-    // 生きてる敵リスト
-    public List<GameObject> GetEnemies()
-    {
-        enemies.RemoveAll(e => e == null);
-        return enemies;
-    }
-
-    // 敵数
-    public int GetEnemyCount()
-    {
-        enemies.RemoveAll(e => e == null);
-        return enemies.Count;
-    }
-
-    // 敵座標リスト
-    public List<Vector3> GetEnemyPositions()
-    {
-        List<Vector3> list = new List<Vector3>();
-
-        foreach (var e in enemies)
-        {
-            if (e != null)
-                list.Add(e.transform.position);
-        }
-
-        return list;
-    }
-
-    private void SortEnemiesByPlayerDistance()
-    {
-        // Playerが見つからない
-        if (player == null) return;
-
-        // 消えた敵を削除
-        enemies.RemoveAll(e => e == null);
-
-        // Player座標
-        Vector3 playerPos = player.transform.position;
-
-        // Playerに近い順に並び替え
-        enemies.Sort((a, b) =>
-        {
-            float distA =Vector3.SqrMagnitude(a.transform.position - playerPos);
-
-            float distB =Vector3.SqrMagnitude(b.transform.position - playerPos);
-
-            return distA.CompareTo(distB);
-        });
-    }
-
-    public GameObject GetNearestEnemy()
-    {
-        // 内部でソート
-        SortEnemiesByPlayerDistance();
-
-        // デバッグ確認
-        foreach (var enemy in enemies)
-        {
-            Debug.Log(enemy.name);
-        }
-
-        // 敵がいない
-        if (enemies.Count == 0)
-            return null;
-
-        // 一番近い敵
-        return enemies[0];
-    }
-
 
     // -----------------------------
     // ステージ制御
@@ -199,23 +126,19 @@ public class SC_Field : MonoBehaviour
         foreach (GameObject obj in objects)
         {
             if (obj != null)
+            {
                 Destroy(obj);
+            }
         }
 
         objects.Clear();
-        enemies.Clear();
+
+        enemyManager.ClearEnemies();
 
         GenerateStage(currentStage);
 
-        //ゴールの色を戻す
-        isGoalActive = false;
-
-        transform.localScale = goalDefaultScale;
-
-        if (goalRenderer != null)
-        {
-            goalRenderer.material.color = Color.gray;
-        }
+        // Goalを閉じる
+        goal.CloseGoal();
     }
 
     public void NextStage()
@@ -233,7 +156,8 @@ public class SC_Field : MonoBehaviour
         {
             Debug.Log("ゲームクリア!");
 
-            SceneManager.LoadScene("Scene_Result");
+            SceneManager.LoadScene(
+                "Scene_Result");
 
             yield break;
         }
@@ -245,7 +169,7 @@ public class SC_Field : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
-    //Playerのポジションリセット
+    // Playerのポジションリセット
     void ResetPlayer()
     {
         if (player == null) return;
@@ -258,7 +182,8 @@ public class SC_Field : MonoBehaviour
             controller.enabled = false;
         }
 
-        player.transform.position = playerStartPos;
+        player.transform.position =
+            playerStartPos;
 
         if (controller != null)
         {
@@ -266,29 +191,5 @@ public class SC_Field : MonoBehaviour
         }
 
         Debug.Log("Playerリセット");
-    }
-
-    //確認用
-    void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("何か触れた : " + other.name);
-
-        if (!other.CompareTag("Player"))
-        {
-            Debug.Log("Playerじゃない");
-            return;
-        }
-
-        Debug.Log("Playerが触れた");
-        Debug.Log("敵の数 : " + GetEnemyCount());
-
-        if (GetEnemyCount() > 0)
-        {
-            Debug.Log("まだ敵がいる");
-            return;
-        }
-
-        Debug.Log("次ステージへ");
-        NextStage();
     }
 }

@@ -21,8 +21,6 @@ public class SC_EnemyMove : SC_EnemyBaceState
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Move State Enter");
-
         rb = Owner.GetComponent<Rigidbody>();
 
         // 開始位置記録
@@ -44,14 +42,16 @@ public class SC_EnemyMove : SC_EnemyBaceState
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Move State Exit");
         animator.SetBool("bMove", false);
+
+        if (rb != null)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Move State Update");
-
         if (rb == null) return;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");

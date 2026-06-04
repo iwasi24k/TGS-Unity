@@ -6,39 +6,40 @@ public enum AttackType
     Weak1,
     Weak2,
     Strong,
-    Uppercut
+    Uppercut,
+    Rotate,
 }
 
 public class SC_PlayerAttack : MonoBehaviour
 {
     [Header("Ref")]
-    [Tooltip("UŒ‚—pƒCƒ“ƒvƒbƒgƒAƒNƒVƒ‡ƒ“(ã)")]
+    [Tooltip("æ”»æ’ƒç”¨ã‚¤ãƒ³ãƒ—ãƒƒãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³(å¼±)")]
     [SerializeField] private InputActionReference iaWeakAttack;
-    [Tooltip("UŒ‚—pƒCƒ“ƒvƒbƒgƒAƒNƒVƒ‡ƒ“(‹­)")]
+    [Tooltip("æ”»æ’ƒç”¨ã‚¤ãƒ³ãƒ—ãƒƒãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³(å¼·)")]
     [SerializeField] private InputActionReference iaStrongAttack;
-    [Tooltip("ƒ^[ƒQƒbƒgî•ñ"), SerializeField] SC_PlayerTarget scTarget;
-    [Tooltip("ƒLƒƒƒ‰ƒNƒ^[ƒRƒ“ƒgƒ[ƒ‰["), SerializeField] CharacterController ccPlayer;
-    [Tooltip("ƒ|[ƒY—pƒIƒuƒWƒFƒNƒg"), SerializeField] SC_Setting scSetting;
-    [Tooltip("ƒAƒjƒ[ƒ^["), SerializeField] private Animator animPlayer;
+    [Tooltip("ã‚¿ãƒ¼ã‚²ãƒƒãƒˆæƒ…å ±"), SerializeField] SC_PlayerTarget scTarget;
+    [Tooltip("ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼"),SerializeField] CharacterController ccPlayer;
+    [Tooltip("ãƒãƒ¼ã‚ºç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ"), SerializeField] SC_Setting scSetting;
+    [Tooltip("ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼"), SerializeField] private Animator animPlayer;
 
     [Header("Settings")]
-    [Tooltip("UŒ‚‚ÌƒN[ƒ‹ƒ_ƒEƒ“ŠÔ")]
+    [Tooltip("æ”»æ’ƒã®ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³æ™‚é–“")]
     [SerializeField] private float attackCooldown = 0.5f;
-    [Tooltip("UŒ‚‚Ìƒ_ƒ[ƒW—Ê(ã)")]
+    [Tooltip("æ”»æ’ƒã®ãƒ€ãƒ¡ãƒ¼ã‚¸é‡(å¼±)")]
     [SerializeField] private int weakAttackDamage = 10;
-    [Tooltip("UŒ‚‚Ìƒ_ƒ[ƒW—Ê(‹­)")]
+    [Tooltip("æ”»æ’ƒã®ãƒ€ãƒ¡ãƒ¼ã‚¸é‡(å¼·)")]
     [SerializeField] private int strongAttackDamage = 20;
-    [Tooltip("UŒ‚”ÍˆÍ"), SerializeField] private Vector3 AttackAreaSize = new Vector3(2f, 2f, 3f);
-    [Tooltip("”ò‚Ñ‚Â‚«‚Ì”ÍˆÍ")]
+    [Tooltip("æ”»æ’ƒç¯„å›²"), SerializeField] private Vector3 AttackAreaSize = new Vector3(2f,2f,3f);
+    [Tooltip("é£›ã³ã¤ãã®ç¯„å›²")]
     [SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
-    [Tooltip("ƒ^[ƒQƒbƒg‚Ì”ò‚Ñ‚Â‚«‚Ì”ÍˆÍ")]
+    [Tooltip("ã‚¿ãƒ¼ã‚²ãƒƒãƒˆæ™‚ã®é£›ã³ã¤ãã®ç¯„å›²")]
     [SerializeField] private Vector3 TargetingJumpInAreaSize = new Vector3(3f, 2f, 10f);
     [SerializeField] private SC_PlayerCamera scCamera;
 
     private float currentAttackCooldown = 0f;
     private readonly Collider[] overlapCollision = new Collider[32];
 
-    //ƒAƒNƒVƒ‡ƒ“ƒRƒ“ƒ{
+    //ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒœ
     private enum AttackInputType
     {
         Weak,
@@ -55,10 +56,10 @@ public class SC_PlayerAttack : MonoBehaviour
     }
 
     [Header("Combo Settings")]
-    [Tooltip("ƒRƒ“ƒ{‚ªƒŠƒZƒbƒg‚³‚ê‚é‚Ü‚Å‚ÌŠÔ")]
+    [Tooltip("ã‚³ãƒ³ãƒœãŒãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹ã¾ã§ã®æ™‚é–“")]
     [SerializeField] private float comboResetTime = 2.0f;
 
-    [Tooltip("ã1’i–Ú")]
+    [Tooltip("å¼±1æ®µç›®")]
     [SerializeField]
     private AttackData weak1Attack = new AttackData
     {
@@ -68,7 +69,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = false
     };
 
-    [Tooltip("ã2’i–Ú")]
+    [Tooltip("å¼±2æ®µç›®")]
     [SerializeField]
     private AttackData weak2Attack = new AttackData
     {
@@ -78,7 +79,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = false
     };
 
-    [Tooltip("Weak ¨ Weak ¨ Weak ‚ÌUŒ‚")]
+    [Tooltip("Weak â†’ Weak â†’ Weak ã®æ”»æ’ƒ")]
     [SerializeField]
     private AttackData strongComboAttack = new AttackData
     {
@@ -88,7 +89,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = true
     };
 
-    [Tooltip("Weak ¨ Weak ¨ Strong ‚ÌUŒ‚")]
+    [Tooltip("Weak â†’ Weak â†’ Strong ã®æ”»æ’ƒ")]
     [SerializeField]
     private AttackData uppercutComboAttack = new AttackData
     {
@@ -98,7 +99,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = true
     };
 
-    [Tooltip("’Êí‚Ì‹­UŒ‚")]
+    [Tooltip("é€šå¸¸ã®å¼·æ”»æ’ƒ")]
     [SerializeField]
     private AttackData normalStrongAttack = new AttackData
     {
@@ -107,6 +108,20 @@ public class SC_PlayerAttack : MonoBehaviour
         areaSize = new Vector3(2f, 2f, 3f),
         blowAway = true
     };
+
+    [Tooltip("Weak â†’ Strong ã®å›è»¢æ”»æ’ƒ")]
+    [SerializeField]
+    private AttackData rotateComboAttack = new AttackData
+    {
+        attackType = AttackType.Rotate,
+        damage = 15,
+        areaSize = new Vector3(2f, 2f, 3f),
+        blowAway = true
+    };
+
+    [Header("Tutorial")]
+    [SerializeField]
+    private SC_AttackTutorial attackTutorial;
 
     private int weakComboCount = 0;
     private float comboTimer = 0f;
@@ -126,11 +141,11 @@ public class SC_PlayerAttack : MonoBehaviour
 
         if (iaWeakAttack == null)
         {
-            Debug.LogError("ãUŒ‚‚ÌInputActionReference‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+            Debug.LogError("å¼±æ”»æ’ƒã®InputActionReferenceãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
         }
         if (iaStrongAttack == null)
         {
-            Debug.LogError("‹­UŒ‚‚ÌInputActionReference‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+            Debug.LogError("å¼·æ”»æ’ƒã®InputActionReferenceãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
         }
     }
 
@@ -139,7 +154,7 @@ public class SC_PlayerAttack : MonoBehaviour
     {
         if (scSetting != null && scSetting.IsPaused())
         {
-            return; // ƒ|[ƒY’†‚ÍUŒ‚‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+            return; // ãƒãƒ¼ã‚ºä¸­ã¯æ”»æ’ƒã§ããªã„ã‚ˆã†ã«ã™ã‚‹
         }
 
         GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");
@@ -161,11 +176,11 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    // SearchAreaSize: ”ò‚Ñ‚Â‚«‚Ì”ÍˆÍ, AttackAreaSize: UŒ‚‚Ì”ÍˆÍ@‹­ã‚Å·‚ğ‚Â‚¯‚½‚¢ê‡‚ğl—¶‚µ‚Ä—¼•û“n‚·‚æ‚¤‚É‚µ‚Ä‚¢‚Ü‚·B
+    // SearchAreaSize: é£›ã³ã¤ãã®ç¯„å›², AttackAreaSize: æ”»æ’ƒã®ç¯„å›²ã€€å¼·å¼±ã§å·®ã‚’ã¤ã‘ãŸã„å ´åˆã‚’è€ƒæ…®ã—ã¦ä¸¡æ–¹æ¸¡ã™ã‚ˆã†ã«ã—ã¦ã„ã¾ã™ã€‚
     private void JumpInEnemy(Vector3 SearchAreaSize, Vector3 AttackAreaSize)
     {
         {
-            // UŒ‚”ÍˆÍ“à‚É“G‚ª‚¢‚é‚©ƒ`ƒFƒbƒN
+            // æ”»æ’ƒç¯„å›²å†…ã«æ•µãŒã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
             var attackCenter = transform.forward * (AttackAreaSize.z * 0.5f) + transform.up * (AttackAreaSize.y * 0.5f) + transform.position;
             int attackHitCount = Physics.OverlapBoxNonAlloc(
                 attackCenter,
@@ -174,7 +189,7 @@ public class SC_PlayerAttack : MonoBehaviour
                 transform.rotation
             );
 
-            // UŒ‚”ÍˆÍ‚É“G‚ª1‘Ì‚Å‚à‚¢‚ê‚Î”ò‚Ñ‚Â‚©‚È‚¢
+            // æ”»æ’ƒç¯„å›²ã«æ•µãŒ1ä½“ã§ã‚‚ã„ã‚Œã°é£›ã³ã¤ã‹ãªã„
             for (int a = 0; a < attackHitCount; a++)
             {
                 var col = overlapCollision[a];
@@ -186,7 +201,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
 
         {
-            //“G‚ÌˆÊ’u‚ÉƒWƒƒƒ“ƒv‚·‚éˆ—
+            //æ•µã®ä½ç½®ã«ã‚¸ãƒ£ãƒ³ãƒ—ã™ã‚‹å‡¦ç†
             var center = transform.forward * (SearchAreaSize.z * 0.5f) + transform.up * (SearchAreaSize.y * 0.5f) + transform.position;
             int hitCount = Physics.OverlapBoxNonAlloc(
                  center,
@@ -205,7 +220,7 @@ public class SC_PlayerAttack : MonoBehaviour
                 if (hit == null) continue;
                 if (!hit.CompareTag("Enemy")) continue;
 
-                // BlownAwayó‘Ô‚Ì“G‚É‚Í”ò‚Ñ‚Â‚©‚È‚¢
+                // BlownAwayçŠ¶æ…‹ã®æ•µã«ã¯é£›ã³ã¤ã‹ãªã„
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
                 if (enemy != null && enemy.IsBlownAway())
                 {
@@ -213,7 +228,7 @@ public class SC_PlayerAttack : MonoBehaviour
                 }
 
                 Vector3 toEnemy = hit.transform.position - selfPos;
-                toEnemy.y = 0f; // …•½‹——£‚Å”äŠr
+                toEnemy.y = 0f; // æ°´å¹³è·é›¢ã§æ¯”è¼ƒ
                 float sqr = toEnemy.sqrMagnitude;
                 if (sqr < minSqrDist)
                 {
@@ -224,25 +239,25 @@ public class SC_PlayerAttack : MonoBehaviour
 
             if (closest == null)
             {
-                // ‘ÎÛ‚È‚µ
+                // å¯¾è±¡ãªã—
                 return;
             }
 
-            // Å‚à‹ß‚¢“G‚É”ò‚Ñ‚Â‚­
+            // æœ€ã‚‚è¿‘ã„æ•µã«é£›ã³ã¤ã
             var directionToEnemy = (closest.transform.position - transform.position);
             directionToEnemy.y = 0f;
             if (directionToEnemy.sqrMagnitude <= 0.0001f) return;
             directionToEnemy.Normalize();
 
-            // ƒvƒŒƒCƒ„[‚ª“G‚É“’B‚µ‚·‚¬‚È‚¢‚æ‚¤UŒ‚”ÍˆÍ‚Ì’†S‚É”z’u
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ•µã«åˆ°é”ã—ã™ããªã„ã‚ˆã†æ”»æ’ƒç¯„å›²ã®ä¸­å¿ƒã«é…ç½®
             var jumpPosition = closest.transform.position - directionToEnemy * (AttackAreaSize.z * 0.5f);
 
-            // ˆÚ“®iCharacterController ‚ª‚ ‚ê‚Î ˆÚ“®j
+            // ç§»å‹•ï¼ˆCharacterController ãŒã‚ã‚Œã° ç§»å‹•ï¼‰
             if (ccPlayer != null)
             {
                 var moveVector = jumpPosition - transform.position;
                 ccPlayer.Move(moveVector);
-                // ƒWƒƒƒ“ƒvŒã‚ÉƒvƒŒƒCƒ„[‚ª“G‚ğŒü‚­‚æ‚¤‚É‰ñ“]
+                // ã‚¸ãƒ£ãƒ³ãƒ—å¾Œã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ•µã‚’å‘ãã‚ˆã†ã«å›è»¢
                 if (moveVector.sqrMagnitude > 0.001f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(directionToEnemy);
@@ -276,6 +291,7 @@ public class SC_PlayerAttack : MonoBehaviour
         );
 
         bool hasHitEnemy = false;
+        bool hasReflectedMissile = false;
 
         for (int i = 0; i < HitCount; i++)
         {
@@ -283,9 +299,24 @@ public class SC_PlayerAttack : MonoBehaviour
 
             if (hit == null) continue;
 
+            SC_ReflectableMissile reflectableMissile = hit.GetComponent<SC_ReflectableMissile>();
+
+            if (reflectableMissile == null)
+            {
+                reflectableMissile =
+                    hit.GetComponentInParent<SC_ReflectableMissile>();
+            }
+
+            if (reflectableMissile != null)
+            {
+                reflectableMissile.ReflectByPlayer(transform);
+                hasReflectedMissile = true;
+                continue;
+            }
+
             if (hit.CompareTag("Enemy"))
             {
-                // BlownAwayó‘Ô‚Ì“G‚É‚Íƒ_ƒ[ƒW‚ğ—^‚¦‚È‚¢
+                // BlownAwayçŠ¶æ…‹ã®æ•µã«ã¯ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆãªã„
                 SC_EnemyStatusManager enemy = hit.GetComponent<SC_EnemyStatusManager>();
 
                 if (enemy == null) continue;
@@ -297,52 +328,61 @@ public class SC_PlayerAttack : MonoBehaviour
             }
         }
 
-        if (hasHitEnemy && currentAttackCooldown <= 0f)
+        if ((hasHitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
         {
             currentAttackCooldown = attackCooldown;
 
             if (attackType == AttackType.Weak1 || attackType == AttackType.Weak2)
             {
-
                 SC_BeatEffectTrigger.Instance?.OnWeakHit();
-    
-                if (scCamera == null) scCamera = FindFirstObjectByType<SC_PlayerCamera>();
-                scCamera?.TriggerCameraShake(0.3f);// ãUŒ‚FƒJƒƒ‰ƒVƒFƒCƒN
+
+                if (scCamera == null)
+                {
+                    scCamera = FindFirstObjectByType<SC_PlayerCamera>();
+                }
+
+                scCamera?.TriggerCameraShake(0.3f);
             }
             else
             {
                 SC_BeatEffectTrigger.Instance?.OnStrongHit();
             }
-            
         }
         else
         {
-            currentAttackCooldown = attackCooldown * 0.5f; // “G‚É“–‚½‚ç‚È‚©‚Á‚½ê‡‚ÍƒN[ƒ‹ƒ_ƒEƒ“‚ğ’Z‚­‚·‚é‚È‚Ç‚Ì’²®‚à‰Â”\
+            currentAttackCooldown = attackCooldown * 0.5f;
         }
 
-        return hasHitEnemy;
+        if (attackTutorial != null)
+        {
+            Debug.Log("AttackTutorialé€šçŸ¥");
+            attackTutorial.OnAttackHit(attackType);
+        }
+        
+
+        return hasHitEnemy || hasReflectedMissile;
     }
 
-    // Sceneã‚Å‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚ÉUŒ‚”ÍˆÍ‚ğ‰Â‹‰»
+    // Sceneä¸Šã§ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒé¸æŠã•ã‚Œã¦ã„ã‚‹ã¨ãã«æ”»æ’ƒç¯„å›²ã‚’å¯è¦–åŒ–
     private void OnDrawGizmosSelected()
     {
-        // ”¼“§–¾‚Ì“h‚è‚ÆƒƒCƒ„[‚Å•\¦
+        // åŠé€æ˜ã®å¡—ã‚Šã¨ãƒ¯ã‚¤ãƒ¤ãƒ¼ã§è¡¨ç¤º
 
-        //Ô = UŒ‚”ÍˆÍ
+        //èµ¤ = æ”»æ’ƒç¯„å›²
         var center = transform.forward * (AttackAreaSize.z * 0.5f) + transform.up * (AttackAreaSize.y * 0.5f) + transform.position;
         Gizmos.color = new Color(1f, 0f, 0f, 0.15f);
         Gizmos.DrawCube(center, AttackAreaSize);
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(center, AttackAreaSize);
 
-        //‰©F = ”ò‚Ñ‚Â‚«”ÍˆÍ
+        //é»„è‰² = é£›ã³ã¤ãç¯„å›²
         var JumpInCenter = transform.forward * (JumpInAreaSize.z * 0.5f) + transform.up * (JumpInAreaSize.y * 0.5f) + transform.position;
         Gizmos.color = new Color(1f, 1f, 0f, 0.15f);
         Gizmos.DrawCube(JumpInCenter, JumpInAreaSize);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(JumpInCenter, JumpInAreaSize);
 
-        //—Î = ƒ^[ƒQƒbƒg‚Ì”ò‚Ñ‚Â‚«”ÍˆÍ
+        //ç·‘ = ã‚¿ãƒ¼ã‚²ãƒƒãƒˆæ™‚ã®é£›ã³ã¤ãç¯„å›²
         var TargetingJumpInCenter = transform.forward * (TargetingJumpInAreaSize.z * 0.5f) + transform.up * (TargetingJumpInAreaSize.y * 0.5f) + transform.position;
         Gizmos.color = new Color(0f, 1f, 0f, 0.15f);
         Gizmos.DrawCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
@@ -350,7 +390,7 @@ public class SC_PlayerAttack : MonoBehaviour
         Gizmos.DrawWireCube(TargetingJumpInCenter, TargetingJumpInAreaSize);
     }
 
-    //ƒN[ƒ‹ƒ_ƒEƒ“
+    //ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³
     private void UpdateAttackCooldown()
     {
         if (currentAttackCooldown > 0f)
@@ -359,9 +399,9 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    //ƒAƒNƒVƒ‡ƒ“ƒRƒ“ƒ{
+    //ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒœ
 
-    //ƒRƒ“ƒ{ƒ^ƒCƒ}[
+    //ã‚³ãƒ³ãƒœã‚¿ã‚¤ãƒãƒ¼
     private void UpdateComboTimer()
     {
         if (comboTimer <= 0f)
@@ -377,7 +417,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    //ƒAƒNƒVƒ‡ƒ““ü—Í
+    //ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å…¥åŠ›
     private void TryAttackInput(AttackInputType inputType)
     {
         if (currentAttackCooldown > 0f)
@@ -394,7 +434,7 @@ public class SC_PlayerAttack : MonoBehaviour
 
         bool hasHitEnemy = ExecuteAttackData(attackData);
 
-        //UŒ‚‚ª“–‚½‚Á‚½‚¾‚¯ƒRƒ“ƒ{ŒvZ
+        //æ”»æ’ƒãŒå½“ãŸã£ãŸæ™‚ã ã‘ã‚³ãƒ³ãƒœè¨ˆç®—
         if (hasHitEnemy)
         {
             UpdateComboState(inputType, attackData);
@@ -405,7 +445,7 @@ public class SC_PlayerAttack : MonoBehaviour
         }
     }
 
-    //“ü—Í•ÏŠ·
+    //å…¥åŠ›å¤‰æ›
     private AttackData GetAttackDataByInput(AttackInputType inputType)
     {
         switch (inputType)
@@ -420,48 +460,55 @@ public class SC_PlayerAttack : MonoBehaviour
         return null;
     }
 
-    //Weak“ü—Í‚Ì•ªŠò
+    //Weakå…¥åŠ›æ™‚ã®åˆ†å²
     private AttackData GetAttackDataByWeakInput()
     {
-        // Weak ¨ Weak ¨ Weak
-        // 3‰ñ–Ú‚ÌWeak“ü—Í‚ÍStrongUŒ‚‚É‚È‚é
+        // Weak â†’ Weak â†’ Weak
+        // 3å›ç›®ã®Weakå…¥åŠ›ã¯Strongæ”»æ’ƒã«ãªã‚‹
         if (weakComboCount >= 2)
         {
-            Debug.Log("PlayerAttack:3‰ñ–Ú‚ÌWeak¨Strong");
+            Debug.Log("PlayerAttack:3å›ç›®ã®Weakâ†’Strong");
             return strongComboAttack;
         }
 
-        // 1‰ñ–Ú‚ÌWeak
+        // 1å›ç›®ã®Weak
         if (weakComboCount == 0)
         {
-            Debug.Log("PlayerAttack:1‰ñ–Ú‚ÌWeak");
+            Debug.Log("PlayerAttack:1å›ç›®ã®Weak");
             return weak1Attack;
         }
 
-        // 2‰ñ–Ú‚ÌWeak
+        // 2å›ç›®ã®Weak
         if (weakComboCount == 1)
         {
-            Debug.Log("PlayerAttack:2‰ñ–Ú‚ÌWeak");
+            Debug.Log("PlayerAttack:2å›ç›®ã®Weak");
             return weak2Attack;
         }
 
         return weak1Attack;
     }
 
-    //Strong“ü—Í‚Ì•ªŠò
+    //Strongå…¥åŠ›æ™‚ã®åˆ†å²
     private AttackData GetAttackDataByStrongInput()
     {
+
         if (weakComboCount >= 2)
         {
             Debug.Log("PlayerAttack:Uppercut");
             return uppercutComboAttack;
         }
 
-        Debug.Log("PlayerAttack:1‰ñ–Ú‚ÌStrong");
+        if (weakComboCount == 1)
+        {
+            Debug.Log("PlayerAttack:Rotate");
+            return rotateComboAttack;
+        }
+
+        Debug.Log("PlayerAttack:Strong");
         return normalStrongAttack;
     }
 
-    //ƒAƒNƒVƒ‡ƒ“Às
+    //ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
     private bool ExecuteAttackData(AttackData attackData)
     {
         Vector3 jumpInSize = scTarget.GetCurrentTarget() != null
@@ -474,10 +521,10 @@ public class SC_PlayerAttack : MonoBehaviour
         return hasHitEnemy;
     }
 
-    //ƒRƒ“ƒ{ó‘ÔXV
+    //ã‚³ãƒ³ãƒœçŠ¶æ…‹æ›´æ–°
     private void UpdateComboState(AttackInputType inputType, AttackData attackData)
     {
-        // Weak“ü—Í‚ÅA‚Ü‚¾ƒRƒ“ƒ{“r’†‚È‚çƒJƒEƒ“ƒg‚ği‚ß‚é
+        // Weakå…¥åŠ›ã§ã€ã¾ã ã‚³ãƒ³ãƒœé€”ä¸­ãªã‚‰ã‚«ã‚¦ãƒ³ãƒˆã‚’é€²ã‚ã‚‹
         if (inputType == AttackInputType.Weak &&
             (attackData.attackType == AttackType.Weak1 || attackData.attackType == AttackType.Weak2))
         {
@@ -486,15 +533,23 @@ public class SC_PlayerAttack : MonoBehaviour
             return;
         }
 
-        // StrongUŒ‚AVeryStrongUŒ‚A’ÊíStrongUŒ‚‚ğo‚µ‚½‚çƒRƒ“ƒ{I—¹
+        // Strongæ”»æ’ƒã€VeryStrongæ”»æ’ƒã€é€šå¸¸Strongæ”»æ’ƒã‚’å‡ºã—ãŸã‚‰ã‚³ãƒ³ãƒœçµ‚äº†
         ResetCombo();
     }
 
-    //ƒRƒ“ƒ{ƒŠƒZƒbƒg
+    //ã‚³ãƒ³ãƒœãƒªã‚»ãƒƒãƒˆ
     private void ResetCombo()
     {
-        Debug.Log("PlayerAttack:ƒRƒ“ƒ{ƒŠƒZƒbƒg");
+        Debug.Log("PlayerAttack:ã‚³ãƒ³ãƒœãƒªã‚»ãƒƒãƒˆ");
         weakComboCount = 0;
         comboTimer = 0f;
+    }
+
+    public void TutorialResetCombo()
+    {
+        weakComboCount = 0;
+        comboTimer = 0f;
+
+        Debug.Log("TutorialResetCombo");
     }
 }
