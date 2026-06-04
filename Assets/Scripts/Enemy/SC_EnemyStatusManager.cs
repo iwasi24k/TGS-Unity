@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//ƒ_ƒ[ƒW‚Ìí—Ş
+//ãƒ€ãƒ¡ãƒ¼ã‚¸ã®ç¨®é¡
 public enum EnemyDamageSource
 {
     PlayerAttack,
@@ -17,38 +17,54 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
-    private int MaxHP = 100; //Å‘åHP‚ğ’è”‚Å’è‹`
+    private int MaxHP;
 
     [Header("State")]
-    [Tooltip("State‚ÌƒŠƒXƒg"),SerializeField] private SC_EnemyBaceState[] stateList;
-    [Tooltip("‰Šúó‘Ô‚ÌState‚Ì”z—ñ”Ô†"),SerializeField] private int initialStateNum;
-    [Tooltip("‚Á”ò‚Ñ‚ÌState"),SerializeField] private SC_EnemyBaceState blowAwayState;
+    [Tooltip("Stateã®ãƒªã‚¹ãƒˆ"),SerializeField] private SC_EnemyBaceState[] stateList;
+    [Tooltip("åˆæœŸçŠ¶æ…‹ã®Stateã®é…åˆ—ç•ªå·"),SerializeField] private int initialStateNum;
+    [Tooltip("å¹ã£é£›ã³ã®State"),SerializeField] private SC_EnemyBaceState blowAwayState;
     private SC_EnemyBaceState localBlowAwayState;
 
-    [Header("Õ“Ë”»’è‰~")]
-    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~’†S"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
-    [Tooltip("“G“¯m‚ÌÕ“Ë”»’è‰~”¼Œa"),SerializeField] private float collisionRadius = 0.5f;
-    [Tooltip("“G“¯m‚ÌÕ“Ë‚Ì‚Á”ò‚Ñ‚ÌˆĞ—Í"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
-    [Tooltip("ƒT[ƒ`‚ÌŠp“x"), SerializeField] private float searchAngleThreshold = 30f;
-    [Tooltip("“G“¯m‚ÌÕ“ËÅ’á‘¬“x"), SerializeField] private float minCollisionSpeed = 1.0f;
-    [Tooltip("“G“¯m‚ÌÕ“ËƒN[ƒ‹ƒ^ƒCƒ€"), SerializeField] private float enemyCollisionCooldown = 0.5f;
+    [Header("è¡çªåˆ¤å®šå††")]
+    [Tooltip("æ•µåŒå£«ã®è¡çªåˆ¤å®šå††ä¸­å¿ƒ"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
+    [Tooltip("æ•µåŒå£«ã®è¡çªåˆ¤å®šå††åŠå¾„"),SerializeField] private float collisionRadius = 0.5f;
+    [Tooltip("æ•µåŒå£«ã®è¡çªæ™‚ã®å¹ã£é£›ã³ã®å¨åŠ›"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
+    [Tooltip("ã‚µãƒ¼ãƒã®è§’åº¦"), SerializeField] private float searchAngleThreshold = 30f;
+    [Tooltip("æ•µåŒå£«ã®è¡çªæœ€ä½é€Ÿåº¦"), SerializeField] private float minCollisionSpeed = 1.0f;
+    [Tooltip("æ•µåŒå£«ã®è¡çªã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ "), SerializeField] private float enemyCollisionCooldown = 0.5f;
 
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
-    [Tooltip("‚±‚Ì“G‚ª‚Á”ò‚Ñó‘Ô‚É‚È‚é‚©‚Ç‚¤‚©"),SerializeField] private bool canBlownAway = true;
+    [Tooltip("ã“ã®æ•µãŒå¹ã£é£›ã³çŠ¶æ…‹ã«ãªã‚‹ã‹ã©ã†ã‹"),SerializeField] private bool canBlownAway = true;
 
     [Header("Boss Down")]
-    [Tooltip("ƒ{ƒX‚ªDown‚·‚éState‚ÌStateList”Ô†"), SerializeField] private int bossDownStateIndex = 6;
-    [Tooltip("‚±‚Ì“G‚ªƒ{ƒXDown‚ğg‚¤‚©"), SerializeField] private bool useBossDown = false;
-    [Tooltip("Down’†‚¾‚¯PlayerUŒ‚‚Ìƒ_ƒ[ƒW‚ğó‚¯‚é‚©"), SerializeField] private bool onlyTakePlayerDamageWhileDown = false;
-
-    //UŒ‚ƒŠƒXƒg
+    [Tooltip("ãƒœã‚¹ãŒDownã™ã‚‹Stateã®StateListç•ªå·"), SerializeField] private int bossDownStateIndex = 6;
+    [Tooltip("ã“ã®æ•µãŒãƒœã‚¹Downã‚’ä½¿ã†ã‹"), SerializeField] private bool useBossDown = false;
+    [Tooltip("Downä¸­ã ã‘Playeræ”»æ’ƒã®ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹ã‹"), SerializeField] private bool onlyTakePlayerDamageWhileDown = false;
+    [Tooltip("1å›ã®Downä¸­ã«å‰Šã‚Œã‚‹HPé‡ã‚’åˆ¶é™ã™ã‚‹ã‹"), SerializeField] private bool useBossDownDamageLimit = true;
+    [Tooltip("ãƒœã‚¹HPã‚’ä½•åˆ†å‰²ã™ã‚‹ã‹ã€‚4ãªã‚‰1å›ã®Downã§æœ€å¤§HPã®1/4ã¾ã§å‰Šã‚Œã‚‹"), SerializeField] private int bossHpPartCount = 4;
+    
+    [Header("Boss Shield")]
+    [Tooltip("ãƒœã‚¹ã‚·ãƒ¼ãƒ«ãƒ‰ã‚’ä½¿ã†ã‹"), SerializeField] private bool useBossShield = false;
+    [Tooltip("ãƒœã‚¹ã‚·ãƒ¼ãƒ«ãƒ‰ã®è¡¨ç¤ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ"), SerializeField] private GameObject bossShieldObject;
+    [Tooltip("ãƒœã‚¹ã‚·ãƒ¼ãƒ«ãƒ‰ã®æœ€å¤§å€¤"), SerializeField] private int maxBossShield = 3;
+    [Tooltip("ç¾åœ¨ã®ãƒœã‚¹ã‚·ãƒ¼ãƒ«ãƒ‰å€¤"), SerializeField] private int currentBossShield = 3;
+    [Tooltip("ã‚·ãƒ¼ãƒ«ãƒ‰ãŒ0ã«ãªã£ãŸæ™‚ã«Downã™ã‚‹ã‹"), SerializeField] private bool downWhenShieldBreak = true;
+    [Tooltip("ã‚·ãƒ¼ãƒ«ãƒ‰ã®ç¨²å¦»æ¼”å‡º"), SerializeField]
+    private SC_ShieldLightningEffect shieldLightningEffect;
+    
+    // æ”»æ’ƒãƒªã‚¹ãƒˆ
     private int[] currentBossAttackList;
     private int currentBossAttackListIndex;
 
+    // BossDownä¸­ã®ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ¶é™ç”¨
+    private int bossDownStartHP;
+    private int bossDownHpLimit;
+    private bool requestEndBossDown;
+
     //----------------------------------------------------------
 
-    // ‘Šè‚²‚Æ‚ÌÄƒqƒbƒg‰Â”\ŠÔ
+    // ç›¸æ‰‹ã”ã¨ã®å†ãƒ’ãƒƒãƒˆå¯èƒ½æ™‚é–“
     private Dictionary<GameObject, float> enemyCollisionTimers = new Dictionary<GameObject, float>();
 
     private SC_EnemyBaceState currentState;
@@ -61,17 +77,17 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         if (hpSlider == null)
         {
-            Debug.LogError("HPƒXƒ‰ƒCƒ_[‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+            Debug.LogError("HPã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
         }
         else
         {
             hpSlider.maxValue = hpSlider.value = HP;
         }
 
-        //‘SƒXƒe[ƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»‚µAƒAƒZƒbƒg‚ğ’¼Ú‚¢‚¶‚ç‚È‚¢Œ`‚É•ÏX
+        //å…¨ã‚¹ãƒ†ãƒ¼ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã—ã€ã‚¢ã‚»ãƒƒãƒˆã‚’ç›´æ¥ã„ã˜ã‚‰ãªã„å½¢ã«å¤‰æ›´
         for (int i = 0; i < stateList.Length; i++)
         {
-            //Debug.Log("StateList‚Ì" + i + "”Ô–Ú‚ÌState‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»" + "StateName : " + stateList[i].name);
+            //Debug.Log("StateListã®" + i + "ç•ªç›®ã®Stateã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–" + "StateName : " + stateList[i].name);
             SC_EnemyBaceState newState = Instantiate(stateList[i]);
             localStateList[i] = newState;
         }
@@ -81,9 +97,25 @@ public class SC_EnemyStatusManager : MonoBehaviour
             localBlowAwayState = Instantiate(blowAwayState);
         }
 
-        //‰Šúó‘Ô‚Ìİ’èACurrentIndex‚ğ‰Šúó‘Ô‚É‡‚í‚¹‚Ä•ÏX
+        //åˆæœŸçŠ¶æ…‹ã®è¨­å®šã€CurrentIndexã‚’åˆæœŸçŠ¶æ…‹ã«åˆã‚ã›ã¦å¤‰æ›´
         currentState = localStateList[initialStateNum];
         currentState.Enter(this.gameObject,this);
+
+        //HPã®åˆæœŸå€¤ã‚’MaxHPã«è¨­å®š
+        MaxHP = HP;
+
+        // Boss Shieldã®åˆæœŸå€¤ã‚’è¨­å®š
+        if (useBossShield)
+        {
+            currentBossShield = maxBossShield;
+            SetBossShieldVisible(true);
+
+            if (shieldLightningEffect == null && bossShieldObject != null)
+            {
+                shieldLightningEffect =
+                    bossShieldObject.GetComponentInChildren<SC_ShieldLightningEffect>();
+            }
+        }
     }
 
     void Update()
@@ -122,7 +154,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    /* : ˆÈ‰ºAŠeƒXƒe[ƒ^ƒX‚ÌŠÇ——pŠÖ”B@ŠO•”‚©‚çŒÄ‚Ño‚µ‚Äd—lB : */
+    /* : ä»¥ä¸‹ã€å„ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ç®¡ç†ç”¨é–¢æ•°ã€‚ã€€å¤–éƒ¨ã‹ã‚‰å‘¼ã³å‡ºã—ã¦ä»•æ§˜ã€‚ : */
     public int GetHP()
     {
         return HP;
@@ -135,20 +167,34 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0, EnemyDamageSource damageSource = EnemyDamageSource.PlayerAttack)
     {
-        // Boss—pFDown’†ˆÈŠO‚ÍPlayerUŒ‚‚Ìƒ_ƒ[ƒW‚ğ–³Œø‰»
-        if (onlyTakePlayerDamageWhileDown &&
-            damageSource == EnemyDamageSource.PlayerAttack &&
-            !IsBossDown())
+
+        SC_TutorialEnemy tutorialEnemy =
+            GetComponent<SC_TutorialEnemy>();
+
+        if (tutorialEnemy != null)
         {
-            Debug.Log("Boss‚ÍDown’†‚Å‚Í‚È‚¢‚½‚ßAPlayerUŒ‚ƒ_ƒ[ƒW‚ğ–³Œø‰»");
-            return;
+            tutorialEnemy.WeakAttackHit();
+        }
+        // Bossç”¨ï¼šPlayeræ”»æ’ƒã®å ´åˆ
+        if (damageSource == EnemyDamageSource.PlayerAttack)
+        {
+            // Downä¸­ä»¥å¤–ã¯HPãƒ€ãƒ¡ãƒ¼ã‚¸ç„¡åŠ¹
+            if (onlyTakePlayerDamageWhileDown && !IsBossDown())
+            {
+                Debug.Log("Bossã¯Downä¸­ã§ã¯ãªã„ãŸã‚ã€Playeræ”»æ’ƒãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ç„¡åŠ¹åŒ–");
+                return;
+            }
+
         }
 
         CollisionDamage(damage);
 
-        if (HP < 0)
+        CheckBossDownDamageLimit();
+
+        if (HP <= 0)
         {
             HP = 0;
+
             if (canBlownAway)
             {
                 TransitionToBlownAway(damage, AttackerPosition, attackType);
@@ -160,11 +206,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             return;
         }
-        else if (isBlowAway && canBlownAway) 
+
+        if (isBlowAway && canBlownAway) 
         {
             TransitionToBlownAway(damage, AttackerPosition, attackType);
         }
-
     }
 
     public void TransitionToNext()
@@ -173,7 +219,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             currentState.Exit(this.gameObject, this);
         }
-        currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //Ÿ‚ÌƒXƒe[ƒg‚ÉˆÚsAƒ‹[ƒv‚·‚éŒ`
+        currentStateIndex = (currentStateIndex + 1) % localStateList.Length; //æ¬¡ã®ã‚¹ãƒ†ãƒ¼ãƒˆã«ç§»è¡Œã€ãƒ«ãƒ¼ãƒ—ã™ã‚‹å½¢
         currentState = localStateList[currentStateIndex];
         currentState.Enter(this.gameObject, this);
     }
@@ -208,10 +254,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void ReturnFromBlownAway()
     {
-        //‚à‚µHP‚ª0ˆÈ‰º‚È‚çAÁ–Å‚·‚é
+        //ã‚‚ã—HPãŒ0ä»¥ä¸‹ãªã‚‰ã€æ¶ˆæ»…ã™ã‚‹
         if(HP <= 0)
         {
-            Debug.Log("HP‚ª0ˆÈ‰º‚Ì‚½‚ßA“G‚ğÁ–Å‚³‚¹‚Ü‚·B");
+            Debug.Log("HPãŒ0ä»¥ä¸‹ã®ãŸã‚ã€æ•µã‚’æ¶ˆæ»…ã•ã›ã¾ã™ã€‚");
+            SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
             Destroy(this.gameObject);
             return;
         }
@@ -224,7 +271,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    //ƒT[ƒ`(À•W•ûŒü‚©‚ç30“xˆÈ“à‚É‚¢‚é“G‚ğ’T‚·)
+    //ã‚µãƒ¼ãƒ(åº§æ¨™æ–¹å‘ã‹ã‚‰30åº¦ä»¥å†…ã«ã„ã‚‹æ•µã‚’æ¢ã™)
     public Vector3 SearchForEnemyInDirection(Vector3 direction, float angleThreshold)
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -254,21 +301,19 @@ public class SC_EnemyStatusManager : MonoBehaviour
         
         if(closestEnemy != null)
         {
-            //Debug.Log("ƒT[ƒ`‚Å“G‚ğŒ©‚Â‚¯‚Ü‚µ‚½ : " + closestEnemy.name);
+            //Debug.Log("ã‚µãƒ¼ãƒã§æ•µã‚’è¦‹ã¤ã‘ã¾ã—ãŸ : " + closestEnemy.name);
 
             Vector3 blowDirection = (closestEnemy.transform.position - this.transform.position).normalized;
             return blowDirection;
         }
         else
         {
-            //Debug.Log("ƒT[ƒ`‚Å“G‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
+            //Debug.Log("ã‚µãƒ¼ãƒã§æ•µãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
             return direction; 
         }
     }
 
-
-
-    //“G“¯m‚ÌÕ“Ë”»’è
+    //æ•µåŒå£«ã®è¡çªåˆ¤å®š
     public void CheckCollisionWithOtherEnemies()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + collisionCenter, collisionRadius);
@@ -287,25 +332,65 @@ public class SC_EnemyStatusManager : MonoBehaviour
             if (otherEnemy == this.gameObject) continue;
             if (!otherEnemy.CompareTag("Enemy")) continue;
 
-            // “¯‚¶“G‚É˜A‘±ƒqƒbƒg‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+            // åŒã˜æ•µã«é€£ç¶šãƒ’ãƒƒãƒˆã—ãªã„ã‚ˆã†ã«ã™ã‚‹
             if (!CanHitEnemyCollision(otherEnemy)) continue;
 
-            RegisterEnemyCollision(otherEnemy);
+            SC_EnemyStatusManager otherStatusManager = otherEnemy.GetComponent<SC_EnemyStatusManager>();
 
+            if (otherStatusManager == null) continue;
+
+            RegisterEnemyCollision(otherEnemy);
+            otherStatusManager.RegisterEnemyCollision(this.gameObject);
+         
             int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
 
+            // ç›¸æ‰‹ãŒã‚·ãƒ¼ãƒ«ãƒ‰æŒã¡ãƒœã‚¹
+            if (otherStatusManager.UseBossShield())
+            {
+                // ã‚·ãƒ¼ãƒ«ãƒ‰ãŒæ®‹ã£ã¦ã„ã‚‹ãªã‚‰ã‚·ãƒ¼ãƒ«ãƒ‰ãƒ€ãƒ¡ãƒ¼ã‚¸
+                if (otherStatusManager.HasBossShield())
+                {
+                    otherStatusManager.TakeBossShieldDamage(myPower);
+                }
+
+                // ã‚·ãƒ¼ãƒ«ãƒ‰ãŒç„¡ãã€Downä¸­ãªã‚‰HPãƒ€ãƒ¡ãƒ¼ã‚¸
+                else if (otherStatusManager.IsBossDown())
+                {
+                    otherStatusManager.TakeDamage(
+                        myPower,
+                        this.transform.position,
+                        false,
+                        0,
+                        EnemyDamageSource.EnemyCollision
+                    );
+                }
+
+                // ãƒœã‚¹ã¯å¹ã£é£›ã°ã•ãªã„
+                // é£›ã°ã•ã‚ŒãŸè‡ªåˆ†ã ã‘è¡çªå¾Œã®å‡¦ç†
+                TransitionToBlownAway(
+                    myPower,
+                    otherEnemy.transform.position,
+                    0
+                );
+
+                CollisionDamage(myPower);
+
+                continue;
+            }
+
+
+            // ã“ã“ã‹ã‚‰æ™®é€šã®æ•µåŒå£«ã®è¡çªå‡¦ç†
             TransitionToBlownAway(myPower, otherEnemy.transform.position, 0);
             CollisionDamage(myPower);
 
-            SC_EnemyStatusManager otherStatusManager = otherEnemy.GetComponent<SC_EnemyStatusManager>();
-            if (otherStatusManager != null)
-            {
-                // ‘Šè‘¤‚É‚àA©•ª‚Æ‚ÌÕ“Ë‚ğ“o˜^‚µ‚Ä‚¨‚­
-                otherStatusManager.RegisterEnemyCollision(this.gameObject);
+            otherStatusManager.TransitionToBlownAway(
+                myPower,
+                this.transform.position,
+                0
+            );
 
-                otherStatusManager.TransitionToBlownAway(myPower, this.transform.position, 0);
-                otherStatusManager.CollisionDamage(myPower);
-            }
+            otherStatusManager.CollisionDamage(myPower);
+
         }
     }
 
@@ -318,14 +403,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    // Sceneã‚Å‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚ÉUŒ‚”ÍˆÍ‚ğ‰Â‹‰»
+    // Sceneä¸Šã§ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒé¸æŠã•ã‚Œã¦ã„ã‚‹ã¨ãã«æ”»æ’ƒç¯„å›²ã‚’å¯è¦–åŒ–
     private void OnDrawGizmosSelected()
     {
-        // “G“¯m‚ÌÕ“Ë”»’è‰~‚ğ•`‰æ
+        // æ•µåŒå£«ã®è¡çªåˆ¤å®šå††ã‚’æç”»
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position + collisionCenter, collisionRadius);
 
-        // ƒT[ƒ`‚ÌŠp“x‚ğ•`‰æ
+        // ã‚µãƒ¼ãƒã®è§’åº¦ã‚’æç”»
         Gizmos.color = Color.blue;
         Vector3 forward = transform.forward;
         Vector3 rightBoundary = Quaternion.Euler(0, searchAngleThreshold, 0) * forward;
@@ -334,7 +419,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary * 2f);
     }
 
-    //Õ“Ëƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”
+    //è¡çªãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹é–¢æ•°
     private void CollisionDamage(int damage)
     {
         HP -= damage;
@@ -345,13 +430,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    //‚à‚µ“G‚ªBlownAwayó‘Ô‚Ì‚ÉAture‚ğ•Ô‚·ŠÖ”
+    //ã‚‚ã—æ•µãŒBlownAwayçŠ¶æ…‹ã®æ™‚ã«ã€tureã‚’è¿”ã™é–¢æ•°
     public bool IsBlownAway()
     {
         return currentState is SC_EnemyBlownAway;
     }
 
-    //ƒ^ƒCƒ}[XV
+    //ã‚¿ã‚¤ãƒãƒ¼æ›´æ–°
     private void UpdateEnemyCollisionTimers()
     {
         if (enemyCollisionTimers.Count == 0) return;
@@ -399,10 +484,17 @@ public class SC_EnemyStatusManager : MonoBehaviour
         enemyCollisionTimers[otherEnemy] = enemyCollisionCooldown;
     }
 
+
+    public void ResetEnemyStatus()
+    {
+        HP = MaxHP;
+    }
+    
     public void SetHP(int hp)
     {
         HP = hp;
         MaxHP = hp;
+
 
         if (hpSlider != null)
         {
@@ -411,12 +503,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    //State‚ğ•ÏX‚·‚éŠÖ”AStateList‚Ì”z—ñ”Ô†‚Åw’è
+
+    //Stateã‚’å¤‰æ›´ã™ã‚‹é–¢æ•°ã€StateListã®é…åˆ—ç•ªå·ã§æŒ‡å®š
     public void ChangeState(int stateIndex)
     {
         if (stateIndex < 0 || stateIndex >= localStateList.Length)
         {
-            Debug.LogError("‘¶İ‚µ‚È‚¢State”Ô†‚Å‚· : " + stateIndex);
+            Debug.LogError("å­˜åœ¨ã—ãªã„Stateç•ªå·ã§ã™ : " + stateIndex);
             return;
         }
 
@@ -430,7 +523,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    // BossDownó‘Ô‚ÉˆÚs‚·‚éŠÖ”
+    // BossDownçŠ¶æ…‹ã«ç§»è¡Œã™ã‚‹é–¢æ•°
     public void TriggerBossDown()
     {
         if (!useBossDown) return;
@@ -438,13 +531,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
         ChangeState(bossDownStateIndex);
     }
 
-    // BossDownó‘Ô‚©‚Ç‚¤‚©‚ğ•Ô‚·ŠÖ”
+    // BossDownçŠ¶æ…‹ã‹ã©ã†ã‹ã‚’è¿”ã™é–¢æ•°
     public bool IsBossDown()
     {
         return currentState is SC_BossDownState;
     }
 
-    // Boss‚ÌUŒ‚ƒŠƒXƒg‚ğŠJn‚·‚éŠÖ”
+    // Bossã®æ”»æ’ƒãƒªã‚¹ãƒˆã‚’é–‹å§‹ã™ã‚‹é–¢æ•°
     public void StartBossAttackList(int[] attackList)
     {
         if (attackList == null || attackList.Length == 0)
@@ -459,7 +552,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         ChangeState(currentBossAttackList[currentBossAttackListIndex]);
     }
 
-    // Boss‚ÌUŒ‚ƒŠƒXƒg‚ÌŸ‚ÌUŒ‚‚ÉˆÚs‚·‚éŠÖ”
+    // Bossã®æ”»æ’ƒãƒªã‚¹ãƒˆã®æ¬¡ã®æ”»æ’ƒã«ç§»è¡Œã™ã‚‹é–¢æ•°
     public void ChangeNextBossAttackInList()
     {
         if (currentBossAttackList == null || currentBossAttackList.Length == 0)
@@ -481,4 +574,139 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         ChangeState(currentBossAttackList[currentBossAttackListIndex]);
     }
+
+    // Bossã®æ”»æ’ƒãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹é–¢æ•°
+    public void ClearBossAttackList()
+    {
+        currentBossAttackList = null;
+        currentBossAttackListIndex = 0;
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ã«ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹é–¢æ•°
+    public void TakeBossShieldDamage(int damage)
+    {
+        if (!useBossShield) return;
+        if (damage <= 0) return;
+
+        // ã™ã§ã«Downä¸­ãªã‚‰ã‚·ãƒ¼ãƒ«ãƒ‰ã¯æ¸›ã‚‰ã•ãªã„
+        if (IsBossDown()) return;
+
+        currentBossShield -= damage;
+
+        if (currentBossShield < 0)
+        {
+            currentBossShield = 0;
+        }
+
+        if (shieldLightningEffect != null)
+        {
+            shieldLightningEffect.PlayHitEffect();
+        }
+
+        Debug.Log("Boss Shield : " + currentBossShield + " / " + maxBossShield);
+
+        if (currentBossShield <= 0)
+        {
+            SetBossShieldVisible(false);
+            OnBossShieldBreak();
+        }
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ãŒ0ã«ãªã£ãŸã¨ãã®å‡¦ç†
+    private void OnBossShieldBreak()
+    {
+        if (!downWhenShieldBreak) return;
+
+        TriggerBossDown();
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
+    public void ResetBossShield()
+    {
+        if (!useBossShield) return;
+
+        currentBossShield = maxBossShield;
+
+        SetBossShieldVisible(true);
+
+        Debug.Log("Boss Shield Reset : " + currentBossShield);
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ã‚’ä½¿ã†ã‹ã©ã†ã‹ã‚’è¿”ã™é–¢æ•°
+    public bool UseBossShield()
+    {
+        return useBossShield;
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ãŒç¾åœ¨æœ‰åŠ¹ã‹ã©ã†ã‹ã‚’è¿”ã™é–¢æ•°
+    public bool HasBossShield()
+    {
+        return useBossShield && currentBossShield > 0;
+    }
+
+    // Bossã‚·ãƒ¼ãƒ«ãƒ‰ã®è¡¨ç¤ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¡¨ç¤ºãƒ»éè¡¨ç¤ºã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹é–¢æ•°
+    public void SetBossShieldVisible(bool visible)
+    {
+        if (bossShieldObject == null) return;
+
+        bossShieldObject.SetActive(visible);
+    }
+
+    // BossDownä¸­ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ä¸Šé™ã‚’é–‹å§‹ã™ã‚‹é–¢æ•°
+    public void BeginBossDownDamageLimit()
+    {
+        if (!useBossDownDamageLimit) return;
+
+        bossHpPartCount = Mathf.Max(1, bossHpPartCount);
+
+        bossDownStartHP = HP;
+
+        int damageLimit = Mathf.CeilToInt((float)MaxHP / bossHpPartCount);
+
+        bossDownHpLimit = bossDownStartHP - damageLimit;
+
+        if (bossDownHpLimit < 0)
+        {
+            bossDownHpLimit = 0;
+        }
+
+        requestEndBossDown = false;
+
+        Debug.Log("Downä¸­ãƒ€ãƒ¡ãƒ¼ã‚¸ä¸Šé™ HP : " + bossDownStartHP + " -> " + bossDownHpLimit);
+    }
+
+    // BossDownä¸­ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ä¸Šé™ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹é–¢æ•°ã€‚ä¸Šé™ã‚’è¶…ãˆã¦ã„ãŸã‚‰ã€trueã‚’è¿”ã™
+    public bool IsRequestEndBossDown()
+    {
+        return requestEndBossDown;
+    }
+
+    // BossDownä¸­ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ä¸Šé™ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦ã€å¿…è¦ãªã‚‰ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹é–¢æ•°
+    public void ClearRequestEndBossDown()
+    {
+        requestEndBossDown = false;
+    }
+
+    // BossDownä¸­ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ä¸Šé™ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦ã€HPã‚’åˆ¶é™ã™ã‚‹é–¢æ•°
+    private void CheckBossDownDamageLimit()
+    {
+        if (!useBossDownDamageLimit) return;
+        if (!IsBossDown()) return;
+
+        if (HP <= bossDownHpLimit)
+        {
+            HP = bossDownHpLimit;
+
+            if (hpSlider != null)
+            {
+                hpSlider.value = HP;
+            }
+
+            requestEndBossDown = true;
+
+            Debug.Log("Downä¸­ã®1ã‚²ãƒ¼ã‚¸åˆ†ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ°é”ã€‚Downã‚’çµ‚äº†ã—ã¾ã™");
+        }
+    }
+
+
 }

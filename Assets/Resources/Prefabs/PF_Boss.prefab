@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3146696696656922908
+--- !u!1 &3475018771120973243
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,50 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2782053012849879036}
-  - component: {fileID: 6385437579151194819}
-  - component: {fileID: 7524563569166619461}
-  - component: {fileID: 3720125751849075900}
-  - component: {fileID: 5344316859885813349}
-  - component: {fileID: 6295404586429313518}
-  - component: {fileID: 8634380684852518709}
+  - component: {fileID: 8848985582804138985}
+  - component: {fileID: 1164973824796174598}
+  - component: {fileID: 7101841934294198423}
+  - component: {fileID: 7491795758519945043}
   m_Layer: 0
-  m_Name: PF_Boss
-  m_TagString: Enemy
+  m_Name: Shield
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2782053012849879036
+--- !u!4 &8848985582804138985
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 3475018771120973243}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 14}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 5808079244715204392}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6385437579151194819
+--- !u!33 &1164973824796174598
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 3475018771120973243}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7524563569166619461
+--- !u!23 &7101841934294198423
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 3475018771120973243}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -70,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 710d2530d40393940a8b503c6900d3b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,13 +91,128 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3720125751849075900
+--- !u!114 &7491795758519945043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475018771120973243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31cd1de4f4e91e4280e43051a7e5a97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  targetRenderer: {fileID: 0}
+  lightningSpeedPropertyName: _LightningSpeed1
+  lightningSpeedBPropertyName: _LightningSpeed2
+  useSecondSpeed: 1
+  normalSpeed1: -1
+  normalSpeed2: -2
+  hitSpeed: -5
+  recoverSpeed: 1
+--- !u!1 &8487347958724102371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5808079244715204392}
+  - component: {fileID: 5554528390885481333}
+  - component: {fileID: 8223032069614910893}
+  - component: {fileID: 7984335469305521873}
+  - component: {fileID: 8448061190793442875}
+  - component: {fileID: 3505882211090475744}
+  - component: {fileID: 5880420886448220101}
+  m_Layer: 0
+  m_Name: PF_Boss
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5808079244715204392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8487347958724102371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.7233943, y: 2.61, z: 11.515918}
+  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8848985582804138985}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &5554528390885481333
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8487347958724102371}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &8223032069614910893
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8487347958724102371}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: b34b07a45ba63ce47896c9e674f3a7a7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &7984335469305521873
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 8487347958724102371}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -115,13 +227,13 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &5344316859885813349
+--- !u!54 &8448061190793442875
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 8487347958724102371}
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
@@ -142,13 +254,13 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &6295404586429313518
+--- !u!114 &3505882211090475744
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 8487347958724102371}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 906b83f5f756b6b4bbf0809d4be61a27, type: 3}
@@ -159,11 +271,30 @@ MonoBehaviour:
   stateList:
   - {fileID: 11400000, guid: 1cada7607adc0fd4795d9bb0e2af0aa9, type: 2}
   - {fileID: 11400000, guid: 2cb6f9ec46ea3f9408c6bc6552ba933a, type: 2}
-  - {fileID: 11400000, guid: a025ac3cbdaf21c4eb707c1c7bd11b66, type: 2}
+  - {fileID: 11400000, guid: d5f8bad7f16156743a970286d200be9a, type: 2}
   - {fileID: 11400000, guid: df1c09b2e77a76d46adff402adb5ab2e, type: 2}
   - {fileID: 11400000, guid: 26552f9021dae0940b084817a8b59475, type: 2}
+  - {fileID: 11400000, guid: a025ac3cbdaf21c4eb707c1c7bd11b66, type: 2}
+  - {fileID: 11400000, guid: c64aa230c34361e45a563e49119e92e7, type: 2}
+  - {fileID: 11400000, guid: 68672d53ca2c6ac42b8d34dae61c4687, type: 2}
+  - {fileID: 11400000, guid: 6623c4042c3128e49baa875fc45233ca, type: 2}
+  - {fileID: 11400000, guid: 79f331bed33ea92498d7441156a0fd24, type: 2}
+  - {fileID: 11400000, guid: 4e8006f144da597448aa32c46c21d0cd, type: 2}
+  - {fileID: 11400000, guid: 7fd790c53601a834a8e7917efc9d831c, type: 2}
+  - {fileID: 11400000, guid: 2331efc7b87fe60479f0aee1c213daad, type: 2}
+  - {fileID: 11400000, guid: 6bdbe8e4cdec4a64aa96dda4f68e5ec4, type: 2}
+  - {fileID: 11400000, guid: f01cf940936aa4445801067b9f88077e, type: 2}
+  - {fileID: 11400000, guid: 0f6accd3c5fe4274e871c717397c802d, type: 2}
+  - {fileID: 11400000, guid: f17ca5ace61e5f940b5a7390cc80ab6b, type: 2}
+  - {fileID: 11400000, guid: b4ed3e69a1053104e874876ee02e9297, type: 2}
+  - {fileID: 11400000, guid: 9e6a9d5abd54c0d418e9d0c09562fbc9, type: 2}
+  - {fileID: 11400000, guid: 10451b486015dc245ba619edafc52b6d, type: 2}
+  - {fileID: 11400000, guid: d5ae506f64b118a48adc9382245e59bd, type: 2}
+  - {fileID: 11400000, guid: 12d2e65a47619374cbc1c0a6b608f4d0, type: 2}
+  - {fileID: 11400000, guid: 0a35e8d6e5883c4419f4e2f32b74211f, type: 2}
   - {fileID: 11400000, guid: 37ea93d67d6b08a439622412ed828743, type: 2}
-  - {fileID: 11400000, guid: d5f8bad7f16156743a970286d200be9a, type: 2}
+  - {fileID: 11400000, guid: e0fb4af9e545820478a5975d7f19bc7e, type: 2}
+  - {fileID: 11400000, guid: 31b7664534220be418ae89fa71ddaf2d, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 0}
   collisionCenter: {x: 0, y: 0, z: 0}
@@ -173,49 +304,82 @@ MonoBehaviour:
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
   canBlownAway: 0
-  bossDownStateIndex: 6
+  bossDownStateIndex: 2
   useBossDown: 1
   onlyTakePlayerDamageWhileDown: 1
---- !u!114 &8634380684852518709
+  useBossDownDamageLimit: 1
+  bossHpPartCount: 4
+  useBossShield: 1
+  bossShieldObject: {fileID: 3475018771120973243}
+  maxBossShield: 50
+  currentBossShield: 50
+  downWhenShieldBreak: 1
+  shieldLightningEffect: {fileID: 0}
+--- !u!114 &5880420886448220101
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146696696656922908}
+  m_GameObject: {fileID: 8487347958724102371}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 584363b866830c74885cfaad89b4c953, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossAttackController
   player: {fileID: 0}
+  playerTag: Player
   meleeWavePrefab: {fileID: 15538130619336969, guid: a3ab2d0ba1cafc2449592a4e030514a6, type: 3}
   meleeWaveRadius: 10
   meleeKnockBackPower: 10
-  homingMissilePrefab: {fileID: 6856034328774344419, guid: b50cd744d34cc4d49bc5ab84397a9b98, type: 3}
-  homingMissileCount: 5
+  homingMissileCount: 6
   homingTime: 2
   homingMissileSpeed: 8
-  fallingMissilePrefab: {fileID: 7585042685050592574, guid: ef213fa8a23389d418c5ec42d860ee8f, type: 3}
-  warningMarkPrefab: {fileID: 6247528478477274410, guid: b7cf405b069495a4e884908a4fc34ce1, type: 3}
   fallingMissileCount: 10
   fallingTime: 1
   fallingInterval: 0.1
   stageRadius: 10
   fallingMissileMinRadius: 5
-  smallEnemyPrefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
-  summonCount: 3
-  summonRadius: 5
+  rapidMissileCount: 5
+  rapidMissileStartDelay: 0.5
+  rapidMissileSpeed: 18
+  machineGunBulletCount: 20
+  machineGunInterval: 0.08
+  machineGunMissileSpeed: 12
+  machineGunRandomAngle: 45
+  splitFallingMissileCount: 3
+  splitFallingTime: 1.5
+  splitFallingInterval: 0.3
+  splitChildMissileCount: 10
+  splitChildMissileSpeed: 10
+  homingMissilePool: {fileID: 0}
+  fallingMissilePool: {fileID: 0}
+  splitFallingMissilePool: {fileID: 0}
+  rapidMissilePool: {fileID: 0}
+  straightMissilePool: {fileID: 0}
+  reflectableMissilePool: {fileID: 0}
+  warningCirclePool: {fileID: 0}
+  warningSectorPool: {fileID: 0}
+  warningRectanglePool: {fileID: 0}
+  homingMissilePoolObjectName: PF_HomingMissile Pool
+  fallingMissilePoolObjectName: PF_FallingMissile Pool
+  splitFallingMissilePoolObjectName: PF_SplitFallingMissile Pool
+  rapidMissilePoolObjectName: PF_RapidMissile Pool
+  straightMissilePoolObjectName: PF_StraightMissile Pool
+  reflectableMissilePoolObjectName: PF_ReflectableMissile Pool
+  warningCirclePoolObjectName: PF_WarningCircle Pool
+  warningSectorPoolObjectName: PF_WarningSector Pool
+  warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
-  - usePattern: 1
+  - usePattern: 0
     patternName: Full
-    stateList: 02000000030000000400000005000000
+    stateList: 05000000030000000400000017000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
   - usePattern: 0
-    patternName: MissileParty
-    stateList: 03000000040000000300000004000000
+    patternName: war
+    stateList: 040000000700000008000000090000000c0000000f000000
   - usePattern: 0
-    patternName: Summom
-    stateList: 05000000050000000500000005000000
-  - usePattern: 0
-    patternName: Melee Wave
-    stateList: 02000000
+    patternName: Circle
+    stateList: 09000000100000000a000000110000000b000000120000000c000000130000000d000000140000000e000000150000000f00000016000000
+  - usePattern: 1
+    patternName: Summon
+    stateList: 170000001800000019000000
