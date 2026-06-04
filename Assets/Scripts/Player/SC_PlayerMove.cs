@@ -68,6 +68,17 @@ public class SC_PlayerMove : MonoBehaviour
 
         Vector3 moveDir = camForward * MoveInput.y + camRight * MoveInput.x;
 
+        if (BlinkTimer > 0f)
+        {
+            BlinkTimer -= Time.deltaTime;
+
+            // マイナス防止
+            if (BlinkTimer < 0f)
+            {
+                BlinkTimer = 0f;
+            }
+        }
+
         //ターゲット方向に向く
         if (scTarget.GetCurrentTarget() != null)
         {
@@ -106,10 +117,10 @@ public class SC_PlayerMove : MonoBehaviour
             {//スプリントが開始された瞬間にブリンクを試みる
                 TryBlink(moveDir);
             }
-            else
-            {
-                BlinkTimer -= Time.deltaTime; // ブリンクのクールダウンを減少させる
-            }
+            //else
+            //{
+            //    BlinkTimer -= Time.deltaTime; // ブリンクのクールダウンを減少させる
+            //}
             wasBlink = isSprint; // ブリンクの使用状態をリセット
 
             float SprintFactor = isSprint ? currentSplintMul : 1f;
