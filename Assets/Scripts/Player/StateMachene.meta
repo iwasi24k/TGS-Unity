@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Materials/M_Smoke.mat.meta
+guid: 5e268224780960246b9956761bfcc747
+NativeFormatImporter:
+========
+guid: d8820118bb8614c42a5d57558f3278e6
+folderAsset: yes
+DefaultImporter:
+>>>>>>>> develop:Assets/Scripts/Player/StateMachene.meta
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

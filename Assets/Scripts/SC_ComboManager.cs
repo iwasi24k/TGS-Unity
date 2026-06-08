@@ -38,7 +38,7 @@ public class ComboManager : MonoBehaviour
         comboCount += addCount;
         timer = comboResetTime;
 
-        Debug.Log("Combo : " + comboCount);
+        //Debug.Log("Combo : " + comboCount);
     }
 
     public int GetComboCount()
@@ -51,7 +51,7 @@ public class ComboManager : MonoBehaviour
         comboCount = 0;
         timer = 0.0f;
 
-        Debug.Log("Combo Reset");
+        //Debug.Log("Combo Reset");
     }
 
     private void CheckAllEnemiesNotBlownAway()

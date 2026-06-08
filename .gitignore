@@ -99,17 +99,17 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
 
-# User-specific files
-Assets/Textures/*
-Assets/Models/*
-Assets/Audio/*
+# External asset links
+Assets/Textures/
+Assets/Models/
+Assets/Audio/
 
-# Ignore user-specific assets, but keep the meta files for them
-Assets/Textures
-Assets/Models
-Assets/Audio
+Assets/Textures.meta
+Assets/Models.meta
+Assets/Audio.meta
 
-# meta files for user-specific assets
-!Assets/Textures.meta
-!Assets/Models.meta
-!Assets/Audio.meta
+# local space files
+Assets/LocalSpace/
+Assets/LocalSpace.meta
+
+Assets/_Recovery/

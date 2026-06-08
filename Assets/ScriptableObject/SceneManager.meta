@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/Effect.meta
+guid: cf565fc8d42173c4d877a410d21181cf
+========
+guid: d350a57e961abc0489d535f3e13c24d3
+>>>>>>>> develop:Assets/ScriptableObject/SceneManager.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
