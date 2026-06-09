@@ -13,7 +13,17 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var Animator = owner.GetComponent<Animator>();
-        Animator.SetTrigger("tWeakAttack");
+        var Manager = owner.GetComponent<SC_PlayerStateManager>();
+        var AttackManager = Manager.attackManager;
+
+        if(AttackManager.GetCurrentComboCount() == 0)
+        {
+            Animator.SetTrigger("tWeakAttack_L");
+        }
+        else
+        {
+            Animator.SetTrigger("tWeakAttack_R");
+        }
         once = false;
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)

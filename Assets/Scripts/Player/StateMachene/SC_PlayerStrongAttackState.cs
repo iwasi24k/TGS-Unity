@@ -12,15 +12,32 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var animator = owner.GetComponent<Animator>();
-        animator.SetTrigger("tStrongAttack");
-
+        var attackManager = owner.GetComponent<SC_PlayerAttackManager>();
+        if (!attackManager.IsNextAttackStrong())
+        {
+            animator.SetTrigger("tStraight");
+        }
+        switch(attackManager.GetCurrentComboCount())
+        {
+            case 0:
+                animator.SetTrigger("tStraight");
+                break;
+            case 1:
+                animator.SetTrigger("tHook");
+                break;
+            case 2:
+                animator.SetTrigger("tUpper");
+                break;
+        }
         once = false;
+        Debug.Log("Enter Strong Attack State");
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
     {
         //----------------------------------------------------//
         var Manager = owner.GetComponent<SC_PlayerStateManager>();
         var AttackManager = Manager.attackManager;
+        var animator = owner.GetComponent<Animator>();
         //----------------------------------------------------//
 
         timer += Time.deltaTime;

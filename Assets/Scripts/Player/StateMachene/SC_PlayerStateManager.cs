@@ -58,6 +58,7 @@ public class SC_PlayerStateManager : MonoBehaviour
         stateList.StrongAttack = strongAttack;
         stateList.JumpIn = jumpIn;
         stateList.ChargeAttack = chargeAttack;
+        _strongPressStartTime = -1;
     }
 
     private void OnEnable()
@@ -94,6 +95,10 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if(Time.time - _strongPressStartTime >= requiredAttackPressDuration && _strongPressStartTime >= 0)
+        {
+            animator.SetBool("bCharge", true);
+        }
         _currentState.FixedUpdateState(this.gameObject,stateList);
     }
 
@@ -129,11 +134,15 @@ public class SC_PlayerStateManager : MonoBehaviour
             {
                 // チャージ攻撃のトリガー
                 ChangeState(stateList.ChargeAttack);
+
+                _strongPressStartTime = -1; // タイマーリセット
                 return;
             }
         }
 
         attackManager.AttackTransitionCheck(stateList, true);
+
+        _strongPressStartTime = -1; // タイマーリセット
         return;
     }
 

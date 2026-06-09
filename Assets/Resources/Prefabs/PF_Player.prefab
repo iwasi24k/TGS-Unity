@@ -50,7 +50,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 89e35cc4b94a92f4e9be4dc1e1f03601, type: 3}
       propertyPath: m_Name
-      value: model
+      value: PF_Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 89e35cc4b94a92f4e9be4dc1e1f03601, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 24e023c6d3fb70d4384a7ab833b233f2, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 89e35cc4b94a92f4e9be4dc1e1f03601, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
