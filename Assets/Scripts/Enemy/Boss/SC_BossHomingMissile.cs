@@ -80,7 +80,10 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
             if (missile != null)
             {
                 missile.SetPool(pool);
+                missile.SetWarningPool(boss.GetWarningCirclePool());
                 missile.OnGetFromPool();
+
+                missile.SetUseLockOnMark(i == 0);
 
                 missile.Init(
                     player,
