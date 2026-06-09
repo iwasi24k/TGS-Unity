@@ -123,13 +123,6 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
     {
         if (!initialized) return;
 
-        // PlayerUŒ‚‚É“–‚½‚Á‚½‚ç”½Œ‚ó‘Ô‚Ö
-        if (!reflected && other.CompareTag("PlayerAttack"))
-        {
-            ReflectByPlayerAttack(other);
-            return;
-        }
-
         // ’Êíó‘ÔFPlayer‚É“–‚½‚é
         if (!reflected)
         {
@@ -157,6 +150,7 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
                 return;
             }
         }
+
         // ”½Œ‚ó‘ÔFEnemy / Boss‚É“–‚½‚é
         else
         {
