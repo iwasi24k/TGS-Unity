@@ -29,6 +29,10 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("反射後の最大速度"), SerializeField] private float maxBounceSpeed = 15.0f;
     [Tooltip("壁反射の連続発生防止時間"),SerializeField] private float wallBounceCooldown = 0.1f;
 
+    [Header("EffectOption")]
+    [Tooltip("エフェクトのキー"), SerializeField] private string effectKey;
+    [Tooltip("再生する距離間隔"), SerializeField] private float effectInterval = 1.0f;
+
     private bool isRotateMove = false;
     private Vector3 rotateLeftDirection;
     private float rotateCurrentPower = 0f;
@@ -38,6 +42,10 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     private Animator animator;
 
     private AttackType receivedAttackType;
+
+    private float effectAccumulator = 0f;
+    private Vector3 effectLastPos = Vector3.zero;
+
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -221,6 +229,21 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         if (wallBounceCooldownTimer > 0f)
         {
             wallBounceCooldownTimer -= Time.fixedDeltaTime;
+        }
+
+        if(effectInterval > 0f && SC_EffectManager.Instance != null)
+        {
+            Vector3 currentPos = Owner.transform.position;
+            float delta = Vector3.Distance(currentPos, effectLastPos);
+            effectAccumulator += delta;
+            effectLastPos = currentPos;
+
+            if (effectAccumulator >= effectInterval)
+            {
+                // 現在位置でエフェクトを再生
+                SC_EffectManager.Instance.PlayEffect(effectKey, currentPos);
+                effectAccumulator = 0f;
+            }
         }
 
         if (!isRotateMove)

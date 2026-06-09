@@ -258,6 +258,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if(HP <= 0)
         {
             Debug.Log("HPが0以下のため、敵を消滅させます。");
+            SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
             Destroy(this.gameObject);
             return;
         }
