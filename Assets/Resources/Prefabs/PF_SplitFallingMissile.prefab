@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   parentWarningRadius: 1.5
-  parentWarningHeightOffset: 0.04
+  parentWarningHeightOffset: 0.02
   showChildWarning: 1
   childWarningWidth: 1
   childWarningLength: 10

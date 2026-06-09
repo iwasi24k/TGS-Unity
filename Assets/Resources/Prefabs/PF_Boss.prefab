@@ -371,15 +371,18 @@ MonoBehaviour:
   warningSectorPoolObjectName: PF_WarningSector Pool
   warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
-  - usePattern: 0
+  - usePattern: 1
     patternName: Full
     stateList: 05000000030000000400000017000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
   - usePattern: 0
     patternName: war
-    stateList: 040000000700000008000000090000000c0000000f000000
+    stateList: 03000000040000000600000008000000090000000c0000000f000000
   - usePattern: 0
     patternName: Circle
     stateList: 09000000100000000a000000110000000b000000120000000c000000130000000d000000140000000e000000150000000f00000016000000
-  - usePattern: 1
+  - usePattern: 0
     patternName: Summon
     stateList: 170000001800000019000000
+  - usePattern: 0
+    patternName: test
+    stateList: 0300000006000000040000000c000000

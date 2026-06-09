@@ -129,3 +129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   lifeTime: 5
   playerDamage: 1
+  useLockOnMark: 1
+  lockOnRadius: 1.2
+  lockOnGroundOffset: 0.05

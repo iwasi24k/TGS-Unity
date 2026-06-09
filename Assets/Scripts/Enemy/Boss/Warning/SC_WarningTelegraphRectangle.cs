@@ -63,7 +63,7 @@ public class SC_WarningTelegraphRectangle : MonoBehaviour, SC_IPoolObject
 
         BuildRectangleMesh(areaMeshFilter, ref areaMesh, this.width, this.length);
         BuildRectangleMesh(gaugeMeshFilter, ref gaugeMesh, this.width, 0.01f);
-        BuildBorder(this.width, this.length);
+        //BuildBorder(this.width, this.length);
     }
 
     private void Update()

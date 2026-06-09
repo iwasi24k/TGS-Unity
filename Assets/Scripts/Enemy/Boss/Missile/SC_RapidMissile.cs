@@ -20,13 +20,35 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private bool initialized;
     private Vector3 moveDirection;
 
+    [Header("Lock On Mark")]
+    [Tooltip("ロックオンマークを表示するか")]
+    [SerializeField] private bool useLockOnMark = true;
+
+    [Tooltip("ロックオンマークの半径")]
+    [SerializeField] private float lockOnRadius = 1.2f;
+
+    [Tooltip("地面から少し浮かせる高さ")]
+    [SerializeField] private float lockOnGroundOffset = 0.05f;
+
+    private SC_ObjectPool warningPool;
+    private GameObject warningMarkObj;
+    private SC_WarningTelegraphCircle warningMark;
+    private bool useThisLockOnMark = true;
+
     public void SetPool(SC_ObjectPool pool)
     {
         ownerPool = pool;
     }
 
+    public void SetWarningPool(SC_ObjectPool pool)
+    {
+        warningPool = pool;
+    }
+
     public void OnGetFromPool()
     {
+        ReturnWarningMark();
+
         target = null;
         speed = 0f;
         startDelay = 0f;
@@ -35,6 +57,10 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         launched = false;
         initialized = false;
         moveDirection = transform.forward;
+
+        useThisLockOnMark = true;
+        warningMarkObj = null;
+        warningMark = null;
     }
 
     public void Init(Transform target, float speed, float startDelay)
@@ -47,6 +73,8 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         launched = false;
         initialized = true;
         moveDirection = transform.forward;
+
+        CreateLockOnMark();
     }
 
     private void Update()
@@ -64,6 +92,8 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
             // 発射する瞬間のPlayer位置を見る
             Launch();
+
+            ReturnWarningMark();
         }
 
         transform.position += moveDirection * speed * Time.deltaTime;
@@ -128,6 +158,67 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
             ReturnToPool();
             return;
         }
+    }
+
+    private void CreateLockOnMark()
+    {
+        if (!useThisLockOnMark) return;
+        if (!useLockOnMark) return;
+        if (warningPool == null) return;
+        if (target == null) return;
+
+        Vector3 markPos = target.position;
+        markPos.y = lockOnGroundOffset;
+
+        warningMarkObj = warningPool.GetObject(
+            markPos,
+            Quaternion.identity
+        );
+
+        if (warningMarkObj == null) return;
+
+        warningMark = warningMarkObj.GetComponent<SC_WarningTelegraphCircle>();
+
+        if (warningMark == null)
+        {
+            warningMarkObj.SetActive(false);
+            warningMarkObj = null;
+            return;
+        }
+
+        warningMark.SetPool(warningPool);
+        warningMark.OnGetFromPool();
+
+        warningMark.Init(
+            lockOnRadius,
+            startDelay
+        );
+
+        warningMark.SetFollowTarget(
+            target,
+            new Vector3(0f, lockOnGroundOffset, 0f)
+        );
+    }
+
+    private void ReturnWarningMark()
+    {
+        if (warningMark != null)
+        {
+            warningMark.StopFollow();
+            warningMark.ReturnToPool();
+        }
+        else if (warningMarkObj != null)
+        {
+            warningMarkObj.SetActive(false);
+        }
+
+        warningMark = null;
+        warningMarkObj = null;
+    }
+
+    public void SetUseLockOnMark(bool use)
+    {
+        useThisLockOnMark = use;
     }
 
     public void ReturnToPool()
