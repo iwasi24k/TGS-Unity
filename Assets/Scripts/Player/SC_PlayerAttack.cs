@@ -119,10 +119,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = true
     };
 
-    [Header("Tutorial")]
-    [SerializeField]
-    private SC_AttackTutorial attackTutorial;
-
+   
     private int weakComboCount = 0;
     private float comboTimer = 0f;
 
@@ -353,13 +350,8 @@ public class SC_PlayerAttack : MonoBehaviour
             currentAttackCooldown = attackCooldown * 0.5f;
         }
 
-        if (attackTutorial != null)
-        {
-            Debug.Log("AttackTutorial通知");
-            attackTutorial.OnAttackHit(attackType);
-        }
-        
-
+      
+    
         return hasHitEnemy || hasReflectedMissile;
     }
 

@@ -41,7 +41,7 @@ public class SC_PlayerCamera : MonoBehaviour
     [SerializeField] private float fovSpeed = 1f;
 
     [Header("敵認知カメラ")]
-    [SerializeField] private SC_Field field;
+    [SerializeField] private SC_EnemyManager enemyManager;
     [SerializeField] private float awareEnemyAngle = 60f;
     [SerializeField] private float awareEnemyDistance = 10f;
     [SerializeField] private float awareEnemyBlend = 0.3f;
@@ -69,7 +69,7 @@ public class SC_PlayerCamera : MonoBehaviour
         if (goMainCamera == null) goMainCamera = Camera.main;
         if (scTarget == null) scTarget = FindFirstObjectByType<SC_PlayerTarget>();
         if (playerTransform == null && scTarget != null) playerTransform = scTarget.transform;
-        if (field == null) field = FindFirstObjectByType<SC_Field>();
+        if (enemyManager == null) enemyManager = FindFirstObjectByType<SC_EnemyManager>();
 
         if (iaMove == null)
             Debug.LogError("移動用のInputActionReferenceがアタッチされていません。");
@@ -91,7 +91,7 @@ public class SC_PlayerCamera : MonoBehaviour
         float blendGoal = isTargeting ? 1f : 0f;
         targetingBlend = Mathf.Lerp(targetingBlend, blendGoal, Time.deltaTime * targetBlendSpeed);
 
-        List<GameObject> enemies = field != null ? field.GetEnemies() : null;
+        List<GameObject> enemies = enemyManager != null ? enemyManager.GetEnemies() : null;
 
         UpdateDynamicZoom(enemies);
 
