@@ -16380,7 +16380,7 @@ MonoBehaviour:
   AttackAreaSize: {x: 2, y: 2, z: 2}
   JumpInAreaSize: {x: 3, y: 2, z: 5}
   TargetingJumpInAreaSize: {x: 3, y: 2, z: 7}
-  jumpInSpeed: 2
+  jumpInSpeed: 100
   snapDistance: 0.5
   weakDamage: 1
   straightDamage: 3
