@@ -94,7 +94,7 @@ public class SC_WarningTelegraphSector : MonoBehaviour, SC_IPoolObject
             this.angleRange
         );
 
-        BuildSectorBorder();
+        //BuildSectorBorder();
     }
 
     private void Update()

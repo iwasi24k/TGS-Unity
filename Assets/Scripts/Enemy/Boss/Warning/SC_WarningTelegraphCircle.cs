@@ -33,6 +33,10 @@ public class SC_WarningTelegraphCircle : MonoBehaviour, SC_IPoolObject
     private float meshUpdateTimer;
     private bool isInitialized;
 
+    private Transform followTarget;
+    private Vector3 followOffset;
+    private bool isFollowing;
+
     public void SetPool(SC_ObjectPool pool)
     {
         ownerPool = pool;
@@ -69,13 +73,19 @@ public class SC_WarningTelegraphCircle : MonoBehaviour, SC_IPoolObject
             0.01f,
             360f
         );
-
-        BuildCircleBorder(this.radius);
+        
+        //BuildCircleBorder(this.radius);
     }
 
     private void Update()
     {
         if (!isInitialized) return;
+
+        if (isFollowing && followTarget != null)
+        {
+            Vector3 pos = followTarget.position + followOffset;
+            transform.position = pos;
+        }
 
         timer += Time.deltaTime;
         meshUpdateTimer += Time.deltaTime;
@@ -196,6 +206,25 @@ public class SC_WarningTelegraphCircle : MonoBehaviour, SC_IPoolObject
 
             borderLineRenderer.SetPosition(i, new Vector3(x, 0.01f, z));
         }
+    }
+
+    public void SetFollowTarget(Transform target, Vector3 offset)
+    {
+        followTarget = target;
+        followOffset = offset;
+        isFollowing = target != null;
+
+        if (isFollowing)
+        {
+            Vector3 pos = target.position + followOffset;
+            transform.position = pos;
+        }
+    }
+
+    public void StopFollow()
+    {
+        followTarget = null;
+        isFollowing = false;
     }
 
     public void ReturnToPool()
