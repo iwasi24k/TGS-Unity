@@ -5,6 +5,7 @@ public class SC_PlayerKnockback : MonoBehaviour
     [Header("Refarence")]
     [SerializeField] private MonoBehaviour stopScript;
     [SerializeField] private CharacterController cController;
+    [SerializeField] private Animator animator;
 
     [Header("Knockback Settings")]
     [SerializeField] private float verticalPower = 5f;
@@ -17,6 +18,7 @@ public class SC_PlayerKnockback : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         if (!stopScript) stopScript = GetComponent<SC_PlayerStateManager>();
         if (!cController) cController = GetComponent<CharacterController>();
     }
@@ -73,6 +75,7 @@ public class SC_PlayerKnockback : MonoBehaviour
 
         knockbackTimer = Mathf.Max(0f, duration);
         isKnockbackActive = true;
+        animator.SetBool("bKnockback", true);
     }
 
     private void EndKnockback()
@@ -84,5 +87,6 @@ public class SC_PlayerKnockback : MonoBehaviour
         {
             stopScript.enabled = true;
         }
+        animator.SetBool("bKnockback", false);
     }
 }

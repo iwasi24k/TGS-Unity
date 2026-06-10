@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class SC_PlayerHP : MonoBehaviour
 {
+    [Header("Reference")]
+    [SerializeField] private Animator animator;
+
     // =========================================
     // HP設定
     // =========================================
@@ -41,6 +44,8 @@ public class SC_PlayerHP : MonoBehaviour
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
+
         // HP初期化
         currentHP = maxHP;
 
@@ -83,6 +88,8 @@ public class SC_PlayerHP : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        // ダメージアニメーション
+        animator?.SetTrigger("tKnockback");
         // HP減少
         currentHP -= damage;
 
