@@ -42,7 +42,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1119130656057440397}
-  - component: {fileID: 8267641783827415149}
+  - component: {fileID: 3709755144212236388}
   m_Layer: 0
   m_Name: Enemy Manager
   m_TagString: Untagged
@@ -65,7 +65,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2790814756231669148}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8267641783827415149
+--- !u!114 &3709755144212236388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3171844298374070894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e8c93bbf87129e4dbf96e3fb5f618e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 38b2b47692682e543bbcb0c25906ed3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyManager
 --- !u!1 &6047523553074944079
@@ -123,5 +123,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_Field
   stages: []
   currentStage: 0
-  enemyManager: {fileID: 8267641783827415149}
+  enemyManager: {fileID: 0}
   goal: {fileID: 0}
