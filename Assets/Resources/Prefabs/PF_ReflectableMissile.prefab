@@ -132,7 +132,7 @@ MonoBehaviour:
   searchDistance: 20
   searchHeightOffset: 1
   targetAimHeight: 1
-  playerDamage: 1
+  playerDamage: 100
   enemyDamage: 5
   targetRenderer: {fileID: 0}
   normalBaseColor: {r: 0, g: 0.9794071, b: 1, a: 0.39215687}

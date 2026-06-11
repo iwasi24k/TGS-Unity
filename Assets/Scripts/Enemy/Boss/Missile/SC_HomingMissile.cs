@@ -11,7 +11,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
     [Header("Damage")]
     [Tooltip("プレイヤーに与えるダメージ"), SerializeField]
-    private float playerDamage = 1.0f;
+    private int playerDamage = 1;
 
     private SC_ObjectPool ownerPool;
 
@@ -154,21 +154,21 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
     private void OnTriggerEnter(Collider other)
     {
-        SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
-
-        // Player本体ではなく子Colliderに当たった場合用
-        if (playerHP == null)
-        {
-            playerHP = other.GetComponentInParent<SC_PlayerHP>();
-        }
-
-        if (playerHP != null)
-        {
-            playerHP.TakeDamage(playerDamage);
-        }
-
         if (other.CompareTag("Player"))
         {
+            SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
+
+            // Player本体ではなく子Colliderに当たった場合用
+            if (playerHP == null)
+            {
+                playerHP = other.GetComponentInParent<SC_PlayerHP>();
+            }
+
+            if (playerHP != null)
+            {
+                playerHP.TakeDamage(playerDamage);
+            }
+
             ReturnToPool();
             return;
         }
