@@ -8,6 +8,12 @@ public enum BarrageMissileType
     Reflectable
 }
 
+public enum BarrageAimBaseType
+{
+    BossForward,
+    ToPlayer
+}
+
 [CreateAssetMenu(menuName = "Enemy/Boss/Circle Barrage State")]
 public class SC_BossCircleBarrageState : SC_EnemyBaceState
 {
@@ -63,6 +69,10 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     [Tooltip("警告の表示時間。基本的にStartDelayと同じにする"), SerializeField]
     private float warningTime = 0.8f;
+
+    [Header("Aim")]
+    [Tooltip("発射方向の基準")]
+    [SerializeField] private BarrageAimBaseType aimBaseType = BarrageAimBaseType.BossForward;
 
     private float timer;
     private float shotTimer;
@@ -163,6 +173,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         {
             FireSector(
                 Owner,
+                boss,
                 pool,
                 0f,
                 360f,
@@ -179,6 +190,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         {
             FireSector(
                 Owner,
+                boss,
                 pool,
                 0f,
                 360f,
@@ -200,6 +212,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
             FireSector(
                 Owner,
+                boss,
                 pool,
                 sector.GetCenterAngle(),
                 sector.GetAngleRange(),
@@ -229,6 +242,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     private void FireSector(
         GameObject Owner,
+        SC_BossAttackController boss,
         SC_ObjectPool pool,
         float centerAngle,
         float angleRange,
@@ -265,6 +279,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
             FireOneMissile(
                 Owner,
+                boss,
                 pool,
                 angle
             );
@@ -273,15 +288,18 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     private void FireOneMissile(
     GameObject Owner,
+    SC_BossAttackController boss,
     SC_ObjectPool pool,
     float angle)
     {
         if (Owner == null) return;
         if (pool == null) return;
 
+        Vector3 baseDir = GetBaseFireDirection(Owner, boss);
+
         Vector3 dir =
             Quaternion.Euler(0f, angle, 0f) *
-            Owner.transform.forward;
+            baseDir;
 
         dir.y = 0f;
 
@@ -290,6 +308,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
             dir = Owner.transform.forward;
             dir.y = 0f;
         }
+
 
         dir.Normalize();
 
@@ -350,20 +369,23 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     private void ShowWarning(GameObject Owner)
     {
+        SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
+
+        if (boss == null) return;
+
         if (HasUsableSectorList() && showSectorWarningWhenListExists)
         {
-            ShowWarningSectors(Owner);
+            ShowWarningSectors(Owner,boss);
             return;
         }
 
-        ShowWarningCircle(Owner);
+        ShowWarningCircle(Owner, boss);
     }
 
-    private void ShowWarningCircle(GameObject Owner)
+    private void ShowWarningCircle(GameObject Owner, SC_BossAttackController boss)
     {
         if (!showCircleWarning) return;
 
-        SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
         SC_ObjectPool pool = boss.GetWarningCirclePool();
@@ -395,11 +417,8 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         }
     }
 
-    private void ShowWarningSectors(GameObject Owner)
+    private void ShowWarningSectors(GameObject Owner, SC_BossAttackController boss)
     {
-        SC_BossAttackController boss =
-            Owner.GetComponent<SC_BossAttackController>();
-
         if (boss == null) return;
 
         SC_ObjectPool pool = boss.GetWarningSectorPool();
@@ -414,6 +433,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
             ShowOneWarningSector(
                 Owner,
+                boss,
                 pool,
                 sector.GetCenterAngle(),
                 sector.GetAngleRange()
@@ -423,17 +443,19 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     private void ShowOneWarningSector(
     GameObject Owner,
+    SC_BossAttackController boss,
     SC_ObjectPool pool,
     float centerAngle,
-    float angleRange
-)
+    float angleRange)
     {
         Vector3 spawnPos = Owner.transform.position;
         spawnPos.y = 0.0f;
         spawnPos += Vector3.up * warningHeightOffset;
 
+        Vector3 baseDir = GetBaseFireDirection(Owner, boss);
+
         Quaternion rotation =
-            Quaternion.LookRotation(Owner.transform.forward);
+            Quaternion.LookRotation(baseDir);
 
         GameObject warningObj = pool.GetObject(
             spawnPos,
@@ -493,5 +515,50 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         }
 
         return null;
+    }
+
+    private Vector3 GetBaseFireDirection(
+    GameObject Owner,
+    SC_BossAttackController boss)
+    {
+        if (Owner == null)
+        {
+            return Vector3.forward;
+        }
+
+        switch (aimBaseType)
+        {
+            case BarrageAimBaseType.ToPlayer:
+                {
+                    if (boss == null) break;
+
+                    Transform player = boss.GetPlayer();
+                    if (player == null) break;
+
+                    Vector3 dir = player.position - Owner.transform.position;
+                    dir.y = 0f;
+
+                    if (dir.sqrMagnitude > 0.0001f)
+                    {
+                        return dir.normalized;
+                    }
+
+                    break;
+                }
+
+            case BarrageAimBaseType.BossForward:
+            default:
+                break;
+        }
+
+        Vector3 forward = Owner.transform.forward;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude <= 0.0001f)
+        {
+            return Vector3.forward;
+        }
+
+        return forward.normalized;
     }
 }
