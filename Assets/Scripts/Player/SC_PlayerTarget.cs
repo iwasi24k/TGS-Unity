@@ -28,8 +28,11 @@ public class SC_PlayerTarget : MonoBehaviour
     {
         if (currentTarget != null) currentTarget = null;
         if (goMainCamera == null) goMainCamera = Camera.main;
+        if(enemyManager == null)
+        {
+            enemyManager = FindFirstObjectByType<SC_EnemyManager>();
+        }
 
-      
         if (iaTarget == null)
         {
             Debug.LogError("ターゲットトグル用のInputActionReferenceがアタッチされていません。");
