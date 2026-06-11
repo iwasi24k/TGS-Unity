@@ -42,6 +42,7 @@ public class SC_Field : MonoBehaviour
     //==================================================
     // Player
     //==================================================
+    [SerializeField] int playerHealEffect = 10;     //TODO: スクリプト分離
     private GameObject player;
 
     private Vector3 playerStartPos;
@@ -188,6 +189,12 @@ public class SC_Field : MonoBehaviour
         if (controller != null)
         {
             controller.enabled = true;
+        }
+
+        var playerHP = player.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.Heal(playerHealEffect);    //TODO: スクリプト分離
         }
 
         Debug.Log("Playerリセット");
