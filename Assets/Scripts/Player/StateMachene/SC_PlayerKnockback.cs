@@ -5,6 +5,7 @@ public class SC_PlayerKnockback : MonoBehaviour
     [Header("Refarence")]
     [SerializeField] private MonoBehaviour stopScript;
     [SerializeField] private CharacterController cController;
+    [SerializeField] private Animator animator;
 
     [Header("Knockback Settings")]
     [SerializeField] private float verticalPower = 5f;
@@ -17,6 +18,7 @@ public class SC_PlayerKnockback : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         if (!stopScript) stopScript = GetComponent<SC_PlayerStateManager>();
         if (!cController) cController = GetComponent<CharacterController>();
     }
@@ -55,7 +57,7 @@ public class SC_PlayerKnockback : MonoBehaviour
     // direction: ノックバックの水平方向ベクトル
     // power: 水平方向の初速
     // duration: ノックバック制御を強制停止する最短時間（着地待ちで延長される）
-    public void AddKnockback(Vector3 direction, float power, float duration)
+    public void AddKnockback(Vector3 direction, float power, float duration ,bool knockup = true)
     {
         if (!cController) cController = GetComponent<CharacterController>();
         if (stopScript)
@@ -69,10 +71,18 @@ public class SC_PlayerKnockback : MonoBehaviour
 
         // 初速設定（水平 + 垂直）
         velocity = dir * power;
-        velocity.y = verticalPower;
+        if (knockup)
+        {
+            velocity.y = verticalPower;
+        }
+        else
+        {
+            velocity.y = 0f;
+        }
 
         knockbackTimer = Mathf.Max(0f, duration);
         isKnockbackActive = true;
+        animator.SetBool("bKnockback", true);
     }
 
     private void EndKnockback()
@@ -84,5 +94,6 @@ public class SC_PlayerKnockback : MonoBehaviour
         {
             stopScript.enabled = true;
         }
+        animator.SetBool("bKnockback", false);
     }
 }

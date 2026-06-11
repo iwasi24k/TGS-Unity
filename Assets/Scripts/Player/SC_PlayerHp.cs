@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class SC_PlayerHP : MonoBehaviour
 {
     [Header("Ref")]
-    [SerializeField] private Animator animator;
+    [SerializeField] private SC_PlayerUI playerUI;
+    [SerializeField] private SC_PlayerKnockback Knockback;
 
     [Header("HP Settings")]
     [SerializeField] private int maxHP = 10;
@@ -18,27 +19,38 @@ public class SC_PlayerHP : MonoBehaviour
     private void Awake()
     {
         currentHP = maxHP;
-        if (!animator)
+        
+        if(!Knockback) Knockback = GetComponent<SC_PlayerKnockback>();
+
+        if (playerUI)
         {
-            animator = GetComponent<Animator>();
+            playerUI.InitializeHPUI(this);
         }
+
     }
 
     public void TakeDamage(int damage)
     {
-        Debug.Log($"currentHP: {currentHP}, damage: {damage}");
         currentHP -= damage;
         if (currentHP < 0)
         {
             currentHP = 0;
-
-            Debug.Log("Player is defeated!");
-            //‚±‚±‚ÅI—¹ˆ—(”s–k)
-            SceneManager.LoadScene("Scene_Result");
         }
-        if(animator)
-        { 
-            animator.SetTrigger("tKnockback");
+
+        if(playerUI)
+        {
+            playerUI.UpdateHPUI(this);
+        }
+
+        if(Knockback)
+        {
+            Knockback.AddKnockback(-this.transform.forward, 0.1f, 0.05f, false);
+        }
+
+        if(currentHP <= 0)
+        {
+            // ƒvƒŒƒCƒ„[‚ªŽ€–S‚µ‚½‚Æ‚«‚Ìˆ—
+            SceneManager.LoadScene("Scene_Result");
         }
     }
 
@@ -48,6 +60,11 @@ public class SC_PlayerHP : MonoBehaviour
         if (currentHP > maxHP)
         {
             currentHP = maxHP;
+        }
+
+        if (playerUI)
+        {
+            playerUI.UpdateHPUI(this);
         }
     }
 }

@@ -58,6 +58,7 @@ public class SC_PlayerStateManager : MonoBehaviour
         stateList.StrongAttack = strongAttack;
         stateList.JumpIn = jumpIn;
         stateList.ChargeAttack = chargeAttack;
+        _strongPressStartTime = -1;
     }
 
     private void OnEnable()
@@ -89,6 +90,11 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void Update()
     {
+        if (Time.time - _strongPressStartTime >= requiredAttackPressDuration && _strongPressStartTime > 0)
+        {
+            Debug.Log("_strongPressStartTime: " + _strongPressStartTime);
+            animator.SetBool("bCharge", true);
+        }
         _currentState.UpdateState(this.gameObject, stateList);
     }
 
@@ -111,6 +117,13 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void OnStrongAttackStart(InputAction.CallbackContext context)
     {
+        if (!_currentState) return;
+
+        if (_currentState == stateList.WeakAttack ||
+            _currentState == stateList.StrongAttack ||
+            _currentState == stateList.JumpIn ||
+            _currentState == stateList.ChargeAttack) return;
+
         _strongPressStartTime = Time.time;
     }
 
@@ -123,17 +136,22 @@ public class SC_PlayerStateManager : MonoBehaviour
             _currentState == stateList.JumpIn ||
             _currentState == stateList.ChargeAttack) return;
 
-        var pressDuration = Time.time - _strongPressStartTime;
-        if (pressDuration > 0) {
-            if (pressDuration >= requiredAttackPressDuration)
+        if (_strongPressStartTime > 0)
+        {
+            var pressDuration = Time.time - _strongPressStartTime;
+            if (pressDuration > 0 && pressDuration >= requiredAttackPressDuration)
             {
                 // チャージ攻撃のトリガー
                 ChangeState(stateList.ChargeAttack);
+                _strongPressStartTime = -1; // タイマーリセット
                 return;
             }
+         
         }
 
         attackManager.AttackTransitionCheck(stateList, true);
+
+        _strongPressStartTime = -1; // タイマーリセット
         return;
     }
 

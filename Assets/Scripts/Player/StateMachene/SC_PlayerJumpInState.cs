@@ -7,6 +7,9 @@ public class SC_PlayerJumpInState : SC_PlayerBaseState
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var Manager = owner.GetComponent<SC_PlayerStateManager>();
+        var animator = owner.GetComponent<Animator>();
+
+        animator.SetBool("bBoost", true);
 
         target = Manager.attackManager.GetJumpInTarget();
 
@@ -18,7 +21,9 @@ public class SC_PlayerJumpInState : SC_PlayerBaseState
 
     public override void Exit(GameObject owner, PlayerState stateList)
     {
-        
+        var animator = owner.GetComponent<Animator>();
+
+        animator.SetBool("bBoost", false);
     }
 
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
