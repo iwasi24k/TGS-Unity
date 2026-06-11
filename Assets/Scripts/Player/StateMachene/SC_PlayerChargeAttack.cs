@@ -13,6 +13,10 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
     public override void Enter(GameObject owner, PlayerState stateList)
     {
+        var animator = owner.GetComponent<Animator>();
+        animator.SetBool("bCharge", false);
+        animator.SetBool("bStraight", true);
+
         _startPosition = owner.transform.position;
         _isCharging = true;
     }
@@ -74,7 +78,8 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
     public override void Exit(GameObject owner, PlayerState stateList)
     {
-
+        var animator = owner.GetComponent<Animator>();
+        animator.SetBool("bStraight", false);
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList)

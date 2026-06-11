@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 0}
-  HP: 100
+  HP: 20
   stateList:
   - {fileID: 11400000, guid: 1cada7607adc0fd4795d9bb0e2af0aa9, type: 2}
   - {fileID: 11400000, guid: 2cb6f9ec46ea3f9408c6bc6552ba933a, type: 2}
@@ -314,8 +314,8 @@ MonoBehaviour:
   bossHpPartCount: 4
   useBossShield: 1
   bossShieldObject: {fileID: 3475018771120973243}
-  maxBossShield: 50
-  currentBossShield: 50
+  maxBossShield: 20
+  currentBossShield: 20
   downWhenShieldBreak: 1
   shieldLightningEffect: {fileID: 0}
 --- !u!114 &5880420886448220101
@@ -385,7 +385,7 @@ MonoBehaviour:
     stateList: 09000000100000000a000000110000000b000000120000000c000000130000000d000000140000000e000000150000000f00000016000000
   - usePattern: 0
     patternName: Summon
-    stateList: 170000001800000019000000
+    stateList: 18000000
   - usePattern: 0
     patternName: test
     stateList: 1a0000001b000000

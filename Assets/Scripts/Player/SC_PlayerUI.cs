@@ -21,6 +21,8 @@ public class SC_PlayerUI : MonoBehaviour
                 hpPoints[i] = Instantiate(hpPointPrefab, transform);
             }
         }
+
+        UpdateHPUI(OwnerHP);
     }
 
     public void UpdateHPUI(SC_PlayerHP OwnerHP)
