@@ -27,7 +27,7 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
 
     [Header("Damage")]
     [Tooltip("プレイヤーに与えるダメージ"), SerializeField]
-    private float playerDamage = 1.0f;
+    private int playerDamage = 1;
 
     [Tooltip("反撃後、敵に与えるダメージ"), SerializeField]
     private int enemyDamage = 10;
@@ -131,8 +131,7 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
         {
             if (other.CompareTag("Player"))
             {
-                SC_PlayerHP playerHP =
-                    other.GetComponent<SC_PlayerHP>();
+                SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
 
                 if (playerHP == null)
                 {
