@@ -57,6 +57,9 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
     private bool initialized;
     private bool reflected;
 
+    private Collider ignoredOwnerCollider;
+    private Collider myCollider;
+
     private MaterialPropertyBlock propertyBlock;
 
     public void SetPool(SC_ObjectPool pool)
@@ -123,13 +126,6 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
     {
         if (!initialized) return;
 
-        // Player攻撃に当たったら反撃状態へ
-        if (!reflected && other.CompareTag("PlayerAttack"))
-        {
-            ReflectByPlayerAttack(other);
-            return;
-        }
-
         // 通常状態：Playerに当たる
         if (!reflected)
         {
@@ -160,43 +156,22 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
         // 反撃状態：Enemy / Bossに当たる
         else
         {
-            if (other.CompareTag("Enemy"))
+            SC_EnemyStatusManager enemy =
+                other.GetComponentInParent<SC_EnemyStatusManager>();
+
+            Debug.Log("Missile hit: " + other.name);
+            if (enemy != null)
             {
-                SC_EnemyStatusManager enemy =
-                    other.GetComponent<SC_EnemyStatusManager>();
+                Debug.Log("Missile hit Enemy: " + enemy.name);
 
-                if (enemy == null)
+                if (enemy.UseBossShield())
                 {
-                    enemy = other.GetComponentInParent<SC_EnemyStatusManager>();
-                }
-
-                if (enemy != null)
-                {
-                    // ボスがシールドを使っている場合
-                    if (enemy.UseBossShield())
+                    if (enemy.HasBossShield())
                     {
-                        // シールドが残っているならシールドダメージ
-                        if (enemy.HasBossShield())
-                        {
-                            enemy.TakeBossShieldDamage(enemyDamage);
-                        }
-                        // シールドがなく、Down中ならHPダメージ
-                        else if (enemy.IsBossDown())
-                        {
-                            enemy.TakeDamage(
-                                enemyDamage,
-                                transform.position,
-                                false,
-                                0,
-                                EnemyDamageSource.EnemyCollision
-                            );
-                        }
-
-                        // Down中ではない、かつシールドもない場合は何もしない
+                        enemy.TakeBossShieldDamage(enemyDamage);
                     }
-                    else
+                    else if (enemy.IsBossDown())
                     {
-                        // 普通の敵ならHPダメージ
                         enemy.TakeDamage(
                             enemyDamage,
                             transform.position,
@@ -205,6 +180,16 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
                             EnemyDamageSource.EnemyCollision
                         );
                     }
+                }
+                else
+                {
+                    enemy.TakeDamage(
+                        enemyDamage,
+                        transform.position,
+                        false,
+                        0,
+                        EnemyDamageSource.EnemyCollision
+                    );
                 }
 
                 ReturnToPool();
@@ -400,6 +385,23 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
             reflectedBaseColor,
             reflectedLightningColor
         );
+
+        if (ignoredOwnerCollider != null && myCollider != null)
+        {
+            Physics.IgnoreCollision(ignoredOwnerCollider, myCollider, false);
+            ignoredOwnerCollider = null;
+        }
+    }
+
+    public void SetIgnoredOwner(Collider ownerCol)
+    {
+        myCollider = GetComponent<Collider>();
+        ignoredOwnerCollider = ownerCol;
+
+        if (ignoredOwnerCollider != null && myCollider != null)
+        {
+            Physics.IgnoreCollision(ignoredOwnerCollider, myCollider, true);
+        }
     }
 
     public void ReturnToPool()
