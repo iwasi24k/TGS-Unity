@@ -58,6 +58,16 @@ public class SC_Field : MonoBehaviour
                 player.transform.position;
         }
 
+        if(enemyManager == null)
+        {
+            enemyManager = FindFirstObjectByType<SC_EnemyManager>();
+        }
+
+        if(goal == null)
+        {
+            goal = FindFirstObjectByType<SC_Goal>();
+        }
+
         // Goal初期化
         goal.Setup(this);
 
