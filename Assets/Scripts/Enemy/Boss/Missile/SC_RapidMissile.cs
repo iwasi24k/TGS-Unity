@@ -144,7 +144,7 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
         if (playerHP != null)
         {
-            playerHP.TakeDamage(playerDamage);
+            playerHP.TakeDamage((int)playerDamage);
         }
 
         if (other.CompareTag("Player"))

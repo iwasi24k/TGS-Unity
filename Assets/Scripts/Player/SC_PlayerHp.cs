@@ -24,6 +24,9 @@ public class SC_PlayerHP : MonoBehaviour
         if (currentHP < 0)
         {
             currentHP = 0;
+
+            //‚±‚±‚ÅI—¹ˆ—(”s–k)
+
         }
         animator.SetTrigger("tKnockback");
     }

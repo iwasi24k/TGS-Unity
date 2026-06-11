@@ -142,7 +142,7 @@ public class SC_SplitFallingMissile : MonoBehaviour, SC_IPoolObject
 
         if (playerHP != null)
         {
-            playerHP.TakeDamage(playerDamage);
+            playerHP.TakeDamage((int)playerDamage);
         }
 
         if (other.CompareTag("Player"))
