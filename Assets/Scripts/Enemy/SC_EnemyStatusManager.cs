@@ -75,17 +75,15 @@ public class SC_EnemyStatusManager : MonoBehaviour
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
 
-        if (useBossShield == false)
+        if (hpSlider == null)
         {
-            if (hpSlider == null)
-            {
-                Debug.LogError("HPスライダーがアタッチされていません。");
-            }
-            else
-            {
-                hpSlider.maxValue = hpSlider.value = HP;
-            }
+            Debug.LogError("HPスライダーがアタッチされていません。");
         }
+        else
+        {
+            hpSlider.maxValue = hpSlider.value = HP;
+        }
+
         //全ステートのインスタンス化し、アセットを直接いじらない形に変更
         for (int i = 0; i < stateList.Length; i++)
         {
@@ -710,14 +708,5 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
-    public int GetCurrentBossShield()
-    {
-        return currentBossShield;
-    }
-
-    public int GetMaxBossShield()
-    {
-        return maxBossShield;
-    }
 
 }
