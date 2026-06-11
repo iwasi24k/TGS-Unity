@@ -1,134 +1,39 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SC_PlayerHP : MonoBehaviour
 {
-    [Header("Reference")]
+    [Header("Ref")]
     [SerializeField] private Animator animator;
 
-    // =========================================
-    // HP設定
-    // =========================================
-
     [Header("HP Settings")]
+    [SerializeField] private int maxHP = 10;
 
-    [SerializeField] private float maxHP = 100f;
-    [SerializeField] private float currentHP;
+    private int currentHP;
+    public int CurrentHP => currentHP;
 
-
-    // =========================================
-    // UI設定
-    // =========================================
-
-    [Header("UI Settings")]
-
-    // シーン内のHPスライダー名
-    [SerializeField] private string hpSliderObjectName = "HP_Slider";
-
-    // HPバー
-    private Slider hpSlider;
-
-
-    // =========================================
-    // ダメージ設定
-    // =========================================
-
-    [Header("Damage Settings")]
-
-    [SerializeField] private float bulletDamage = 10f;
-
-
-    // =========================================
-    // 初期化
-    // =========================================
-
-    private void Start()
+    private void Awake()
     {
-        animator = GetComponent<Animator>();
-
-        // HP初期化
         currentHP = maxHP;
-
-        // HPスライダー取得
-        FindHPSlider();
-
-        // UI更新
-        UpdateHPUI();
     }
 
-
-    // =========================================
-    // HPスライダー取得
-    // =========================================
-
-    private void FindHPSlider()
+    public void TakeDamage(int damage)
     {
-        // 名前でオブジェクト検索
-        GameObject sliderObject = GameObject.Find(hpSliderObjectName);
-
-        // 見つかった場合
-        if (sliderObject != null)
-        {
-            hpSlider = sliderObject.GetComponent<Slider>();
-
-            // Slider初期設定
-            hpSlider.maxValue = maxHP;
-            hpSlider.value = currentHP;
-        }
-        else
-        {
-            Debug.LogWarning("HP Slider が見つかりません");
-        }
-    }
-
-
-    // =========================================
-    // ダメージ処理
-    // =========================================
-
-    public void TakeDamage(float damage)
-    {
-        // ダメージアニメーション
-        animator?.SetTrigger("tKnockback");
-        // HP減少
         currentHP -= damage;
-
-        // HP制限
-        currentHP = Mathf.Clamp(currentHP, 0f, maxHP);
-
-        // UI更新
-        UpdateHPUI();
-
-    }
-
-
-    // =========================================
-    // UI更新
-    // =========================================
-
-    private void UpdateHPUI()
-    {
-        if (hpSlider != null)
+        if (currentHP < 0)
         {
-            hpSlider.value = currentHP;
+            currentHP = 0;
         }
+        animator.SetTrigger("tKnockback");
     }
 
-
-    // =========================================
-    // 弾ヒット処理
-    // =========================================
-
-    private void OnTriggerEnter(Collider other)
+    public void Heal(int value)
     {
-        // Bulletタグ確認
-        if (other.CompareTag("Bullet"))
+        currentHP += value;
+        if (currentHP > maxHP)
         {
-            // ダメージ
-            TakeDamage(bulletDamage);
-
-            // 弾削除
-            Destroy(other.gameObject);
+            currentHP = maxHP;
         }
     }
 }

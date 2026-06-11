@@ -54,36 +54,38 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
             {
                 // AttackArea
                 targets = AttackManager.GetInAreaObjectByTag("Enemy");
-                if (targets == null || targets.Length == 0) return;
-
-
-                foreach (var target in targets)
+                if (targets != null && targets.Length != 0)
                 {
-                    if (target == null) continue; // ここが重要：null 要素をスキップ
 
-                    var Enemy = target.GetComponent<SC_EnemyStatusManager>();
-                    if (Enemy == null) continue;
+                    foreach (var target in targets)
+                    {
+                        if (target == null) continue; // ここが重要：null 要素をスキップ
 
-                    // ダメージ処理など
-                    Enemy.TakeDamage(AttackManager.GetWeakDamage(), owner.transform.position, false, AttackType.Weak1);
-                    isHit = true;
+                        var Enemy = target.GetComponent<SC_EnemyStatusManager>();
+                        if (Enemy == null) continue;
+
+                        // ダメージ処理など
+                        Enemy.TakeDamage(AttackManager.GetWeakDamage(), owner.transform.position, false, AttackType.Weak1);
+                        isHit = true;
+                    }
                 }
             }
 
             {
                 targets = AttackManager.GetInAreaObjectByTag("Bullet");
-                if (targets == null || targets.Length == 0) return;
-
-                foreach (var target in targets)
+                if (targets != null && targets.Length != 0)
                 {
-                    if (target == null) continue; // ここが重要：null 要素をスキップ
+                    foreach (var target in targets)
+                    {
+                        if (target == null) continue; // ここが重要：null 要素をスキップ
 
-                    var Missile = target.GetComponent<SC_ReflectableMissile>();
-                    if (Missile == null) continue;
+                        var Missile = target.GetComponent<SC_ReflectableMissile>();
+                        if (Missile == null) continue;
 
-                    // ダメージ処理など
-                    Missile.ReflectByPlayer(owner.transform);
-                    isHit = true;
+                        // ダメージ処理など
+                        Missile.ReflectByPlayer(owner.transform);
+                        isHit = true;
+                    }
                 }
             }
 

@@ -51,36 +51,70 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
         {
 
             GameObject[] gameObjects = AttackManager.GetInAreaObjectByTag("Enemy");
-
-            if (gameObjects == null || gameObjects.Length == 0) return;
-
-            foreach (var gameObject in gameObjects)
             {
-                var Enemy = gameObject.GetComponent<SC_EnemyStatusManager>();
+                if (gameObjects != null && gameObjects.Length != 0)
+                {
+                    foreach (var gameObject in gameObjects)
+                    {
+                        var Enemy = gameObject.GetComponent<SC_EnemyStatusManager>();
 
-                if (!AttackManager.IsNextAttackStrong())
-                {
-                    Debug.Log("Straight Attack");
-                    Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
-                    continue;
-                }
-                switch (AttackManager.GetCurrentComboCount())
-                {
-                    case 0:
-                        Debug.Log("Straight Attack");
-                        Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
-                        break;
-                    case 1:
-                        Debug.Log("Rotate Attack");
-                        Enemy.TakeDamage(AttackManager.GetRotateDamage(), owner.transform.position, true, AttackType.Rotate);
-                        break;
-                    case 2:
-                        Debug.Log("Uppercut Attack");
-                        Enemy.TakeDamage(AttackManager.GetUppercutDamage(), owner.transform.position, true, AttackType.Uppercut);
-                        break;
+                        if (!AttackManager.IsNextAttackStrong())
+                        {
+                            Debug.Log("Straight Attack");
+                            Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+                            continue;
+                        }
+                        switch (AttackManager.GetCurrentComboCount())
+                        {
+                            case 0:
+                                Debug.Log("Straight Attack");
+                                Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+                                break;
+                            case 1:
+                                Debug.Log("Rotate Attack");
+                                Enemy.TakeDamage(AttackManager.GetRotateDamage(), owner.transform.position, true, AttackType.Rotate);
+                                break;
+                            case 2:
+                                Debug.Log("Uppercut Attack");
+                                Enemy.TakeDamage(AttackManager.GetUppercutDamage(), owner.transform.position, true, AttackType.Uppercut);
+                                break;
+                        }
+                    }
                 }
             }
 
+            gameObjects = AttackManager.GetInAreaObjectByTag("Bullet");
+            {
+                if (gameObjects != null && gameObjects.Length != 0)
+                {
+                    foreach (var gameObject in gameObjects)
+                    {
+                        var Missile = gameObject.GetComponent<SC_ReflectableMissile>();
+
+                        if (!AttackManager.IsNextAttackStrong())
+                        {
+                            Debug.Log("Straight Attack");
+                            Missile.ReflectByPlayer(owner.transform);
+                            continue;
+                        }
+                        switch (AttackManager.GetCurrentComboCount())
+                        {
+                            case 0:
+                                Debug.Log("Straight Attack");
+                                Missile.ReflectByPlayer(owner.transform);
+                                break;
+                            case 1:
+                                Debug.Log("Rotate Attack");
+                                Missile.ReflectByPlayer(owner.transform);
+                                break;
+                            case 2:
+                                Debug.Log("Uppercut Attack");
+                                Missile.ReflectByPlayer(owner.transform);
+                                break;
+                        }
+                    }
+                }
+            }
             AttackManager.ResetCombo();
             once = true;
         }
