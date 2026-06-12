@@ -167,9 +167,11 @@ public class SC_Field : MonoBehaviour
         {
             Debug.Log("ゲームクリア!");
 
-            SceneManager.LoadScene(
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Scene Tutorial")
+            {
+                SceneManager.LoadScene(
                 "Scene_Result");
-
+            }
             yield break;
         }
 
@@ -208,5 +210,48 @@ public class SC_Field : MonoBehaviour
         }
 
         Debug.Log("Playerリセット");
+    }
+
+
+
+
+    public int GetEnemyCount()
+    {
+        if (enemyManager == null)
+        {
+            Debug.LogError("EnemyManagerが未設定");
+            return 0;
+        }
+
+        return enemyManager.GetEnemyCount();
+    }
+    public int GetObjectCount()
+    {
+        objects.RemoveAll(o => o == null);
+
+        return objects.Count;
+    }
+
+    public int GetCurrentStage()
+    {
+        return currentStage;
+    }
+
+    public void ReloadCurrentStage()
+    {
+        Debug.Log(
+            $"Stage {currentStage} Reload");
+
+        ResetPlayer();
+
+        SC_PlayerAttack attack =
+            player.GetComponent<SC_PlayerAttack>();
+
+        if (attack != null)
+        {
+            attack.TutorialResetCombo();
+        }
+
+        Refresh();
     }
 }

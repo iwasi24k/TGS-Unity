@@ -2,17 +2,52 @@ using UnityEngine;
 
 public class SC_TutorialEnemy : MonoBehaviour
 {
-    [SerializeField] private SC_MoveTutorial tutorialManager;
+    private Vector3 startPosition;
+    private Quaternion startRotation;
 
-    private bool completed;
+    private Rigidbody rb;
 
-    public void WeakAttackHit()
+    private SC_EnemyStatusManager status;
+
+    private void Start()
     {
-        if (completed)
-            return;
+        startPosition =
+            transform.position;
 
-        completed = true;
+        startRotation =
+            transform.rotation;
 
-        //tutorialManager.WeakAttackTutorialComplete();
+        rb =
+            GetComponent<Rigidbody>();
+
+        status =
+            GetComponent<SC_EnemyStatusManager>();
+    }
+
+    public void ResetEnemy()
+    {
+        transform.position =
+            startPosition;
+
+        transform.rotation =
+            startRotation;
+
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                Vector3.zero;
+
+            rb.angularVelocity =
+                Vector3.zero;
+        }
+
+        if (status != null)
+        {
+            status.ResetEnemyStatus();
+
+            status.ChangeState(0);
+        }
+
+        Debug.Log("チュートリアル敵リセット");
     }
 }
