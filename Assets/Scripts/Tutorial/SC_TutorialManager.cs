@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SC_TutorialManager : MonoBehaviour
 {
@@ -7,34 +8,89 @@ public class SC_TutorialManager : MonoBehaviour
     private TMP_Text tutorialText;
     private SC_PlayerAttackManager playerAttack;
 
-    [Header("Stage Messages")]
-    [TextArea(3, 10)]
+    // =================================================
+    // ■Stageデータ
+    // =================================================
+    [System.Serializable]
+    public class StageUIData
+    {
+        [TextArea(3, 10)]
+        public string message;
+
+        public StageImageData[] images;
+    }
+
+    // =================================================
+    // ■画像データ
+    // =================================================
+    [System.Serializable]
+    public class StageImageData
+    {
+        public Texture2D texture;
+        public Vector2 position;
+        public Vector2 size = new Vector2(200, 200);
+        public float rotation;
+    }
+
+    [Header("Stage Data")]
     [SerializeField]
-    private string[] stageMessages;
+    private StageUIData[] stages;
 
     private int currentDisplayStage = -1;
 
     private bool stageCleared = false;
     private bool stageLock = false;
 
+    // -------------------------
+    // 攻撃検出用
+    // -------------------------
     private int lastCombo = 0;
-    private bool lastStrong = false;
+    private bool lastStrongState = false;
 
+    // UI
+    private Image[] tutorialImages;
+    private Sprite[] spriteCache = new Sprite[5];
 
-    private int lastRotateDamage = 0;
-    private int lastUpperDamage = 0;
+    // =================================================
     private void Start()
     {
         field = FindFirstObjectByType<SC_Field>();
         playerAttack = FindFirstObjectByType<SC_PlayerAttackManager>();
 
-        GameObject textObj = GameObject.Find("TutorialText");
-        if (textObj != null)
-            tutorialText = textObj.GetComponent<TMP_Text>();
+        tutorialText = GameObject.Find("TutorialText")?.GetComponent<TMP_Text>();
+
+        tutorialImages = new Image[5];
+
+        tutorialImages[0] = GameObject.Find("TutorialImage1")?.GetComponent<Image>();
+        tutorialImages[1] = GameObject.Find("TutorialImage2")?.GetComponent<Image>();
+        tutorialImages[2] = GameObject.Find("TutorialImage3")?.GetComponent<Image>();
+        tutorialImages[3] = GameObject.Find("TutorialImage4")?.GetComponent<Image>();
+        tutorialImages[4] = GameObject.Find("TutorialImage5")?.GetComponent<Image>();
+
+        ForceInitUI();
 
         UpdateTutorialText();
+        UpdateTutorialUI(currentDisplayStage);
     }
 
+    // =================================================
+    private void ForceInitUI()
+    {
+        for (int i = 0; i < tutorialImages.Length; i++)
+        {
+            if (tutorialImages[i] == null) continue;
+
+            RectTransform rt = tutorialImages[i].GetComponent<RectTransform>();
+
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+
+            tutorialImages[i].gameObject.SetActive(false);
+        }
+    }
+
+    // =================================================
     private void Update()
     {
         if (field == null || playerAttack == null) return;
@@ -44,12 +100,15 @@ public class SC_TutorialManager : MonoBehaviour
         if (currentDisplayStage != stage)
         {
             currentDisplayStage = stage;
+
             stageCleared = false;
             stageLock = false;
+
             lastCombo = 0;
-            lastStrong = false;
+            lastStrongState = false;
 
             UpdateTutorialText();
+            UpdateTutorialUI(stage);
         }
 
         DetectAttack(stage);
@@ -57,88 +116,42 @@ public class SC_TutorialManager : MonoBehaviour
     }
 
     // =================================================
-    // ■攻撃検出（成功＋失敗）
+    // ■攻撃検出（安定版）
     // =================================================
     private void DetectAttack(int stage)
     {
         int combo = playerAttack.GetCurrentComboCount();
         bool strong = playerAttack.IsNextAttackStrong();
 
-        int rotateDamage = playerAttack.GetRotateDamage();
-        int upperDamage = playerAttack.GetUppercutDamage();
+        // -------------------------
+        // 弱攻撃（combo増加）
+        // -------------------------
+        bool weakAttack = combo > lastCombo;
 
-        bool weakAttack = combo == 1 && lastCombo == 0;
-
-        // ★重要：変化検出に戻す（1回だけ発火）
-        bool spinAttack = rotateDamage != lastRotateDamage && rotateDamage > 0;
-        bool upperAttack = upperDamage != lastUpperDamage && upperDamage > 0;
-
-        bool strongAttack = strong;
-
-        // 成功
-        if (IsCorrectAttack(stage, weakAttack, strongAttack, spinAttack, upperAttack))
+        if (weakAttack && stage == 2)
         {
             stageCleared = true;
             TryNextStage();
         }
 
-        // 失敗
-        if (IsWrongAttack(stage, weakAttack, strongAttack, spinAttack, upperAttack))
+        // -------------------------
+        // 強攻撃（立ち上がり検出）
+        // -------------------------
+        bool strongAttack = strong && !lastStrongState;
+
+        if (strongAttack && stage >= 3)
         {
-            ResetStage();
+            stageCleared = true;
+            TryNextStage();
         }
 
+        // 更新
         lastCombo = combo;
-        lastRotateDamage = rotateDamage;
-        lastUpperDamage = upperDamage;
+        lastStrongState = strong;
     }
 
     // =================================================
-    // ■正解判定
-    // =================================================
-    private bool IsCorrectAttack(int stage, bool weak, bool strong, bool spin, bool upper)
-    {
-        return stage switch
-        {
-            2 => weak,
-            3 => strong,
-            4 => spin,
-            5 => upper,
-            _ => false
-        };
-    }
-
-    // =================================================
-    // ■失敗判定
-    // =================================================
-    private bool IsWrongAttack(int stage, bool weak, bool strong, bool spin, bool upper)
-    {
-        return stage switch
-        {
-            2 => strong || spin || upper,
-            3 => weak || spin || upper,
-            4 => weak || strong || upper,
-            5 => weak || strong || spin,
-            _ => false
-        };
-    }
-
-    // =================================================
-    // ■ステージリセット
-    // =================================================
-    private void ResetStage()
-    {
-        Debug.Log("Wrong attack → Stage Reset");
-
-        stageCleared = false;
-        lastCombo = 0;
-        lastStrong = false;
-
-        // 必要ならここで演出やUI戻しも可能
-    }
-
-    // =================================================
-    // ■ステージ進行
+    // ■敵処理
     // =================================================
     private void HandleFieldClear(int stage)
     {
@@ -162,12 +175,17 @@ public class SC_TutorialManager : MonoBehaviour
         }
     }
 
+    // =================================================
+    // ■ステージ進行
+    // =================================================
     private void TryNextStage()
     {
         if (stageLock) return;
 
         stageLock = true;
+
         field.NextStage();
+
         Invoke(nameof(Unlock), 1.5f);
     }
 
@@ -176,13 +194,66 @@ public class SC_TutorialManager : MonoBehaviour
         stageLock = false;
     }
 
+    // =================================================
+    // ■テキスト更新
+    // =================================================
     private void UpdateTutorialText()
     {
         if (tutorialText == null) return;
 
-        if (currentDisplayStage >= 0 && currentDisplayStage < stageMessages.Length)
-            tutorialText.text = stageMessages[currentDisplayStage];
+        if (currentDisplayStage >= 0 && currentDisplayStage < stages.Length)
+        {
+            tutorialText.text = stages[currentDisplayStage].message;
+        }
         else
+        {
             tutorialText.text = "";
+        }
+    }
+
+    // =================================================
+    // ■UI更新
+    // =================================================
+    private void UpdateTutorialUI(int stage)
+    {
+        if (stages == null) return;
+        if (stage < 0 || stage >= stages.Length) return;
+
+        for (int i = 0; i < tutorialImages.Length; i++)
+        {
+            if (tutorialImages[i] == null) continue;
+            tutorialImages[i].gameObject.SetActive(false);
+        }
+
+        var images = stages[stage].images;
+        if (images == null) return;
+
+        int count = Mathf.Min(images.Length, tutorialImages.Length);
+
+        for (int i = 0; i < count; i++)
+        {
+            var data = images[i];
+            var ui = tutorialImages[i];
+
+            if (ui == null || data.texture == null) continue;
+
+            RectTransform rt = ui.GetComponent<RectTransform>();
+
+            if (spriteCache[i] == null || spriteCache[i].texture != data.texture)
+            {
+                spriteCache[i] = Sprite.Create(
+                    data.texture,
+                    new Rect(0, 0, data.texture.width, data.texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            }
+
+            ui.sprite = spriteCache[i];
+            ui.gameObject.SetActive(true);
+
+            rt.anchoredPosition = data.position;
+            rt.sizeDelta = data.size;
+            rt.localRotation = Quaternion.Euler(0, 0, data.rotation);
+        }
     }
 }
