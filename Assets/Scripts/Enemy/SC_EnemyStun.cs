@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Enemy/State/Stun State")]
-public class SC_EnemyStunState : SC_EnemyBaceState
+[CreateAssetMenu(menuName = "Enemy/Stun State")]
+public class SC_EnemyStun : SC_EnemyBaceState
 {
     [Tooltip("ƒXƒ^ƒ“ŽžŠÔ")]
     [SerializeField] private float stunTime = 0.5f;
@@ -10,6 +10,8 @@ public class SC_EnemyStunState : SC_EnemyBaceState
     [SerializeField] private bool stopVelocity = true;
 
     private float timer;
+
+    private Animator animator;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -21,6 +23,9 @@ public class SC_EnemyStunState : SC_EnemyBaceState
         {
             rb.linearVelocity = Vector3.zero;
         }
+
+        animator = Owner.GetComponent<Animator>();
+        animator.SetBool("bHit", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -35,6 +40,6 @@ public class SC_EnemyStunState : SC_EnemyBaceState
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-
+        animator.SetBool("bHit", false);
     }
 }

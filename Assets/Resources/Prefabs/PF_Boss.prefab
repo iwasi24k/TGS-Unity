@@ -318,8 +318,8 @@ MonoBehaviour:
   bossHpPartCount: 4
   useBossShield: 1
   bossShieldObject: {fileID: 3475018771120973243}
-  maxBossShield: 20
-  currentBossShield: 20
+  maxBossShield: 50
+  currentBossShield: 50
   downWhenShieldBreak: 1
   shieldLightningEffect: {fileID: 0}
 --- !u!114 &5880420886448220101
@@ -378,7 +378,7 @@ MonoBehaviour:
   warningSectorPoolObjectName: PF_WarningSector Pool
   warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
-  - usePattern: 1
+  - usePattern: 0
     patternName: Full
     stateList: 0500000003000000040000001700000006000000070000000800000009000000110000000b000000190000001a000000140000000f0000001b000000180000000c000000
   - usePattern: 0
@@ -387,9 +387,9 @@ MonoBehaviour:
   - usePattern: 0
     patternName: Circle
     stateList: 09000000100000000a000000110000000b000000120000000c000000130000000d000000140000000e000000150000000f00000016000000
-  - usePattern: 0
+  - usePattern: 1
     patternName: Summon
-    stateList: 18000000
+    stateList: 170000001800000019000000
   - usePattern: 0
     patternName: test
     stateList: 1a0000001b000000
