@@ -32,12 +32,13 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
 
         if (SprintIA.action.triggered)
         {
-            animator.SetBool("bRun", true);
+            animator.SetBool("bBoost", true);
             SprintSC.TrySprint();
         }
-        else
+
+        if(SprintIA.action.WasReleasedThisFrame())
         {
-            animator.SetBool("bRun", false);
+            animator.SetBool("bBoost", false);
         }
 
         var ccon = Manager.cController;
@@ -81,7 +82,7 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
     public override void Exit(GameObject owner, PlayerState stateList)
     {
         var animator = owner.GetComponent<Animator>();
-        animator.SetBool("bRun", false);
+        animator.SetBool("bBoost", false);
         animator.SetBool("bWalk", false);
     }
 }

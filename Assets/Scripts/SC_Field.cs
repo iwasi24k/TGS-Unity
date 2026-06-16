@@ -42,6 +42,7 @@ public class SC_Field : MonoBehaviour
     //==================================================
     // Player
     //==================================================
+    [SerializeField] int playerHealEffect = 10;     //TODO: スクリプト分離
     private GameObject player;
 
     private Vector3 playerStartPos;
@@ -55,6 +56,16 @@ public class SC_Field : MonoBehaviour
         {
             playerStartPos =
                 player.transform.position;
+        }
+
+        if(enemyManager == null)
+        {
+            enemyManager = FindFirstObjectByType<SC_EnemyManager>();
+        }
+
+        if(goal == null)
+        {
+            goal = FindFirstObjectByType<SC_Goal>();
         }
 
         // Goal初期化
@@ -188,6 +199,12 @@ public class SC_Field : MonoBehaviour
         if (controller != null)
         {
             controller.enabled = true;
+        }
+
+        var playerHP = player.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.Heal(playerHealEffect);    //TODO: スクリプト分離
         }
 
         Debug.Log("Playerリセット");

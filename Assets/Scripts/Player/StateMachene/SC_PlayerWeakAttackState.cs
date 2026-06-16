@@ -13,7 +13,17 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var Animator = owner.GetComponent<Animator>();
-        Animator.SetTrigger("tWeakAttack");
+        var Manager = owner.GetComponent<SC_PlayerStateManager>();
+        var AttackManager = Manager.attackManager;
+
+        if(AttackManager.GetCurrentComboCount() == 0)
+        {
+            Animator.SetTrigger("tWeakAttack_L");
+        }
+        else
+        {
+            Animator.SetTrigger("tWeakAttack_R");
+        }
         once = false;
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
@@ -40,23 +50,43 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
         {
 
             GameObject[] targets;
-
-            // AttackArea
-            targets = AttackManager.GetInAreaObjectByTag("Enemy");
-            if (targets == null || targets.Length == 0) return;
-
             bool isHit = false;
-
-            foreach (var target in targets)
             {
-                if (target == null) continue; // ここが重要：null 要素をスキップ
+                // AttackArea
+                targets = AttackManager.GetInAreaObjectByTag("Enemy");
+                if (targets != null && targets.Length != 0)
+                {
 
-                var Enemy = target.GetComponent<SC_EnemyStatusManager>();
-                if (Enemy == null) continue;
+                    foreach (var target in targets)
+                    {
+                        if (target == null) continue; // ここが重要：null 要素をスキップ
 
-                // ダメージ処理など
-                Enemy.TakeDamage(AttackManager.GetWeakDamage(), owner.transform.position, false, AttackType.Weak1);
-                isHit = true;
+                        var Enemy = target.GetComponent<SC_EnemyStatusManager>();
+                        if (Enemy == null) continue;
+
+                        // ダメージ処理など
+                        Enemy.TakeDamage(AttackManager.GetWeakDamage(), owner.transform.position, false, AttackType.Weak1);
+                        isHit = true;
+                    }
+                }
+            }
+
+            {
+                targets = AttackManager.GetInAreaObjectByTag("Bullet");
+                if (targets != null && targets.Length != 0)
+                {
+                    foreach (var target in targets)
+                    {
+                        if (target == null) continue; // ここが重要：null 要素をスキップ
+
+                        var Missile = target.GetComponent<SC_ReflectableMissile>();
+                        if (Missile == null) continue;
+
+                        // ダメージ処理など
+                        Missile.ReflectByPlayer(owner.transform);
+                        isHit = true;
+                    }
+                }
             }
 
             if (isHit)

@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: SceneMap
   m_EditorClassIdentifier: Assembly-CSharp::SceneMap
   sceneNames:
-  - Test
-  - Scene_tee
+  - Scene Title
+  - Scene Tutorial
+  - Scene Game
+  - Scene Result

@@ -408,15 +408,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5
+      value: 2.78
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0000017611746
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 9.473209
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalRotation.w
@@ -542,9 +542,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 1446328084253458848}
-  HP: 100
+  HP: 5
   stateList:
-  - {fileID: 11400000, guid: 7178cd9463612024e95eb63969e5863d, type: 2}
   - {fileID: 11400000, guid: 7d905cb2d6927144a9f24beb8b066f2e, type: 2}
   - {fileID: 11400000, guid: e17a1d3593bf67044a4e58f8eef0d402, type: 2}
   initialStateNum: 0
