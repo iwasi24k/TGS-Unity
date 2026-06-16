@@ -33,3 +33,11 @@ MonoBehaviour:
     randomPosition: 1
     centerAngle: 0
     angleRange: 0
+  - enemyPrefab: {fileID: 2421892717064337079, guid: 0d84b6463638431479fae1d6330fa506, type: 3}
+    hp: 5
+    summonCount: 3
+    summonRadius: 10
+    spawnHeight: 0
+    randomPosition: 1
+    centerAngle: 0
+    angleRange: 0

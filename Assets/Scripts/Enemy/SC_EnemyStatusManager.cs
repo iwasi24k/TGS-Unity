@@ -501,6 +501,27 @@ public class SC_EnemyStatusManager : MonoBehaviour
         Vector3 leftBoundary = Quaternion.Euler(0, -searchAngleThreshold, 0) * forward;
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary * 2f);
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary * 2f);
+
+        if (Application.isPlaying)
+        {
+            if (currentState != null)
+            {
+                currentState.OnDrawGizmosSelectedState(this.gameObject, this);
+            }
+        }
+        else
+        {
+            if (stateList != null)
+            {
+                for (int i = 0; i < stateList.Length; i++)
+                {
+                    if (stateList[i] != null)
+                    {
+                        stateList[i].OnDrawGizmosSelectedState(this.gameObject, this);
+                    }
+                }
+            }
+        }
     }
 
     //衝突ダメージを与える関数
