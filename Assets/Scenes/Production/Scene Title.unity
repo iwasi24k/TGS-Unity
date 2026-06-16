@@ -765,8 +765,8 @@ MonoBehaviour:
   popupButtons:
   - {fileID: 1420771150}
   - {fileID: 1762308403}
-  mainGameSceneName: Scene_tee
-  tutorialSceneName: Scene_Tutorial
+  mainGameSceneName: Scene Game
+  tutorialSceneName: Scene Tutorial
 --- !u!1 &1109754895
 GameObject:
   m_ObjectHideFlags: 0
