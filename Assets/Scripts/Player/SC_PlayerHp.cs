@@ -50,7 +50,7 @@ public class SC_PlayerHP : MonoBehaviour
         if(currentHP <= 0)
         {
             // ƒvƒŒƒCƒ„[‚ªŽ€–S‚µ‚½‚Æ‚«‚Ìˆ—
-            SceneManager.LoadScene("Scene_Result");
+            SceneManager.LoadScene("Scene Result");
         }
     }
 

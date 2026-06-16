@@ -10,4 +10,5 @@ public abstract class SC_EnemyBaceState : ScriptableObject
 
     public virtual void OnCollisionEnterState(GameObject Owner, SC_EnemyStatusManager Manager, Collision collision) { }
 
+    public virtual void OnDrawGizmosSelectedState(GameObject Owner,SC_EnemyStatusManager Manager) { }
 }

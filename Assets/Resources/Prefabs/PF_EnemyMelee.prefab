@@ -400,7 +400,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_Name
-      value: PF_EnemyMulti
+      value: PF_Enemy Melee
       objectReference: {fileID: 0}
     - target: {fileID: 100066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_TagString
@@ -408,15 +408,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.7699454
+      value: -7.191499
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0000006504316
+      value: 0.0000004849535
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.1134734
+      value: -6.1242237
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalRotation.w
@@ -544,12 +544,14 @@ MonoBehaviour:
   hpSlider: {fileID: 1446328084253458848}
   HP: 5
   stateList:
-  - {fileID: 11400000, guid: 7d905cb2d6927144a9f24beb8b066f2e, type: 2}
-  - {fileID: 11400000, guid: dd0328389a50e5d49b615d1dec56ab3e, type: 2}
+  - {fileID: 11400000, guid: 52592670bc944ae4a895f54414881656, type: 2}
+  - {fileID: 11400000, guid: 998550d80c0fd12439730e21b5e2ab54, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
   stunState: {fileID: 11400000, guid: 8b1686356d6ee46488610b3028cbc128, type: 2}
   useHitStun: 1
+  useFallDeath: 1
+  fallDeathY: -10
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 2
@@ -581,7 +583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttackPoolProvider
   bulletMultiPool: {fileID: 0}
-  bulletMultiPoolObjectName: PF_StraightMissile Pool
+  bulletMultiPoolObjectName: PF_ReflectableMissile Pool
 --- !u!4 &2421892717064628887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
