@@ -34,6 +34,7 @@ public class SC_PlayerAttack : MonoBehaviour
     [SerializeField] private Vector3 JumpInAreaSize = new Vector3(3f, 2f, 5f);
     [Tooltip("ターゲット時の飛びつきの範囲")]
     [SerializeField] private Vector3 TargetingJumpInAreaSize = new Vector3(3f, 2f, 10f);
+    [SerializeField] private SC_PlayerCamera scCamera;
 
     private float currentAttackCooldown = 0f;
     private readonly Collider[] overlapCollision = new Collider[32];
@@ -118,10 +119,7 @@ public class SC_PlayerAttack : MonoBehaviour
         blowAway = true
     };
 
-    [Header("Tutorial")]
-    [SerializeField]
-    private SC_AttackTutorial attackTutorial;
-
+   
     private int weakComboCount = 0;
     private float comboTimer = 0f;
 
@@ -132,15 +130,17 @@ public class SC_PlayerAttack : MonoBehaviour
 
         if (scTarget == null) scTarget = this.GetComponent<SC_PlayerTarget>();
 
-        if(scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
+        if (scSetting == null) scSetting = GameObject.FindGameObjectWithTag("Setting").GetComponent<SC_Setting>();
 
-        if(animPlayer == null) animPlayer = this.GetComponent<Animator>();
+        if (animPlayer == null) animPlayer = this.GetComponent<Animator>();
+
+        if (scCamera == null) scCamera = FindFirstObjectByType<SC_PlayerCamera>();
 
         if (iaWeakAttack == null)
         {
             Debug.LogError("弱攻撃のInputActionReferenceがアタッチされていません。");
         }
-        if (iaStrongAttack == null) 
+        if (iaStrongAttack == null)
         {
             Debug.LogError("強攻撃のInputActionReferenceがアタッチされていません。");
         }
@@ -149,7 +149,7 @@ public class SC_PlayerAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(scSetting != null && scSetting.IsPaused())
+        if (scSetting != null && scSetting.IsPaused())
         {
             return; // ポーズ中は攻撃できないようにする
         }
@@ -322,24 +322,36 @@ public class SC_PlayerAttack : MonoBehaviour
 
                 enemy.TakeDamage(AttackDamage, transform.position, BlowAway, attackType);
                 hasHitEnemy = true;
-
-                if ((hasHitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
-                {
-                    currentAttackCooldown = attackCooldown;
-                }
-                else
-                {
-                    currentAttackCooldown = attackCooldown * 0.5f;
-                }
-
-                if (attackTutorial != null)
-                {
-                    Debug.Log("AttackTutorial通知");
-                    attackTutorial.OnAttackHit(attackType);
-                }
             }
         }
 
+        if ((hasHitEnemy || hasReflectedMissile) && currentAttackCooldown <= 0f)
+        {
+            currentAttackCooldown = attackCooldown;
+
+            if (attackType == AttackType.Weak1 || attackType == AttackType.Weak2)
+            {
+                SC_BeatEffectTrigger.Instance?.OnWeakHit();
+
+                if (scCamera == null)
+                {
+                    scCamera = FindFirstObjectByType<SC_PlayerCamera>();
+                }
+
+                scCamera?.TriggerCameraShake(0.3f);
+            }
+            else
+            {
+                SC_BeatEffectTrigger.Instance?.OnStrongHit();
+            }
+        }
+        else
+        {
+            currentAttackCooldown = attackCooldown * 0.5f;
+        }
+
+      
+    
         return hasHitEnemy || hasReflectedMissile;
     }
 

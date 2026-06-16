@@ -523,7 +523,7 @@ MonoBehaviour:
   menuButtons:
   - {fileID: 1876797039}
   - {fileID: 1819580874}
-  titleSceneName: Scene_Title
+  titleSceneName: Scene Title
 --- !u!1 &1109754895
 GameObject:
   m_ObjectHideFlags: 0

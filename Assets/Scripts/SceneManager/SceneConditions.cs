@@ -34,5 +34,15 @@ public class SceneConditions : MonoBehaviour
         {
             StartCoroutine(ChangeScene(sceneMap.sceneNames[1]));
         }
+
+        if (Keyboard.current.vKey.wasPressedThisFrame)
+        {
+            StartCoroutine(ChangeScene(sceneMap.sceneNames[2]));
+        }
+
+        if (Keyboard.current.bKey.wasPressedThisFrame)
+        {
+            StartCoroutine(ChangeScene(sceneMap.sceneNames[3]));
+        }
     }
 }

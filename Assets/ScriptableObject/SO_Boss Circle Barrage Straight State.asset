@@ -22,9 +22,11 @@ MonoBehaviour:
   rotateOffsetPerShot: 30
   angleSectorList: []
   endDelay: 0.5
+  missileType: 0
   showCircleWarning: 1
   warningRadius: 20
   showSectorWarningWhenListExists: 1
   sectorWarningRadius: 20
   warningHeightOffset: 0.03
   warningTime: 0.3
+  aimBaseType: 0

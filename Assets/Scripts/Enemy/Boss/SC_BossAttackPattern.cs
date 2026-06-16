@@ -29,7 +29,12 @@ public enum BossAttackStateType
 
     SummonAll = 23,
     SummonRandom = 24,
-    SummonByIndex = 25
+    SummonByIndex = 25,
+
+    CircleBarragePlayerStraight=26,
+    CircleBarragePlayerReflectable = 27,
+
+
 }
 
 // ボスの攻撃パターンを定義するクラス

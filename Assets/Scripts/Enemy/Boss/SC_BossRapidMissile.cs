@@ -22,12 +22,6 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
     {
         timer = 0f;
         fired = false;
-
-        Animator animator = Owner.GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.SetTrigger("tRapidMissile");
-        }
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -91,7 +85,9 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
             if (missile != null)
             {
                 missile.SetPool(pool);
+                missile.SetWarningPool(boss.GetWarningCirclePool());
                 missile.OnGetFromPool();
+                missile.SetUseLockOnMark(i == 0);
 
                 missile.Init(
                     player,
@@ -101,4 +97,5 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
             }
         }
     }
+
 }

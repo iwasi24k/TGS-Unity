@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5081923726643048088}
   m_Layer: 0
   m_Name: PF_HomingMissile
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,6 +129,9 @@ MonoBehaviour:
   startDelay: 0.5
   lifeTime: 5
   playerDamage: 1
+  useLockOnMark: 1
+  lockOnRadius: 1.2
+  lockOnGroundOffset: 0.05
 --- !u!54 &5081923726643048088
 Rigidbody:
   m_ObjectHideFlags: 0

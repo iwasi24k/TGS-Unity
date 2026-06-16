@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3650846209934710526}
   m_Layer: 0
   m_Name: PF_SplitFallingMissile
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   parentWarningRadius: 1.5
-  parentWarningHeightOffset: 0.04
+  parentWarningHeightOffset: 0.02
   showChildWarning: 1
   childWarningWidth: 1
   childWarningLength: 10

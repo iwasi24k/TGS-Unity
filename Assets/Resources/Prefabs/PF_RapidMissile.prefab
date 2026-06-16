@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 698334378419609194}
   m_Layer: 0
   m_Name: PF_RapidMissile
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,3 +129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   lifeTime: 5
   playerDamage: 1
+  useLockOnMark: 1
+  lockOnRadius: 1.2
+  lockOnGroundOffset: 0.05

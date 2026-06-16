@@ -142,10 +142,10 @@ public class SC_EnemyAttack : SC_EnemyBaceState
 
         // “G‚Æ’e‚ÌÕ“Ë‚ğ–³‹
         Collider ownerCol = Owner.GetComponent<Collider>();
-        Collider bulletCol = bulletObj.GetComponent<Collider>();
-        if (ownerCol != null && bulletCol != null)
+
+        if (bullet != null)
         {
-            Physics.IgnoreCollision(ownerCol, bulletCol);
+            bullet.SetIgnoredOwner(ownerCol);
         }
 
         // ’e‚ğ‘O‚É”ò‚Î‚·

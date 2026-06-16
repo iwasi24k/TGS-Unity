@@ -113,3 +113,7 @@ Assets/LocalSpace/
 Assets/LocalSpace.meta
 
 Assets/_Recovery/
+
+# External assets that are linked to the project but not stored in the repository
+Assets/ExternalAssets/
+Assets/ExternalAssets.meta
