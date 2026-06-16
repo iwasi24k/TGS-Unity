@@ -11,6 +11,9 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
     private Vector3 _startPosition;
     private bool _isCharging;
 
+    private bool _wasHit;
+    public bool GetWasHit() => _wasHit;
+
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var animator = owner.GetComponent<Animator>();
@@ -19,6 +22,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
         _startPosition = owner.transform.position;
         _isCharging = true;
+        _wasHit = false;
     }
 
     public override void UpdateState(GameObject owner, PlayerState stateList)
@@ -80,6 +84,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
     {
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bStraight", false);
+        _wasHit = false;
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList)
@@ -98,6 +103,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
             Debug.Log("Straight Attack");
             Enemy.TakeDamage(attackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+            _wasHit = true;
             break;
         }
 
