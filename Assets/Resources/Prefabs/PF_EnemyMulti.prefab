@@ -408,15 +408,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5
+      value: 1.7699454
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0000006504316
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: -7.1134734
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalRotation.w
@@ -548,6 +548,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dd0328389a50e5d49b615d1dec56ab3e, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 11400000, guid: 51298b203376df043b5458c122255729, type: 2}
+  stunState: {fileID: 11400000, guid: 8b1686356d6ee46488610b3028cbc128, type: 2}
+  useHitStun: 1
   collisionCenter: {x: 0, y: 1, z: 0}
   collisionRadius: 1.5
   blowAwayPowerOnCollision: 2

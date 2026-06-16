@@ -25,6 +25,23 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
     private SC_EnemyBaceState localBlowAwayState;
 
+    [Header("Stun")]
+    [Tooltip("攻撃を受けた時に短時間止まるState")]
+    [SerializeField] private SC_EnemyBaceState stunState;
+
+    [Tooltip("Player攻撃を受けた時にStunするか")]
+    [SerializeField] private bool useHitStun = true;
+
+    private SC_EnemyBaceState localStunState;
+    private SC_EnemyBaceState beforeStunState;
+
+    [Header("Fall Death")]
+    [Tooltip("一定Y座標より下に落ちたら死亡するか")]
+    [SerializeField] private bool useFallDeath = true;
+
+    [Tooltip("このY座標より下に落ちたら死亡")]
+    [SerializeField] private float fallDeathY = -10.0f;
+
     [Header("衝突判定円")]
     [Tooltip("敵同士の衝突判定円中心"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
     [Tooltip("敵同士の衝突判定円半径"),SerializeField] private float collisionRadius = 0.5f;
@@ -100,6 +117,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
             localBlowAwayState = Instantiate(blowAwayState);
         }
 
+        if (stunState != null)
+        {
+            localStunState = Instantiate(stunState);
+        }
+
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
         currentState = localStateList[initialStateNum];
         currentState.Enter(this.gameObject,this);
@@ -123,6 +145,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     void Update()
     {
+        CheckFallDeath();
+
         UpdateEnemyCollisionTimers();
 
         currentState.UpdateState(this.gameObject, this);
@@ -154,6 +178,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (localBlowAwayState != null)
         {
             Destroy(localBlowAwayState);
+        }
+
+        if (localStunState != null)
+        {
+            Destroy(localStunState);
         }
     }
 
@@ -193,6 +222,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
         CollisionDamage(damage);
 
         CheckBossDownDamageLimit();
+
+        if (damageSource == EnemyDamageSource.PlayerAttack && HP > 0 && !isBlowAway)
+        {
+            ChangeToStun();
+        }
 
         if (HP <= 0)
         {
@@ -313,6 +347,53 @@ public class SC_EnemyStatusManager : MonoBehaviour
         {
             //Debug.Log("サーチで敵が見つかりませんでした。");
             return direction; 
+        }
+    }
+
+    public void ChangeToStun()
+    {
+        if (!useHitStun) return;
+        if (localStunState == null) return;
+
+        // 吹っ飛び中、BossDown中はStunにしない
+        if (IsBlownAway()) return;
+        if (IsBossDown()) return;
+
+        // すでにStun中なら入り直さない
+        if (currentState == localStunState) return;
+
+        beforeStunState = currentState;
+
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+
+        currentState = localStunState;
+        currentState.Enter(this.gameObject, this);
+    }
+
+    public void ReturnFromStun()
+    {
+        if (currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+
+        if (beforeStunState != null)
+        {
+            currentState = beforeStunState;
+        }
+        else
+        {
+            currentState = localStateList[currentStateIndex];
+        }
+
+        beforeStunState = null;
+
+        if (currentState != null)
+        {
+            currentState.Enter(this.gameObject, this);
         }
     }
 
@@ -711,6 +792,27 @@ public class SC_EnemyStatusManager : MonoBehaviour
         }
     }
 
+    private void CheckFallDeath()
+    {
+        if (!useFallDeath) return;
+
+        if (transform.position.y <= fallDeathY)
+        {
+            FallDeath();
+        }
+    }
+
+    private void FallDeath()
+    {
+        Debug.Log("敵が落下死しました : " + gameObject.name);
+
+        if (SC_EffectManager.Instance != null)
+        {
+            SC_EffectManager.Instance.PlayEffect("Explosion", transform.position);
+        }
+
+        Destroy(gameObject);
+    }
 
     public int GetCurrentBossShield()
     {

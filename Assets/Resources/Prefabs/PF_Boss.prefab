@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyStatusManager
   hpSlider: {fileID: 0}
-  HP: 20
+  HP: 100
   stateList:
   - {fileID: 11400000, guid: 1cada7607adc0fd4795d9bb0e2af0aa9, type: 2}
   - {fileID: 11400000, guid: 2cb6f9ec46ea3f9408c6bc6552ba933a, type: 2}
@@ -300,6 +300,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3a9bb8ee1141a44478ed5549fbeb09af, type: 2}
   initialStateNum: 0
   blowAwayState: {fileID: 0}
+  stunState: {fileID: 0}
+  useHitStun: 0
+  useFallDeath: 0
+  fallDeathY: -10
   collisionCenter: {x: 0, y: 0, z: 0}
   collisionRadius: 2.6
   blowAwayPowerOnCollision: 0.5
