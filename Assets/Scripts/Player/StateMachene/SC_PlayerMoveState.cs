@@ -73,6 +73,7 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
         }
 
         float speedMultiplier = (SprintValue > 0.1f ? SprintSC.GetSprintSpeedMultiplier() : 1f);
+        Debug.Log("Speed Multiplier: " + speedMultiplier);
         ccon.Move(move * moveSpeed * speedMultiplier * Time.deltaTime);
     }
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
