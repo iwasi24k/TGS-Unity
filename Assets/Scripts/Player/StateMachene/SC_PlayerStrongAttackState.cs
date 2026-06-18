@@ -58,6 +58,11 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
                     {
                         var Enemy = gameObject.GetComponent<SC_EnemyStatusManager>();
 
+                        if(Enemy == null)
+                        {
+                            continue;
+                        }
+
                         if (!AttackManager.IsNextAttackStrong())
                         {
                             Debug.Log("Straight Attack");
@@ -90,6 +95,11 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
                     foreach (var gameObject in gameObjects)
                     {
                         var Missile = gameObject.GetComponent<SC_ReflectableMissile>();
+                        
+                        if (Missile == null)
+                        {
+                            continue;
+                        }
 
                         if (!AttackManager.IsNextAttackStrong())
                         {
