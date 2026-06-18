@@ -288,6 +288,10 @@ MonoBehaviour:
     effectPrefab: {fileID: 8684138600790934082, guid: 0a78ad568c6805b47918a89b39782b2b, type: 3}
     defaultCapacity: 10
     maxCapacity: 30
+  - effectKey: Heal
+    effectPrefab: {fileID: 1754467356384018874, guid: d8e4d2442fdd08447b2439675fad59bc, type: 3}
+    defaultCapacity: 10
+    maxCapacity: 30
 --- !u!1 &3224975190213506827
 GameObject:
   m_ObjectHideFlags: 0

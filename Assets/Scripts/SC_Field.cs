@@ -123,7 +123,7 @@ public class SC_Field : MonoBehaviour
             // Enemy登録
             if (obj.CompareTag("Enemy"))
             {
-                enemyManager.AddEnemy(obj);
+                //enemyManager.AddEnemy(obj);
             }
         }
     }
@@ -145,6 +145,8 @@ public class SC_Field : MonoBehaviour
         objects.Clear();
 
         enemyManager.ClearEnemies();
+
+        SC_EnemyStartGate.ResetGate();
 
         GenerateStage(currentStage);
 
