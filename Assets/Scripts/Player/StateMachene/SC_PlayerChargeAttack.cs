@@ -7,9 +7,11 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 {
     [SerializeField] private float chargeSpeed = 5f;
     [SerializeField] private float maxChargeDistance = 5f;
+    [SerializeField] private float maxChargeTime = 1f;
 
     private Vector3 _startPosition;
     private bool _isCharging;
+    private float _startTime;
 
     private bool _wasHit;
     public bool GetWasHit() => _wasHit;
@@ -23,6 +25,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         _startPosition = owner.transform.position;
         _isCharging = true;
         _wasHit = false;
+        _startTime = Time.time;
     }
 
     public override void UpdateState(GameObject owner, PlayerState stateList)
@@ -73,6 +76,11 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
             _isCharging = false;
         }
 
+        if(_startTime != -1f && Time.time - _startTime >= maxChargeTime)
+        {
+            ChargeAttackExe(owner, stateList);
+            _isCharging = false;
+        }
     }
 
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
@@ -85,6 +93,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bStraight", false);
         _wasHit = false;
+        _startTime = -1f;
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList)
