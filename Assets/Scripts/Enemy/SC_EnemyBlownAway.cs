@@ -85,6 +85,10 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
             StartRotateMove(rb, blownAwayDirection);
             return;
         }
+        else if(receivedAttackType == AttackType.Door)
+        {
+            velocity = blownAwayDirection.normalized * blownAwayPower;
+        }
         else
         {
             velocity = blownAwayDirection.normalized * adjustedPower;

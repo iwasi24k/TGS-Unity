@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1164973824796174598}
   - component: {fileID: 7101841934294198423}
   - component: {fileID: 7491795758519945043}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 8448061190793442875}
   - component: {fileID: 3505882211090475744}
   - component: {fileID: 5880420886448220101}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PF_Boss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -322,6 +322,7 @@ MonoBehaviour:
   currentBossShield: 50
   downWhenShieldBreak: 1
   shieldLightningEffect: {fileID: 0}
+  useStartLock: 1
 --- !u!114 &5880420886448220101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +360,7 @@ MonoBehaviour:
   splitFallingInterval: 0.3
   splitChildMissileCount: 10
   splitChildMissileSpeed: 10
+  maxEnemyCount: 10
   homingMissilePool: {fileID: 0}
   fallingMissilePool: {fileID: 0}
   splitFallingMissilePool: {fileID: 0}
@@ -401,6 +403,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5808079244715204392}
     m_Modifications:
+    - target: {fileID: 487467508221794554, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 867121596792738142, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1477190869779497126, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1870494638432586051, guid: b533d5172901eeb4dbb504621910971e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -485,9 +499,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF_BossStatusUI
       objectReference: {fileID: 0}
+    - target: {fileID: 2706919847284761364, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5483311028246940112, guid: b533d5172901eeb4dbb504621910971e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5857112863429230474, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6773514801415931513, guid: b533d5172901eeb4dbb504621910971e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -496,6 +518,22 @@ PrefabInstance:
     - target: {fileID: 7494373290252306964, guid: b533d5172901eeb4dbb504621910971e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 147
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560302694745231276, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8218271729977134868, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729014897138622733, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9053563941584814808, guid: b533d5172901eeb4dbb504621910971e, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
