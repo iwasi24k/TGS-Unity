@@ -254,13 +254,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
             return;
         }
 
-        SC_TutorialEnemy tutorialEnemy =
-            GetComponent<SC_TutorialEnemy>();
-
-        if (tutorialEnemy != null)
-        {
-            tutorialEnemy.WeakAttackHit();
-        }
         // Boss用：Player攻撃の場合
         if (damageSource == EnemyDamageSource.PlayerAttack)
         {
