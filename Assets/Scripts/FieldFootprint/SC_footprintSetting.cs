@@ -1,19 +1,14 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Footprint/Footprint Setting")]
+[CreateAssetMenu(menuName = "Footprint/Setting")]
 public class SC_footprintSetting : ScriptableObject
 {
+    [Header("Footprint Texture")]
     public Texture2D footprintTexture;
 
-    public float radius;
+    [Header("Footprint Size")]
+    public float radius = 0.03f;
 
-    public float depth;
-}
-
-public struct FootprintStampData
-{
-    public Vector2 uv;
-    public float radius;
-    public float depth;
-    public float rotation;
+    [Header("Footprint Depth")]
+    public float depth = 1.0f;
 }
