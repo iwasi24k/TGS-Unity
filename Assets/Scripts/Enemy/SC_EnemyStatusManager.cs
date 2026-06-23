@@ -9,16 +9,6 @@ public enum EnemyDamageSource
     EnemyCollision
 }
 
-public enum AttackType
-{
-    Weak1,
-    Weak2,
-    Strong,
-    Uppercut,
-    Rotate,
-    Door,
-}
-
 public class SC_EnemyStatusManager : MonoBehaviour
 {
     [Header("Ref")]

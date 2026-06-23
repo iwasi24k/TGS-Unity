@@ -82,6 +82,12 @@ public class SC_PlayerKnockback : MonoBehaviour
 
         knockbackTimer = Mathf.Max(0f, duration);
         isKnockbackActive = true;
+        if(animator.GetBool("bCharge") || animator.GetBool("bStraight"))
+        {
+            animator.SetBool("bCharge", false);
+            animator.SetBool("bStraight", false);
+        }
+
         animator.SetBool("bKnockback", true);
     }
 

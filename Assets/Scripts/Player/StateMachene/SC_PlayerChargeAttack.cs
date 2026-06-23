@@ -61,7 +61,15 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         GameObject[] targets = attackManager.GetInAreaObjectByTag("Enemy");
         if (targets != null && targets.Length > 0)
         {
-            ChargeAttackExe(owner, stateList);
+            ChargeAttackExe(owner, stateList, targets, "Enemy");
+            _isCharging = false;
+            return;
+        }
+
+        targets = attackManager.GetInAreaObjectByTag("Door");
+        if (targets != null && targets.Length > 0)
+        {
+            ChargeAttackExe(owner, stateList, targets, "Door");
             _isCharging = false;
             return;
         }
@@ -72,13 +80,15 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         float traveled = Vector3.Distance(_startPosition, owner.transform.position);
         if (traveled >= maxChargeDistance)
         {
-            ChargeAttackExe(owner, stateList);
+            targets = attackManager.GetInAreaObjectByTag("Enemy");
+            ChargeAttackExe(owner, stateList, targets, "Enemy");
             _isCharging = false;
         }
 
         if(_startTime != -1f && Time.time - _startTime >= maxChargeTime)
         {
-            ChargeAttackExe(owner, stateList);
+            targets = attackManager.GetInAreaObjectByTag("Enemy");
+            ChargeAttackExe(owner, stateList, targets, "Enemy");
             _isCharging = false;
         }
     }
@@ -96,25 +106,46 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         _startTime = -1f;
     }
 
-    private void ChargeAttackExe(GameObject owner, PlayerState stateList)
+    private void ChargeAttackExe(GameObject owner, PlayerState stateList, GameObject[] targets, string tag)
     {
         var manager = owner.GetComponent<SC_PlayerStateManager>();
         var attackManager = manager.attackManager;
 
         // Attack handle
-        GameObject[] targets = attackManager.GetInAreaObjectByTag("Enemy");
 
         if (targets == null || targets.Length == 0) return;
 
+        
         foreach (var target in targets)
         {
-            var Enemy = target.GetComponent<SC_EnemyStatusManager>();
+            switch(tag)
+            {
+                case "Enemy":
+                    var Enemy = target.GetComponent<SC_EnemyStatusManager>();
 
-            Debug.Log("Straight Attack");
-            Enemy.TakeDamage(attackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
-            _wasHit = true;
-            break;
+                    Debug.Log("Straight Attack");
+                    Enemy.TakeDamage(attackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+                    _wasHit = true;
+                    break;
+
+                case "Door":
+                    var door = target.GetComponent<SC_Door>();
+                    if (door != null)
+                    {
+                        Debug.Log("Door Attack");
+                        door.BlowAwayByPlayer(owner.transform);
+                        _wasHit = true;
+                    }
+                    break;
+
+                default:
+                    Debug.LogWarning($"Unknown tag: {tag}");
+                    break;
+            }
+
         }
+
+        
 
         attackManager.ResetCombo();
     }
