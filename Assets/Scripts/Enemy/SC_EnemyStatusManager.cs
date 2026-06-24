@@ -87,8 +87,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
-    
+
+    //ボス戦カメラ用
+    public int GetCurrentStateIndex() => currentStateIndex;
+
     void Start()
+
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
 
