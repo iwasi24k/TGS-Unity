@@ -4,7 +4,7 @@ using UnityEngine;
 public class SC_BlinkStamina: MonoBehaviour
 {
     [Header("Player")]
-    [SerializeField] private SC_PlayerMove playerMove;
+    [SerializeField] private SC_PlayerSprintManager playerMove;
 
     [Header("Needle")]
     [SerializeField] private RectTransform needle;
@@ -31,7 +31,7 @@ public class SC_BlinkStamina: MonoBehaviour
 
         if (playerObj != null)
         {
-            playerMove = playerObj.GetComponent<SC_PlayerMove>();
+            playerMove = playerObj.GetComponent<SC_PlayerSprintManager>();
         }
 
         if (playerMove == null)
@@ -42,14 +42,14 @@ public class SC_BlinkStamina: MonoBehaviour
 
         // private float BlinkTimer
         blinkTimerField =
-            typeof(SC_PlayerMove)
+            typeof(SC_PlayerSprintManager)
             .GetField(
                 "BlinkTimer",
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
         // private float blinkCooldown
         blinkCooldownField =
-            typeof(SC_PlayerMove)
+            typeof(SC_PlayerSprintManager)
             .GetField(
                 "blinkCooldown",
                 BindingFlags.NonPublic | BindingFlags.Instance);

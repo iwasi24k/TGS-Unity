@@ -1,4 +1,15 @@
 using UnityEngine;
+
+public enum AttackType
+{
+    Weak1,
+    Weak2,
+    Strong,
+    Uppercut,
+    Rotate,
+    Door,
+}
+
 public class SC_PlayerAttackManager : MonoBehaviour
 {
     [Header("Ref")]

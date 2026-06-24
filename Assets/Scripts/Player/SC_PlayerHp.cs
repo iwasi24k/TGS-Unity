@@ -66,5 +66,7 @@ public class SC_PlayerHP : MonoBehaviour
         {
             playerUI.UpdateHPUI(this);
         }
+
+        SC_EffectManager.Instance.PlayEffect("Heal", this.transform.position);
     }
 }
