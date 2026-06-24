@@ -37,12 +37,12 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
         }
         startRotation = Owner.transform.rotation;
 
-        animator = Owner.GetComponent<Animator>();
+        animator = Owner.GetComponentInChildren<Animator>();
         if (animator != null)
         {
             // Root Motion‚ÅŸè‚É‰ñ“]‚·‚éê‡‚Ì‘Îô
             animator.applyRootMotion = false;
-            animator.SetTrigger("tAttack");
+            animator.SetTrigger("tGunAttack");
         }
     }
 

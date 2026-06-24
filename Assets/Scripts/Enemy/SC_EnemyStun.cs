@@ -24,8 +24,29 @@ public class SC_EnemyStun : SC_EnemyBaceState
             rb.linearVelocity = Vector3.zero;
         }
 
-        animator = Owner.GetComponent<Animator>();
-        animator.SetBool("bHit", true);
+        animator = Owner.GetComponentInChildren<Animator>();
+
+        if (animator == null) return;
+
+        AttackType attackType = Manager.GetStunAttackType();
+
+        animator.SetBool("tKnockback_R", false);
+        animator.SetBool("tKnockback_L", false);
+
+        switch (attackType)
+        {
+            case AttackType.Weak1:
+                animator.SetBool("tKnockback_R", true);
+                break;
+
+            case AttackType.Weak2:
+                animator.SetBool("tKnockback_L", true);
+                break;
+
+            default:
+                animator.SetBool("tKnockback_R", true);
+                break;
+        }
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -40,6 +61,9 @@ public class SC_EnemyStun : SC_EnemyBaceState
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        animator.SetBool("bHit", false);
+        if (animator == null) return;
+
+        animator.SetBool("tKnockback_R", false);
+        animator.SetBool("tKnockback_L", false);
     }
 }

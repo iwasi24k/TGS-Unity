@@ -39,7 +39,7 @@ public class SC_EnemyAttackMelee : SC_EnemyBaceState
         attacked = false;
 
         rb = Owner.GetComponent<Rigidbody>();
-        animator = Owner.GetComponent<Animator>();
+        animator = Owner.GetComponentInChildren<Animator>();
 
         if (rb != null)
         {
@@ -49,7 +49,7 @@ public class SC_EnemyAttackMelee : SC_EnemyBaceState
 
         if (animator != null)
         {
-            animator.SetTrigger("tAttack");
+            animator.SetTrigger("tAxeAttack");
         }
     }
 
