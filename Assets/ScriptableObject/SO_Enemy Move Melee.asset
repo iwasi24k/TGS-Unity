@@ -15,5 +15,5 @@ MonoBehaviour:
   moveSpeed: 3
   attackRange: 1.5
   playerTag: Player
-  stuckCheckTime: 1
-  stuckThreshold: 0.1
+  stuckCheckTime: 3
+  stuckThreshold: 0.05

@@ -10,6 +10,17 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
     {
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bWalk", true);
+
+        var Manager = owner.GetComponent<SC_PlayerStateManager>();
+        var SprintIA = Manager.sprintInput;
+        var SprintSC = owner.GetComponent<SC_PlayerSprintManager>();
+
+        if (SprintIA.action.ReadValue<float>() > 0.1f)
+        {
+            animator.SetBool("bBoost", true);
+            SprintSC.TrySprint();
+        }
+
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
     {
@@ -73,6 +84,7 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
         }
 
         float speedMultiplier = (SprintValue > 0.1f ? SprintSC.GetSprintSpeedMultiplier() : 1f);
+        Debug.Log("Speed Multiplier: " + speedMultiplier);
         ccon.Move(move * moveSpeed * speedMultiplier * Time.deltaTime);
     }
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)

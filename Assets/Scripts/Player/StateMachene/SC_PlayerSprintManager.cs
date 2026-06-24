@@ -13,7 +13,7 @@ public class SC_PlayerSprintManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _currentSprintSpeedMultiplier = sprintSpeedMultiplier;
     }
 
     // Update is called once per frame
@@ -42,6 +42,7 @@ public class SC_PlayerSprintManager : MonoBehaviour
             _currentBoostCoolTime = boostCoolTime; // Reset the cooldown
             return true;
         }
+        _currentSprintSpeedMultiplier = sprintSpeedMultiplier;
 
         return false;
     }

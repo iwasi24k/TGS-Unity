@@ -40,6 +40,9 @@ public class SC_BossAttackController : MonoBehaviour
     [Tooltip("増殖ミサイルの落下間隔"), SerializeField] private float splitFallingInterval = 0.3f;
     [Tooltip("地面に当たった時に周囲へ発射する数"), SerializeField] private int splitChildMissileCount = 8;
     [Tooltip("周囲へ発射するミサイルの速度"), SerializeField] private float splitChildMissileSpeed = 10.0f;
+    
+    [Header("Summon Limit")]
+    [SerializeField] private int maxEnemyCount = 10;
 
     [Header("Missile Pool")]
     [Tooltip("追従型ミサイル用Pool"), SerializeField]
@@ -234,6 +237,11 @@ public class SC_BossAttackController : MonoBehaviour
     public float GetSplitChildMissileSpeed() 
     {
         return splitChildMissileSpeed;
+    }
+
+    public int GetMaxEnemyCount()
+    {
+        return maxEnemyCount;
     }
 
     private void Awake()

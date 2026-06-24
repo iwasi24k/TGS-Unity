@@ -92,68 +92,114 @@ public class SC_BossSummonState : SC_EnemyBaceState
         if (summonEnemyList == null) return;
         if (summonEnemyList.Length == 0) return;
 
+        SC_EnemyManager enemyManager = GetEnemyManager();
+
+        if (enemyManager == null)
+        {
+            Debug.LogWarning("SC_EnemyManager Ç™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅBè¢ä´ÇíÜé~ÇµÇ‹Ç∑ÅB");
+            return;
+        }
+
+        int currentEnemyCount = enemyManager.GetEnemyCount();
+
+        SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
+
+        if (boss == null) return;
+
+        int maxEnemyCount = boss.GetMaxEnemyCount();
+
+        if (currentEnemyCount >= maxEnemyCount)
+        {
+            Debug.Log("EnemyêîÇ™è„å¿ÇÃÇΩÇﬂè¢ä´ÇµÇ‹ÇπÇÒ : " + currentEnemyCount);
+            return;
+        }
+
+        int remainSummonCount = maxEnemyCount - currentEnemyCount;
+
         switch (summonMode)
         {
             case BossSummonMode.AllElements:
-                SummonAllElements(Owner);
+                SummonAllElements(Owner, ref remainSummonCount);
                 break;
 
             case BossSummonMode.OneRandomElement:
-                SummonOneRandomElement(Owner);
+                SummonOneRandomElement(Owner, ref remainSummonCount);
                 break;
 
             case BossSummonMode.OneByIndex:
-                SummonOneByIndex(Owner, summonElementIndex);
+                SummonOneByIndex(Owner, summonElementIndex, ref remainSummonCount);
                 break;
         }
     }
 
-    private void SummonElement(GameObject Owner, SummonEnemyData data)
+    private int SummonElement(GameObject Owner, SummonEnemyData data, int remainSummonCount)
     {
-        if (data == null) return;
-        if (data.enemyPrefab == null) return;
-        if (data.summonCount <= 0) return;
+        if (data == null) return 0;
+        if (data.enemyPrefab == null) return 0;
+        if (data.summonCount <= 0) return 0;
+        if (remainSummonCount <= 0) return 0;
 
-        for (int i = 0; i < data.summonCount; i++)
+        int actualSummonCount = Mathf.Min(data.summonCount, remainSummonCount);
+        int summonedCount = 0;
+
+        for (int i = 0; i < actualSummonCount; i++)
         {
             Vector3 spawnPos = GetSpawnPosition(Owner, data, i);
 
             GameObject enemyObj = Instantiate(
                 data.enemyPrefab,
-                spawnPos,Quaternion.
-                identity);
+                spawnPos,
+                Quaternion.identity
+            );
 
-            SC_EnemyStatusManager enemyManager =
+            SC_EnemyStatusManager statusManager =
                 enemyObj.GetComponent<SC_EnemyStatusManager>();
 
-            if (enemyManager != null)
+            if (statusManager != null)
             {
-                enemyManager.SetHP(data.hp);
+                statusManager.SetHP(data.hp);
             }
-        }
-    }
 
-    private void SummonAllElements(GameObject Owner)
+            summonedCount++;
+        }
+
+        return summonedCount;
+    }
+    private void SummonAllElements(GameObject Owner, ref int remainSummonCount)
     {
         for (int i = 0; i < summonEnemyList.Length; i++)
         {
-            SummonElement(Owner, summonEnemyList[i]);
+            if (remainSummonCount <= 0) return;
+
+            int summonedCount =
+                SummonElement(Owner, summonEnemyList[i], remainSummonCount);
+
+            remainSummonCount -= summonedCount;
         }
     }
 
-    private void SummonOneRandomElement(GameObject Owner)
+    private void SummonOneRandomElement(GameObject Owner, ref int remainSummonCount)
     {
+        if (remainSummonCount <= 0) return;
+
         int index = Random.Range(0, summonEnemyList.Length);
 
-        SummonElement(Owner, summonEnemyList[index]);
+        int summonedCount =
+            SummonElement(Owner, summonEnemyList[index], remainSummonCount);
+
+        remainSummonCount -= summonedCount;
     }
 
-    private void SummonOneByIndex(GameObject Owner, int index)
+    private void SummonOneByIndex(GameObject Owner, int index, ref int remainSummonCount)
     {
         if (index < 0) return;
         if (index >= summonEnemyList.Length) return;
+        if (remainSummonCount <= 0) return;
 
-        SummonElement(Owner, summonEnemyList[index]);
+        int summonedCount =
+            SummonElement(Owner, summonEnemyList[index], remainSummonCount);
+
+        remainSummonCount -= summonedCount;
     }
 
     private Vector3 GetSpawnPosition(
@@ -196,5 +242,8 @@ public class SC_BossSummonState : SC_EnemyBaceState
         return spawnPos;
     }
 
-
+    private SC_EnemyManager GetEnemyManager()
+    {
+        return Object.FindFirstObjectByType<SC_EnemyManager>();
+    }
 }

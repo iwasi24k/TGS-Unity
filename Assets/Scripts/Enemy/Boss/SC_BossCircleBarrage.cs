@@ -83,6 +83,12 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
+        if (ShouldSkipAttackByEnemyCount())
+        {
+            Manager.ChangeNextBossAttackInList();
+            return;
+        }
+
         timer = 0f;
         shotTimer = 0f;
         endTimer = 0f;
@@ -560,5 +566,19 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         }
 
         return forward.normalized;
+    }
+
+    private bool ShouldSkipAttackByEnemyCount()
+    {
+        SC_EnemyManager enemyManager =
+            FindFirstObjectByType<SC_EnemyManager>();
+
+        if (enemyManager == null)
+        {
+            return false;
+        }
+
+        Debug.Log("EnemyCount:"+enemyManager.GetEnemyCount());
+        return enemyManager.GetEnemyCount() >= 2;
     }
 }

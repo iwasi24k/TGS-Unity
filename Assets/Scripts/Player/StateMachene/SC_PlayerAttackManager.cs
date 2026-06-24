@@ -1,4 +1,15 @@
 using UnityEngine;
+
+public enum AttackType
+{
+    Weak1,
+    Weak2,
+    Strong,
+    Uppercut,
+    Rotate,
+    Door,
+}
+
 public class SC_PlayerAttackManager : MonoBehaviour
 {
     [Header("Ref")]
@@ -205,8 +216,13 @@ public class SC_PlayerAttackManager : MonoBehaviour
         closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-        if (sctarget == null && sctarget.GetCurrentTarget() != null)
+        //Debug.Log("飛びつき範囲をチェック: sctarget >" + sctarget + "/ sctarget.GetCurrentTarget() >" + sctarget.GetCurrentTarget());
+        if (sctarget != null && sctarget.GetCurrentTarget() != null)
         {
+            //ターゲット方向に身体を向ける
+            Debug.Log("ターゲットに向く");
+            this.transform.rotation = Quaternion.LookRotation(sctarget.GetCurrentTarget().transform.position);
+
             // 3) ターゲット優先の探索（TargetingJumpInAreaSize）
             count = SerchInArea(TargetingJumpInAreaSize);
             if (count > 0)
