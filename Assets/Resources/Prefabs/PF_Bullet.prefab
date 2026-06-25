@@ -155,5 +155,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_BulletMulti
   lifeTime: 10
   spreadMoveTime: 1
-  spreadSpeed: 10
-  straightSpeed: 20
+  spreadSpeed: 5
+  straightSpeed: 10

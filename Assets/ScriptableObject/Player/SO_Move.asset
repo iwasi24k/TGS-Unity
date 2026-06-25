@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3485d4750ea8642408dd296ec3fc9565, type: 3}
   m_Name: SO_Move
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerMoveState
-  moveSpeed: 5
-  sprintSpeed: 1.5
-  BoostSpeed: 4
-  sprintLerpTime: 2
+  moveSpeed: 4
+  rotationSpeed: 20

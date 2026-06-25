@@ -123,5 +123,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_Field
   stages: []
   currentStage: 0
-  enemyManager: {fileID: 0}
-  goal: {fileID: 0}
+  enemyManager: {fileID: 3709755144212236388}
+  goal: {fileID: 8457564129814428521, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
+  playerHealEffect: 10

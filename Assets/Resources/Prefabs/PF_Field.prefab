@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5190628425488906947}
   - component: {fileID: 7804920638565424625}
   - component: {fileID: 9205562681231314661}
+  - component: {fileID: 7416161943921572415}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Wall
@@ -67,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -112,6 +113,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7416161943921572415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174538808464907124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &228586787163683522
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,6 +252,7 @@ GameObject:
   - component: {fileID: 6444844012470594576}
   - component: {fileID: 4138895655677497972}
   - component: {fileID: 6577505720599639438}
+  - component: {fileID: 4479861349421923965}
   m_Layer: 0
   m_Name: Cube (6)
   m_TagString: Wall
@@ -292,7 +308,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -337,6 +353,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4479861349421923965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501904949042307332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &3154487023835171074
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +379,7 @@ GameObject:
   - component: {fileID: 5181875628281821131}
   - component: {fileID: 2243727111544059921}
   - component: {fileID: 1936495763973357468}
+  - component: {fileID: 7119681095580011774}
   m_Layer: 0
   m_Name: Cube (7)
   m_TagString: Wall
@@ -404,7 +435,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -449,6 +480,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7119681095580011774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3154487023835171074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &3280766138766689658
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,6 +506,7 @@ GameObject:
   - component: {fileID: 7496578398076731515}
   - component: {fileID: 8714553448827138885}
   - component: {fileID: 307694091981145614}
+  - component: {fileID: 4000623179217846534}
   m_Layer: 0
   m_Name: Cube (5)
   m_TagString: Wall
@@ -516,7 +562,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -561,6 +607,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4000623179217846534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3280766138766689658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &3311522877992388057
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,6 +633,7 @@ GameObject:
   - component: {fileID: 623217216484437505}
   - component: {fileID: 4079747910114634049}
   - component: {fileID: 7205239218676521724}
+  - component: {fileID: 6221235858561540274}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Wall
@@ -628,7 +689,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -673,6 +734,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6221235858561540274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3311522877992388057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &4309709723691424089
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +760,7 @@ GameObject:
   - component: {fileID: 5607527577888415277}
   - component: {fileID: 3651896764927927134}
   - component: {fileID: 1727751082647965456}
+  - component: {fileID: 2245535375659544640}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Wall
@@ -740,7 +816,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -785,6 +861,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2245535375659544640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4309709723691424089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &4598817127505784085
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +887,7 @@ GameObject:
   - component: {fileID: 8415670982260604386}
   - component: {fileID: 4068212939557783817}
   - component: {fileID: 1968466239986270392}
+  - component: {fileID: 7413198639302832967}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Wall
@@ -852,7 +943,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -897,6 +988,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7413198639302832967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4598817127505784085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10
 --- !u!1 &4642499408674868148
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,6 +1054,7 @@ GameObject:
   - component: {fileID: 3882995979529036}
   - component: {fileID: 4079605094119643536}
   - component: {fileID: 351032383342254475}
+  - component: {fileID: 8778660781307580973}
   m_Layer: 0
   m_Name: Cube (4)
   m_TagString: Wall
@@ -1004,7 +1110,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 0bccfcf38c75891488f0a2c1ff805422, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1049,3 +1155,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8778660781307580973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7407549845147586370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c739630fddd51e640a74765cbe1e2160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FadeObject
+  fadeAlpha: 0.2
+  fadeSpeed: 10

@@ -101,6 +101,8 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
                             continue;
                         }
 
+                        if (Missile == null) continue;
+
                         if (!AttackManager.IsNextAttackStrong())
                         {
                             Debug.Log("Straight Attack");

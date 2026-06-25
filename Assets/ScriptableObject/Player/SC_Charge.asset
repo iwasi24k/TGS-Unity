@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d959da69341646b48a966ffe61a0b7e7, type: 3}
   m_Name: SC_Charge
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerChargeAttack
-  chargeSpeed: 5
-  maxChargeDistance: 5
+  chargeSpeed: 1.5
+  maxChargeDistance: 2.5
