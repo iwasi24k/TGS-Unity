@@ -146,7 +146,7 @@ public class SC_Field : MonoBehaviour
 
         enemyManager.ClearEnemies();
 
-        SC_EnemyStartGate.ResetGate();
+        //SC_EnemyStartGate.ResetGate();
 
         GenerateStage(currentStage);
 
