@@ -34,7 +34,7 @@ public class SC_EnemyMoveMelee : SC_EnemyBaceState
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         rb = Owner.GetComponent<Rigidbody>();
-        animator = Owner.GetComponent<Animator>();
+        animator = Owner.GetComponentInChildren<Animator>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
 

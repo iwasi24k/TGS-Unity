@@ -24,6 +24,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("初期状態のStateの配列番号"),SerializeField] private int initialStateNum;
     [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
     private SC_EnemyBaceState localBlowAwayState;
+    private AttackType stunAttackType;
 
     [Header("Stun")]
     [Tooltip("攻撃を受けた時に短時間止まるState")]
@@ -92,8 +93,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
-    
+
+    //ボス戦カメラ用
+    public int GetCurrentStateIndex() => currentStateIndex;
+
     void Start()
+
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
 
@@ -262,7 +267,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         if (damageSource == EnemyDamageSource.PlayerAttack && HP > 0 && !isBlowAway)
         {
-            ChangeToStun();
+            ChangeToStun(attackType);
         }
 
         if (HP <= 0)
@@ -347,11 +352,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         blowDirection.Normalize();
 
-        blownAway.SetBlownAway(
-            power,
-            blowDirection,
-            attackType
-        );
+        stunAttackType = attackType;
+
+        blownAway.SetBlownAway(power, blowDirection);
 
         currentState = blownAway;
         stateStarted = true;
@@ -472,7 +475,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return direction;
     }
 
-    public void ChangeToStun()
+    public void ChangeToStun(AttackType attackType)
     {
         if (!useHitStun) return;
         if (localStunState == null) return;
@@ -483,6 +486,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         // すでにStun中なら入り直さない
         if (currentState == localStunState) return;
+
+        stunAttackType = attackType;
 
         beforeStunState = currentState;
 
@@ -1033,4 +1038,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return useStartLock && !SC_EnemyStartGate.IsOpened;
     }
 
+    public AttackType GetStunAttackType()
+    {
+        return stunAttackType;
+    }
 }
