@@ -23,26 +23,28 @@ public class SceneConditions : MonoBehaviour
         yield return FadeManager.FadeIn();
     }
 
-    private void Update()
+    // タイトルへ
+    public void GoTitle()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame)
-        {
-            StartCoroutine(ChangeScene(sceneMap.sceneNames[0]));
-        }
-
-        if (Keyboard.current.cKey.wasPressedThisFrame)
-        {
-            StartCoroutine(ChangeScene(sceneMap.sceneNames[1]));
-        }
-
-        if (Keyboard.current.vKey.wasPressedThisFrame)
-        {
-            StartCoroutine(ChangeScene(sceneMap.sceneNames[2]));
-        }
-
-        if (Keyboard.current.bKey.wasPressedThisFrame)
-        {
-            StartCoroutine(ChangeScene(sceneMap.sceneNames[3]));
-        }
+        StartCoroutine(ChangeScene(sceneMap.sceneNames[0]));
     }
+
+    // チュートリアルへ
+    public void GoTutorial()
+    {
+        StartCoroutine(ChangeScene(sceneMap.sceneNames[1]));
+    }
+
+    // ゲームへ
+    public void GoGame()
+    {
+        StartCoroutine(ChangeScene(sceneMap.sceneNames[2]));
+    }
+
+    // リザルトへ
+    public void GoResult()
+    {
+        StartCoroutine(ChangeScene(sceneMap.sceneNames[3]));
+    }
+
 }
