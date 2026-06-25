@@ -51,6 +51,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
 
+    [Header("Attack Point")]
+    [Tooltip("弾を出す位置。銃口や腕などを登録する"), SerializeField] private Transform attackPoint;
+
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
     [Tooltip("この敵が吹っ飛び状態になるかどうか"),SerializeField] private bool canBlownAway = true;
@@ -1041,5 +1044,20 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public AttackType GetStunAttackType()
     {
         return stunAttackType;
+    }
+
+    public Transform GetAttackPoint()
+    {
+        return attackPoint;
+    }
+
+    public Vector3 GetAttackPointPosition()
+    {
+        if (attackPoint != null)
+        {
+            return attackPoint.position;
+        }
+
+        return transform.position;
     }
 }

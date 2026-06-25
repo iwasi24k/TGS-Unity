@@ -118,16 +118,25 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
                 Owner.transform.rotation *
                 Quaternion.Euler(0f, angleOffset, 0f);
 
-            Vector3 spawnPos =
-                Owner.transform.position +
-                Owner.transform.forward * spawnForwardOffset +
-                Owner.transform.up * spawnUpOffset +
-                Owner.transform.right * spawnRightOffset;
+            Transform attackPoint = Manager.GetAttackPoint();
 
-            GameObject bulletObj = bulletPool.GetObject(
-                spawnPos,
-                rot
-            );
+            Vector3 spawnPos;
+
+            if (attackPoint != null)
+            {
+                spawnPos = attackPoint.position;
+            }
+            else
+            {
+                spawnPos =
+                    Owner.transform.position +
+                    Owner.transform.forward * spawnForwardOffset +
+                    Owner.transform.up * spawnUpOffset +
+                    Owner.transform.right * spawnRightOffset;
+            }
+
+            GameObject bulletObj = bulletPool.GetObject(spawnPos, rot);
+
 
             if (bulletObj == null) continue;
 

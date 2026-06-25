@@ -110,17 +110,24 @@ public class SC_EnemyAttack : SC_EnemyBaceState
 
         // î≠éÀï˚å¸Ç∆ê∂ê¨à íu
         Quaternion rot = Quaternion.Euler(0f, angleOffset, 0f) * Owner.transform.rotation;
-        Vector3 spawnPos =
-            Owner.transform.position +
-            Owner.transform.forward * spawnForwardOffset +
-            Owner.transform.up * spawnUpOffset +
-            Owner.transform.right * spawnRightOffset;
+        Transform attackPoint = Manager.GetAttackPoint();
 
-        animator.SetTrigger("tAttack");
-        GameObject bulletObj = bulletPool.GetObject(
-            spawnPos,
-            rot
-         );
+        Vector3 spawnPos;
+
+        if (attackPoint != null)
+        {
+            spawnPos = attackPoint.position;
+        }
+        else
+        {
+            spawnPos =
+                Owner.transform.position +
+                Owner.transform.forward * spawnForwardOffset +
+                Owner.transform.up * spawnUpOffset +
+                Owner.transform.right * spawnRightOffset;
+        }
+
+        GameObject bulletObj = bulletPool.GetObject(spawnPos, rot);
 
         if (bulletObj == null) return;
 
