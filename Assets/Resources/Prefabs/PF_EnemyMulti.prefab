@@ -390,6 +390,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd838ee855458f0419395d6150d14e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Billboard
+--- !u!1 &6292378275977553386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2798582549013995037}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2798582549013995037
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6292378275977553386}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4003134513608675717}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2421892717064237141
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -825,6 +856,7 @@ MonoBehaviour:
   searchAngleThreshold: 15
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
+  attackPoint: {fileID: 2798582549013995037}
   canBlownAway: 1
   bossDownStateIndex: 6
   useBossDown: 0
@@ -923,12 +955,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6317331498368775292, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2798582549013995037}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6784903230781931995}
   m_SourcePrefab: {fileID: 100100000, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+--- !u!4 &4003134513608675717 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6317331498368775292, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+  m_PrefabInstance: {fileID: 6928319804934219257}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7470609055515738642 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}

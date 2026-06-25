@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: SO_Attack
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttack
   bulletNum: 5
-  bulletPrefab: {fileID: 5102349697781354183, guid: ea8a6556f2b64994eb2946b6a3fcf2ce, type: 3}
-  attackStartDelay: 0.5
+  attackStartDelay: 0.4
   bulletSpeed: 15
   fireInterval: 0.1
   spreadAngle: 3
