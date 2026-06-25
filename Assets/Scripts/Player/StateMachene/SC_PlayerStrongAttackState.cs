@@ -13,22 +13,7 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
     {
         var animator = owner.GetComponent<Animator>();
         var attackManager = owner.GetComponent<SC_PlayerAttackManager>();
-        if (!attackManager.IsNextAttackStrong())
-        {
-            animator.SetTrigger("tStraight");
-        }
-        switch(attackManager.GetCurrentComboCount())
-        {
-            case 0:
-                animator.SetTrigger("tStraight");
-                break;
-            case 1:
-                animator.SetTrigger("tHook");
-                break;
-            case 2:
-                animator.SetTrigger("tUpper");
-                break;
-        }
+        animator.SetTrigger("tStraight");
         once = false;
         Debug.Log("Enter Strong Attack State");
     }
@@ -58,32 +43,13 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
                     {
                         var Enemy = gameObject.GetComponent<SC_EnemyStatusManager>();
 
-                        if(Enemy == null)
+                        if(!Enemy)
                         {
                             continue;
                         }
 
-                        if (!AttackManager.IsNextAttackStrong())
-                        {
-                            Debug.Log("Straight Attack");
-                            Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
-                            continue;
-                        }
-                        switch (AttackManager.GetCurrentComboCount())
-                        {
-                            case 0:
-                                Debug.Log("Straight Attack");
-                                Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
-                                break;
-                            case 1:
-                                Debug.Log("Rotate Attack");
-                                Enemy.TakeDamage(AttackManager.GetRotateDamage(), owner.transform.position, true, AttackType.Rotate);
-                                break;
-                            case 2:
-                                Debug.Log("Uppercut Attack");
-                                Enemy.TakeDamage(AttackManager.GetUppercutDamage(), owner.transform.position, true, AttackType.Uppercut);
-                                break;
-                        }
+                        Debug.Log("Straight Attack");
+                        Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
                     }
                 }
             }

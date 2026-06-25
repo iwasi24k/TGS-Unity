@@ -1,112 +1,245 @@
+ï»¿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
+using UnityEngine.InputSystem;
+using UnityEngine.Pool;
 
+// ãƒ–ãƒ¼ã‚¹ãƒˆå…¥åŠ›ä¸­ã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å…¨ãƒ¡ãƒƒã‚·ãƒ¥ã®æ®‹åƒã‚’ç”Ÿæˆã™ã‚‹ã€‚
 public class SC_AfterImage : MonoBehaviour
 {
     [Header("Spawn Settings")]
-    [SerializeField] private float spawnInterval = 0.02f; // c‘œ‚Ì¶¬ŠÔŠui•bj
-    [SerializeField] private float lifeTime = 0.05f; // c‘œ‚Ìõ–½i•bj
+    [SerializeField] private float spawnInterval = 0.02f; // æ®‹åƒã®ç”Ÿæˆé–“éš”
+    [SerializeField] private float lifeTime = 0.05f;      // æ®‹åƒ1æšã®å¯¿å‘½
 
     [Header("Reference")]
-    [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer; // ƒvƒŒƒCƒ„[‚ÌMesh
-    [SerializeField] private Material ghostMaterial;        // c‘œ—pƒ}ƒeƒŠƒAƒ‹
+    [Tooltip("å­ã‹ã‚‰è‡ªå‹•å–å¾—")]
+    [SerializeField] private SkinnedMeshRenderer[] skinnedMeshRenderers;
+    [SerializeField] private Material ghostMaterial;       // æ®‹åƒç”¨ãƒãƒ†ãƒªã‚¢ãƒ«
+
+    [Header("Boost Input")]
+    [Tooltip("SC_PlayerStateManager ã‹ã‚‰è‡ªå‹•å–å¾—")]
+    [SerializeField] private InputActionReference sprintInput;
+    [SerializeField] private float inputThreshold = 0.1f; 
 
     [Header("Fade Settings")]
-    [SerializeField, Range(0f, 1f)] private float startAlpha = 0.2f; // c‘œ‚Ì‰Šú“§–¾“x
+    [SerializeField, Range(0f, 1f)] private float startAlpha = 0.2f; // æ®‹åƒã®åˆæœŸé€æ˜åº¦
 
-    private const string AFTER_IMAGE_NAME = "AfterImage";
-    private const float END_ALPHA = 0f;
+    private const int DefaultCapacity = 12; // ãƒ—ãƒ¼ãƒ«ã®äº‹å‰ç¢ºä¿æ•°
+    private const int MaxCapacity = 64;     // ãƒ—ãƒ¼ãƒ«ã®æœ€å¤§ä¿æŒæ•°
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+    private static readonly int ColorId = Shader.PropertyToID("_Color");
 
-    private Coroutine spawnCoroutine;
-    private bool isActive = false;
+    private readonly List<Ghost> _active = new();
+    private InputAction _sprintAction;
+    private ObjectPool<Ghost> _pool;
+    private Transform _container;
+    private int _colorId;
+    private float _spawnTimer;
 
-  
-    ///c‘œ¶¬‚ğŠJn‚·‚é
-    public void StartTrail()
+    private void Awake()
     {
-        if (isActive) return;
+        if (skinnedMeshRenderers == null || skinnedMeshRenderers.Length == 0)
+            skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
-        isActive = true;
-        spawnCoroutine = StartCoroutine(SpawnLoop());
+        _sprintAction = ResolveSprintAction();
+        _colorId = ResolveColorId(ghostMaterial);
+        WarnIfMisconfigured();
+
+        _container = new GameObject("AfterImageContainer").transform;
+        _spawnTimer = spawnInterval;
+
+        _pool = new ObjectPool<Ghost>(
+            createFunc: CreateGhost,
+            actionOnGet: ghost => ghost.GameObject.SetActive(true),
+            actionOnRelease: ghost => ghost.GameObject.SetActive(false),
+            actionOnDestroy: ghost => ghost.Dispose(),
+            collectionCheck: false,
+            defaultCapacity: DefaultCapacity,
+            maxSize: MaxCapacity);
+
+        WarmUp();
     }
 
-    ///c‘œ¶¬‚ğ’â~‚·‚é
-    public void StopTrail()
+    // å…¥åŠ›ã‚’èª­ã‚ã‚‹ã‚ˆã†ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’æœ‰åŠ¹åŒ–ã™ã‚‹
+    private void OnEnable()
     {
-        if (!isActive) return;
+        if (_sprintAction != null && !_sprintAction.enabled) _sprintAction.Enable();
+    }
 
-        isActive = false;
+    // å…¥åŠ›ä¸­ã¯æ®‹åƒã‚’ç”Ÿæˆã—ã€ç”Ÿæˆæ¸ˆã¿ã®æ®‹åƒã‚’ãƒ•ã‚§ãƒ¼ãƒ‰ã•ã›ã‚‹
+    private void Update()
+    {
+        float deltaTime = Time.deltaTime;
 
-        if (spawnCoroutine != null)
+        if (IsBoostHeld())
         {
-            StopCoroutine(spawnCoroutine);
-            spawnCoroutine = null;
+            _spawnTimer += deltaTime;
+            while (_spawnTimer >= spawnInterval)
+            {
+                _spawnTimer -= spawnInterval;
+                SpawnGhosts();
+            }
         }
-    }
-
-    ///ˆê’èŠÔŠu‚Åc‘œ‚ğ¶¬‚µ‘±‚¯‚éƒ‹[ƒv
-    private IEnumerator SpawnLoop()
-    {
-        // WaitForSeconds‚ğƒLƒƒƒbƒVƒ…
-        var wait = new WaitForSeconds(spawnInterval);
-
-        while (isActive)
+        else
         {
-            CreateAfterImage();
-            yield return wait;
-        }
-    }
-
-    ///Œ»İ‚Ìƒ|[ƒY‚ÅMesh‚ğ•¡»‚µ‚Äc‘œƒIƒuƒWƒFƒNƒg‚ğ¶¬‚·‚é
-    private void CreateAfterImage()
-    {
-        // Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒ|[ƒY‚ğMesh‚Æ‚µ‚Äæ“¾
-        Mesh bakedMesh = new Mesh();
-        skinnedMeshRenderer.BakeMesh(bakedMesh);
-
-        // c‘œƒIƒuƒWƒFƒNƒg¶¬EMeshİ’è
-        GameObject obj = new GameObject(AFTER_IMAGE_NAME);
-        MeshFilter mf = obj.AddComponent<MeshFilter>();
-        MeshRenderer mr = obj.AddComponent<MeshRenderer>();
-
-        mf.sharedMesh = bakedMesh;
-        mr.sharedMaterial = ghostMaterial;
-
-        // ƒvƒŒƒCƒ„[‚ÌTransform‚ğ‚»‚Ì‚Ü‚ÜƒRƒs[
-        obj.transform.SetPositionAndRotation(transform.position, transform.rotation);
-        obj.transform.localScale = transform.localScale;
-
-        // ƒtƒF[ƒhƒAƒEƒgŠJn
-        StartCoroutine(FadeAndDestroy(obj, mr));
-    }
-
-    private IEnumerator FadeAndDestroy(GameObject obj, MeshRenderer renderer)
-    {
-        float elapsed = 0f;
-        Material mat = renderer.material;
-
-        Color color = mat.GetColor(BaseColorId);
-
-        while (elapsed < lifeTime)
-        {
-            elapsed += Time.deltaTime;
-
-            // Œo‰ßŠÔ‚É‰‚¶‚Äalpha‚ğŒã”¼‚Ù‚Ç”–‚­‚·‚é
-            color.a = Mathf.Lerp(startAlpha, END_ALPHA, elapsed / lifeTime);
-
-            mat.SetColor(BaseColorId, color);
-
-            yield return null;
+            _spawnTimer = spawnInterval; // æ¬¡å›ãƒ–ãƒ¼ã‚¹ãƒˆé–‹å§‹æ™‚ã«å³ç”Ÿæˆ
         }
 
-        Destroy(obj);
+        TickGhosts(deltaTime);
     }
 
+    // ç„¡åŠ¹åŒ–æ™‚ã¯ç”Ÿæˆä¸­ã®æ®‹åƒã‚’ã™ã¹ã¦ãƒ—ãƒ¼ãƒ«ã¸æˆ»ã™
     private void OnDisable()
     {
-        // ƒIƒuƒWƒFƒNƒg‚ª–³Œø‰»‚³‚ê‚½‚Æ‚«‚ÉŠmÀ‚É’â~‚·‚é
-        StopTrail();
+        for (int i = _active.Count - 1; i >= 0; i--) _pool.Release(_active[i]);
+        _active.Clear();
+        _spawnTimer = spawnInterval;
+    }
+
+    // ãƒ–ãƒ¼ã‚¹ãƒˆå…¥åŠ›ãŒé–¾å€¤ã‚’è¶…ãˆã¦æŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹
+    private bool IsBoostHeld() =>
+        _sprintAction != null && _sprintAction.ReadValue<float>() > inputThreshold;
+
+    // å…¨ãƒ¡ãƒƒã‚·ãƒ¥ã®æ®‹åƒã‚’1æšãšã¤ç”Ÿæˆã™ã‚‹
+    private void SpawnGhosts()
+    {
+        if (skinnedMeshRenderers == null) return;
+
+        for (int i = 0; i < skinnedMeshRenderers.Length; i++)
+        {
+            var smr = skinnedMeshRenderers[i];
+            if (smr == null || !smr.gameObject.activeInHierarchy) continue;
+
+            var ghost = _pool.Get();
+            ghost.Play(smr, startAlpha, lifeTime);
+            _active.Add(ghost);
+        }
+    }
+
+    // ç”Ÿæˆæ¸ˆã¿æ®‹åƒã®ãƒ•ã‚§ãƒ¼ãƒ‰ã‚’é€²ã‚ã€å¯¿å‘½åˆ‡ã‚Œã‚’ãƒ—ãƒ¼ãƒ«ã¸è¿”ã™
+    private void TickGhosts(float deltaTime)
+    {
+        for (int i = _active.Count - 1; i >= 0; i--)
+        {
+            if (!_active[i].Tick(deltaTime)) continue;
+            _pool.Release(_active[i]);
+            _active.RemoveAt(i);
+        }
+    }
+
+    private Ghost CreateGhost() => new(_container, ghostMaterial, _colorId);
+
+    // èµ·å‹•æ™‚ã«ãƒ—ãƒ¼ãƒ«ã‚’æº€ãŸã—ã€åˆå›ãƒ–ãƒ¼ã‚¹ãƒˆã®ç”Ÿæˆã‚³ã‚¹ãƒˆã‚’å¹³æº–åŒ–
+    private void WarmUp()
+    {
+        var warm = new Ghost[DefaultCapacity];
+        for (int i = 0; i < DefaultCapacity; i++) warm[i] = _pool.Get();
+        for (int i = 0; i < DefaultCapacity; i++) _pool.Release(warm[i]);
+    }
+
+    // ãƒ–ãƒ¼ã‚¹ãƒˆå…¥åŠ›ã‚’è§£æ±ºã™ã‚‹
+    private InputAction ResolveSprintAction()
+    {
+        if (sprintInput != null && sprintInput.action != null) return sprintInput.action;
+
+        var stateManager = GetComponentInParent<SC_PlayerStateManager>();
+        return stateManager != null && stateManager.sprintInput != null
+            ? stateManager.sprintInput.action
+            : null;
+    }
+
+    // ãƒãƒ†ãƒªã‚¢ãƒ«ãŒæŒã¤ã‚«ãƒ©ãƒ¼ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£IDã‚’è¿”ã™
+    private static int ResolveColorId(Material material)
+    {
+        if (material == null) return BaseColorId;
+        if (material.HasProperty(BaseColorId)) return BaseColorId;
+        if (material.HasProperty(ColorId)) return ColorId;
+        return BaseColorId;
+    }
+
+    // æ®‹åƒãŒå‡ºãªã„å…¸å‹åŸå› ã‚’èµ·å‹•æ™‚ã«é€šçŸ¥ã™ã‚‹
+    private void WarnIfMisconfigured()
+    {
+        if (skinnedMeshRenderers == null || skinnedMeshRenderers.Length == 0)
+            Debug.LogWarning("[SC_AfterImage] SkinnedMeshRenderer ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚", this);
+        if (ghostMaterial == null)
+            Debug.LogWarning("[SC_AfterImage] Ghost Material ãŒæœªå‰²ã‚Šå½“ã¦ã§ã™ã€‚", this);
+        if (_sprintAction == null)
+            Debug.LogWarning("[SC_AfterImage] ãƒ–ãƒ¼ã‚¹ãƒˆå…¥åŠ›ã‚’è§£æ±ºã§ãã¾ã›ã‚“ã€‚Sprint Input ã‚’å‰²ã‚Šå½“ã¦ã¦ãã ã•ã„ã€‚", this);
+    }
+
+    // æ®‹åƒ1æšåˆ†ã®è»½é‡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    private sealed class Ghost
+    {
+        public readonly GameObject GameObject;
+
+        private readonly Transform _transform;
+        private readonly MeshFilter _meshFilter;
+        private readonly MeshRenderer _meshRenderer;
+        private readonly MaterialPropertyBlock _mpb = new();
+        private readonly Mesh _bakedMesh = new() { name = "AfterImageBakedMesh" };
+        private readonly int _colorId;
+
+        private Color _color;
+        private float _startAlpha;
+        private float _lifeTime;
+        private float _elapsed;
+
+        // æç”»ç”¨ã®GameObjectã¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ç”Ÿæˆ
+        public Ghost(Transform parent, Material material, int colorId)
+        {
+            _colorId = colorId;
+            _color = material != null && material.HasProperty(colorId)
+                ? material.GetColor(colorId) : Color.white;
+
+            GameObject = new GameObject("AfterImage");
+            _transform = GameObject.transform;
+            _transform.SetParent(parent);
+
+            _meshFilter = GameObject.AddComponent<MeshFilter>();
+            _meshRenderer = GameObject.AddComponent<MeshRenderer>();
+            _meshRenderer.sharedMaterial = material;
+            _meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _meshRenderer.receiveShadows = false;
+        }
+
+        // ç¾åœ¨ã®ãƒãƒ¼ã‚ºã‚’æ—¢å­˜ãƒ¡ãƒƒã‚·ãƒ¥ã¸ç„¼ãã€ãƒ•ã‚§ãƒ¼ãƒ‰å†ç”Ÿã‚’é–‹å§‹
+        public void Play(SkinnedMeshRenderer source, float startAlpha, float lifeTime)
+        {
+            source.BakeMesh(_bakedMesh);
+            _meshFilter.sharedMesh = _bakedMesh;
+
+            var src = source.transform;
+            _transform.SetPositionAndRotation(src.position, src.rotation);
+            _transform.localScale = src.lossyScale;
+
+            _startAlpha = startAlpha;
+            _lifeTime = Mathf.Max(0.0001f, lifeTime);
+            _elapsed = 0f;
+            ApplyAlpha(startAlpha);
+        }
+
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚’1ãƒ•ãƒ¬ãƒ¼ãƒ é€²ã‚ã€å¯¿å‘½ãŒå°½ããŸã‚‰trueã‚’è¿”ã™
+        public bool Tick(float deltaTime)
+        {
+            _elapsed += deltaTime;
+            ApplyAlpha(Mathf.Lerp(_startAlpha, 0f, _elapsed / _lifeTime));
+            return _elapsed >= _lifeTime;
+        }
+
+        // MaterialPropertyBlockã§ã‚¢ãƒ«ãƒ•ã‚¡ã®ã¿ä¸Šæ›¸ãã™ã‚‹
+        private void ApplyAlpha(float alpha)
+        {
+            _color.a = alpha;
+            _mpb.SetColor(_colorId, _color);
+            _meshRenderer.SetPropertyBlock(_mpb);
+        }
+
+        // ç„¼ãè¾¼ã¿ãƒ¡ãƒƒã‚·ãƒ¥ã¨GameObjectã‚’ç ´æ£„ã™ã‚‹
+        public void Dispose()
+        {
+            if (_bakedMesh != null) Object.Destroy(_bakedMesh);
+            if (GameObject != null) Object.Destroy(GameObject);
+        }
     }
 }

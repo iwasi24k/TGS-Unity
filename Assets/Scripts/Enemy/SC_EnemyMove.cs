@@ -35,7 +35,7 @@ public class SC_EnemyMove : SC_EnemyBaceState
             Random.Range(-1f, 1f),0f,Random.Range(-1f, 1f)
             ).normalized;
 
-        animator = Owner.GetComponent<Animator>();
+        animator = Owner.GetComponentInChildren<Animator>();
 
         animator.SetBool("bMove", true);
     }
