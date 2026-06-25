@@ -5,8 +5,6 @@ public enum AttackType
     Weak1,
     Weak2,
     Strong,
-    Uppercut,
-    Rotate,
     Door,
 }
 
@@ -41,7 +39,6 @@ public class SC_PlayerAttackManager : MonoBehaviour
 
     private float currentComboTime; // コンボリセットのタイマー
     private int currentComboCount = 0;
-    private bool NextAttackIsStrong = false;
     private readonly Collider[] overlapCollision = new Collider[32];
     private Collider closestTarget = null;
 
@@ -82,22 +79,15 @@ public class SC_PlayerAttackManager : MonoBehaviour
         return snapDistance;
     }
 
-    public bool IsNextAttackStrong()
+    public void AttackTransitionCheck(PlayerState statList)
     {
-        return NextAttackIsStrong;
-    }
-
-    public void AttackTransitionCheck(PlayerState statList, bool Strong)
-    {
-        NextAttackIsStrong = Strong;
-
         if (JumpInToTarget("Enemy"))
         {
             stateManager.ChangeState(statList.JumpIn);
         }
         else
         {
-            if (NextAttackIsStrong || currentComboCount >= 3)
+            if (currentComboCount >= 3)
             {
                 stateManager.ChangeState(statList.StrongAttack);
             }
