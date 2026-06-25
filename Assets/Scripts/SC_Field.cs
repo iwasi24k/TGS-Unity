@@ -18,6 +18,8 @@ public class SC_Field : MonoBehaviour
     public class StageData
     {
         public ObjData[] objects;
+
+        public Vector3 goalPosition;
     }
 
     [SerializeField] private StageData[] stages;
@@ -101,6 +103,12 @@ public class SC_Field : MonoBehaviour
         enemyManager.ClearEnemies();
 
         StageData stage = stages[stageIndex];
+
+        //ゴールの位置設定
+        goal.transform.position =
+            transform.position +
+            stage.goalPosition;
+
 
         foreach (ObjData data in stage.objects)
         {

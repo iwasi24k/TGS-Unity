@@ -4,6 +4,8 @@ public class SC_Goal : MonoBehaviour
 {
     private Renderer goalRenderer;
 
+    private Collider goalCollider;
+
     private Vector3 defaultScale;
 
     private bool isActive = false;
@@ -19,6 +21,9 @@ public class SC_Goal : MonoBehaviour
 
         goalRenderer =
             GetComponent<Renderer>();
+
+        goalCollider = 
+            GetComponent<Collider>();
 
         defaultScale =
             transform.localScale;
@@ -37,11 +42,8 @@ public class SC_Goal : MonoBehaviour
 
         Debug.Log("ÉSÅ[Éãâï˙ÅI");
 
-        if (goalRenderer != null)
-        {
-            goalRenderer.material.color =
-                Color.yellow;
-        }
+        goalRenderer.enabled = true;
+        goalCollider.enabled = true;
 
         transform.localScale =
             defaultScale * 1.3f;
@@ -57,11 +59,8 @@ public class SC_Goal : MonoBehaviour
         transform.localScale =
             defaultScale;
 
-        if (goalRenderer != null)
-        {
-            goalRenderer.material.color =
-                Color.gray;
-        }
+        goalRenderer.enabled = false;
+        goalCollider.enabled = false;
     }
 
     //--------------------------------
