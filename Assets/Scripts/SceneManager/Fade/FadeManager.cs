@@ -59,6 +59,7 @@ public class FadeManager : MonoBehaviour
         Image image = imageObject.AddComponent<Image>();
 
         image.color = Color.black;
+        image.raycastTarget = false;
 
         canvasGroup =
             imageObject.AddComponent<CanvasGroup>();

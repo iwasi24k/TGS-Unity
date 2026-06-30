@@ -1,4 +1,13 @@
 using UnityEngine;
+
+public enum AttackType
+{
+    Weak1,
+    Weak2,
+    Strong,
+    Door,
+}
+
 public class SC_PlayerAttackManager : MonoBehaviour
 {
     [Header("Ref")]
@@ -30,7 +39,6 @@ public class SC_PlayerAttackManager : MonoBehaviour
 
     private float currentComboTime; // コンボリセットのタイマー
     private int currentComboCount = 0;
-    private bool NextAttackIsStrong = false;
     private readonly Collider[] overlapCollision = new Collider[32];
     private Collider closestTarget = null;
 
@@ -71,22 +79,15 @@ public class SC_PlayerAttackManager : MonoBehaviour
         return snapDistance;
     }
 
-    public bool IsNextAttackStrong()
+    public void AttackTransitionCheck(PlayerState statList)
     {
-        return NextAttackIsStrong;
-    }
-
-    public void AttackTransitionCheck(PlayerState statList, bool Strong)
-    {
-        NextAttackIsStrong = Strong;
-
         if (JumpInToTarget("Enemy"))
         {
             stateManager.ChangeState(statList.JumpIn);
         }
         else
         {
-            if (NextAttackIsStrong || currentComboCount >= 3)
+            if (currentComboCount >= 3)
             {
                 stateManager.ChangeState(statList.StrongAttack);
             }
@@ -205,8 +206,13 @@ public class SC_PlayerAttackManager : MonoBehaviour
         closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-        if (sctarget == null && sctarget.GetCurrentTarget() != null)
+        //Debug.Log("飛びつき範囲をチェック: sctarget >" + sctarget + "/ sctarget.GetCurrentTarget() >" + sctarget.GetCurrentTarget());
+        if (sctarget != null && sctarget.GetCurrentTarget() != null)
         {
+            //ターゲット方向に身体を向ける
+            Debug.Log("ターゲットに向く");
+            this.transform.rotation = Quaternion.LookRotation(sctarget.GetCurrentTarget().transform.position);
+
             // 3) ターゲット優先の探索（TargetingJumpInAreaSize）
             count = SerchInArea(TargetingJumpInAreaSize);
             if (count > 0)

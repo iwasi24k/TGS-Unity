@@ -48,14 +48,7 @@ public class SC_PlayerJumpInState : SC_PlayerBaseState
         if(attackManager.CheckObjectInAttackArea("Enemy"))
         {
             // UŒ‚”ÍˆÍ“à‚É“ü‚Á‚½‚çUŒ‚
-            if(attackManager.IsNextAttackStrong())
-            {
-                Manager.ChangeState(stateList.StrongAttack);
-            }
-            else
-            {
-                Manager.ChangeState(stateList.WeakAttack);
-            }
+            attackManager.AttackTransitionCheck(stateList);
 
         }
         else

@@ -18,6 +18,8 @@ public class SC_Field : MonoBehaviour
     public class StageData
     {
         public ObjData[] objects;
+
+        public Vector3 goalPosition;
     }
 
     [SerializeField] private StageData[] stages;
@@ -102,6 +104,12 @@ public class SC_Field : MonoBehaviour
 
         StageData stage = stages[stageIndex];
 
+        //ゴールの位置設定
+        goal.transform.position =
+            transform.position +
+            stage.goalPosition;
+
+
         foreach (ObjData data in stage.objects)
         {
             Vector3 pos =
@@ -123,7 +131,7 @@ public class SC_Field : MonoBehaviour
             // Enemy登録
             if (obj.CompareTag("Enemy"))
             {
-                enemyManager.AddEnemy(obj);
+                //enemyManager.AddEnemy(obj);
             }
         }
     }
@@ -145,6 +153,8 @@ public class SC_Field : MonoBehaviour
         objects.Clear();
 
         enemyManager.ClearEnemies();
+
+        //SC_EnemyStartGate.ResetGate();
 
         GenerateStage(currentStage);
 

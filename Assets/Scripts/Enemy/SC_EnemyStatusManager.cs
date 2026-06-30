@@ -24,6 +24,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("初期状態のStateの配列番号"),SerializeField] private int initialStateNum;
     [Tooltip("吹っ飛びのState"),SerializeField] private SC_EnemyBaceState blowAwayState;
     private SC_EnemyBaceState localBlowAwayState;
+    private AttackType stunAttackType;
 
     [Header("Stun")]
     [Tooltip("攻撃を受けた時に短時間止まるState")]
@@ -49,6 +50,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
+
+    [Header("Attack Point")]
+    [Tooltip("弾を出す位置。銃口や腕などを登録する"), SerializeField] private Transform attackPoint;
 
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
@@ -79,6 +83,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private int bossDownHpLimit;
     private bool requestEndBossDown;
 
+    [Header("Start Lock")]
+    [SerializeField] private bool useStartLock = false;
+
+    private bool stateStarted;
+
     //----------------------------------------------------------
 
     // 相手ごとの再ヒット可能時間
@@ -87,8 +96,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_EnemyBaceState currentState;
     private SC_EnemyBaceState[] localStateList;
     private int currentStateIndex = 0;
-    
+
+    //ボス戦カメラ用
+    public int GetCurrentStateIndex() => currentStateIndex;
+
     void Start()
+
     {
         localStateList = new SC_EnemyBaceState[stateList.Length];
 
@@ -124,7 +137,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         //初期状態の設定、CurrentIndexを初期状態に合わせて変更
         currentState = localStateList[initialStateNum];
-        currentState.Enter(this.gameObject,this);
 
         //HPの初期値をMaxHPに設定
         MaxHP = HP;
@@ -141,10 +153,34 @@ public class SC_EnemyStatusManager : MonoBehaviour
                     bossShieldObject.GetComponentInChildren<SC_ShieldLightningEffect>();
             }
         }
+
+        stateStarted = false;
+
+        if (!useStartLock || SC_EnemyStartGate.IsOpened)
+        {
+            StartCurrentState();
+        }
+
+        SC_EnemyManager enemyManager = FindFirstObjectByType<SC_EnemyManager>();
+
+        if (enemyManager != null)
+        {
+            enemyManager.AddEnemy(gameObject);
+        }
     }
 
     void Update()
     {
+        if (IsStartLocked())
+        {
+            return;
+        }
+
+        if (!stateStarted)
+        {
+            StartCurrentState();
+        }
+
         CheckFallDeath();
 
         UpdateEnemyCollisionTimers();
@@ -154,6 +190,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (IsStartLocked())
+        {
+            return;
+        }
+
+        if (!stateStarted)
+        {
+            return;
+        }
+
         if (currentState != null)
         {    
             currentState.FixedUpdateState(this.gameObject, this);
@@ -199,14 +245,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 AttackerPosition, bool isBlowAway = false, AttackType attackType = 0, EnemyDamageSource damageSource = EnemyDamageSource.PlayerAttack)
     {
-
-        SC_TutorialEnemy tutorialEnemy =
-            GetComponent<SC_TutorialEnemy>();
-
-        if (tutorialEnemy != null)
+        // StartLock中は通常ダメージを受けない
+        if (IsStartLocked())
         {
-            tutorialEnemy.WeakAttackHit();
+            Debug.Log("StartLock中のためダメージ無効 : " + gameObject.name);
+            return;
         }
+
         // Boss用：Player攻撃の場合
         if (damageSource == EnemyDamageSource.PlayerAttack)
         {
@@ -225,7 +270,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         if (damageSource == EnemyDamageSource.PlayerAttack && HP > 0 && !isBlowAway)
         {
-            ChangeToStun();
+            ChangeToStun(attackType);
         }
 
         if (HP <= 0)
@@ -234,7 +279,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             if (canBlownAway)
             {
-                TransitionToBlownAway(damage, AttackerPosition, attackType);
+                TransitionToBlownAway(damage, AttackerPosition, attackType, true);
             }
             else
             {
@@ -246,7 +291,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         if (isBlowAway && canBlownAway) 
         {
-            TransitionToBlownAway(damage, AttackerPosition, attackType);
+            TransitionToBlownAway(damage, AttackerPosition, attackType, true);
         }
     }
 
@@ -261,34 +306,64 @@ public class SC_EnemyStatusManager : MonoBehaviour
         currentState.Enter(this.gameObject, this);
     }
 
-    private void TransitionToBlownAway(float power,Vector3 attackerPosition, AttackType attackType)
+    private void TransitionToBlownAway(
+     float power,
+     Vector3 attackerPosition,
+     AttackType attackType,
+     bool exitCurrentState)
     {
         if (!canBlownAway) return;
 
         SC_EnemyBlownAway blownAway = localBlowAwayState as SC_EnemyBlownAway;
 
-        if (!IsBlownAway())
+        if (blownAway == null)
         {
-            if (currentState != null)
-            {
-                currentState.Exit(this.gameObject, this);
-            }
-
-            Vector3 initialBlowDirection = (this.transform.position - attackerPosition).normalized;
-            initialBlowDirection.y = 0.0f;
-            initialBlowDirection.Normalize();
-
-            Vector3 blowDirection = SearchForEnemyInDirection(initialBlowDirection, searchAngleThreshold);
-            blowDirection.y = 0.0f;
-            blowDirection.Normalize();
-
-            blownAway.SetBlownAway(power, blowDirection, attackType);
-
-            currentState = blownAway;
-            blownAway.Enter(this.gameObject, this);
+            Debug.LogError("localBlowAwayState が SC_EnemyBlownAway ではありません : " + gameObject.name);
+            return;
         }
-    }
 
+        if (IsBlownAway()) return;
+
+        // ここが重要：
+        // StartLock中でEnterしていないStateならExitしない
+        if (exitCurrentState && currentState != null)
+        {
+            currentState.Exit(this.gameObject, this);
+        }
+
+        Vector3 initialBlowDirection = transform.position - attackerPosition;
+        initialBlowDirection.y = 0.0f;
+
+        if (initialBlowDirection.sqrMagnitude <= 0.0001f)
+        {
+            initialBlowDirection = transform.forward;
+        }
+
+        initialBlowDirection.Normalize();
+
+        Vector3 blowDirection = SearchForEnemyInDirection(
+            initialBlowDirection,
+            searchAngleThreshold
+        );
+
+        blowDirection.y = 0.0f;
+
+        if (blowDirection.sqrMagnitude <= 0.0001f)
+        {
+            blowDirection = initialBlowDirection;
+        }
+
+        blowDirection.Normalize();
+
+        stunAttackType = attackType;
+
+        blownAway.SetBlownAway(power, blowDirection);
+
+        currentState = blownAway;
+        stateStarted = true;
+
+        blownAway.Enter(this.gameObject, this);
+    }
     public void ReturnFromBlownAway()
     {
         //もしHPが0以下なら、消滅する
@@ -312,45 +387,98 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public Vector3 SearchForEnemyInDirection(Vector3 direction, float angleThreshold)
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        GameObject closestEnemy = null;
-        float closestDistance = Mathf.Infinity;
+
+        GameObject closestNormalEnemy = null;
+        float closestNormalDistance = Mathf.Infinity;
+
+        GameObject closestBossShieldEnemy = null;
+        float closestBossShieldDistance = Mathf.Infinity;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            return transform.forward;
+        }
+
+        direction.Normalize();
 
         foreach (GameObject enemy in enemies)
         {
-            if (enemy != this.gameObject)
+            if (enemy == null) continue;
+            if (enemy == this.gameObject) continue;
+
+            Vector3 toEnemy = enemy.transform.position - transform.position;
+            toEnemy.y = 0f;
+
+            float distance = toEnemy.magnitude;
+
+            if (distance <= 0.0001f) continue;
+
+            Vector3 toEnemyDir = toEnemy.normalized;
+
+            float angle = Vector3.Angle(direction, toEnemyDir);
+
+            if (angle > angleThreshold)
             {
-                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
-                toEnemy.y = 0f;
+                continue;
+            }
 
-                float angle = Vector3.Angle(direction, toEnemy);
+            SC_EnemyStatusManager enemyStatus = enemy.GetComponent<SC_EnemyStatusManager>();
 
-                if (angle <= angleThreshold)
+            if (enemyStatus == null)
+            {
+                enemyStatus = enemy.GetComponentInParent<SC_EnemyStatusManager>();
+            }
+
+            if (enemyStatus != null && enemyStatus.UseBossShield())
+            {
+                if (distance < closestBossShieldDistance)
                 {
-                    float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestEnemy = enemy;
-                    }
+                    closestBossShieldDistance = distance;
+                    closestBossShieldEnemy = enemy;
                 }
+
+                continue;
+            }
+
+            if (distance < closestNormalDistance)
+            {
+                closestNormalDistance = distance;
+                closestNormalEnemy = enemy;
             }
         }
-        
-        if(closestEnemy != null)
-        {
-            //Debug.Log("サーチで敵を見つけました : " + closestEnemy.name);
 
-            Vector3 blowDirection = (closestEnemy.transform.position - this.transform.position).normalized;
-            return blowDirection;
-        }
-        else
+        if (closestBossShieldEnemy != null)
         {
-            //Debug.Log("サーチで敵が見つかりませんでした。");
-            return direction; 
+            Vector3 blowDirection =
+                closestBossShieldEnemy.transform.position - transform.position;
+
+            blowDirection.y = 0f;
+
+            if (blowDirection.sqrMagnitude > 0.0001f)
+            {
+                return blowDirection.normalized;
+            }
         }
+
+        if (closestNormalEnemy != null)
+        {
+            Vector3 blowDirection =
+                closestNormalEnemy.transform.position - transform.position;
+
+            blowDirection.y = 0f;
+
+            if (blowDirection.sqrMagnitude > 0.0001f)
+            {
+                return blowDirection.normalized;
+            }
+        }
+
+        return direction;
     }
 
-    public void ChangeToStun()
+    public void ChangeToStun(AttackType attackType)
     {
         if (!useHitStun) return;
         if (localStunState == null) return;
@@ -361,6 +489,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         // すでにStun中なら入り直さない
         if (currentState == localStunState) return;
+
+        stunAttackType = attackType;
 
         beforeStunState = currentState;
 
@@ -454,7 +584,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 TransitionToBlownAway(
                     myPower,
                     otherEnemy.transform.position,
-                    0
+                    0, 
+                    true
                 );
 
                 CollisionDamage(myPower);
@@ -464,13 +595,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
 
             // ここから普通の敵同士の衝突処理
-            TransitionToBlownAway(myPower, otherEnemy.transform.position, 0);
+            TransitionToBlownAway(myPower, otherEnemy.transform.position, 0, true);
             CollisionDamage(myPower);
 
             otherStatusManager.TransitionToBlownAway(
                 myPower,
                 this.transform.position,
-                0
+                0, 
+                true
             );
 
             otherStatusManager.CollisionDamage(myPower);
@@ -845,4 +977,87 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return maxBossShield;
     }
 
+    private void StartCurrentState()
+    {
+        if (stateStarted) return;
+        if (currentState == null) return;
+
+        stateStarted = true;
+        currentState.Enter(this.gameObject, this);
+    }
+
+    public void ForceBlowAway(
+        float power,
+        Vector3 attackerPosition,
+        AttackType attackType = 0,
+        bool unlockStartLock = true)
+    {
+        Debug.Log("ForceBlowAway called : " + gameObject.name);
+
+        // 変更前の状態を保存
+        bool wasStateStarted = stateStarted;
+
+        if (unlockStartLock)
+        {
+            useStartLock = false;
+        }
+
+        if (!canBlownAway)
+        {
+            Debug.Log("canBlownAway が false です : " + gameObject.name);
+            return;
+        }
+
+        if (localBlowAwayState == null)
+        {
+            Debug.LogError("BlowAwayState が設定されていません : " + gameObject.name);
+            return;
+        }
+
+        if (currentState == null)
+        {
+            currentStateIndex = initialStateNum;
+            currentState = localStateList[currentStateIndex];
+        }
+
+        // StartLock中でEnterされていなかったEnemyなら、
+        // currentState.Exit() は呼ばない
+        TransitionToBlownAway(
+            power,
+            attackerPosition,
+            attackType,
+            wasStateStarted
+        );
+    }
+
+    public void UnlockStartLock()
+    {
+        useStartLock = false;
+        stateStarted = true;
+    }
+
+    public bool IsStartLocked()
+    {
+        return useStartLock && !SC_EnemyStartGate.IsOpened;
+    }
+
+    public AttackType GetStunAttackType()
+    {
+        return stunAttackType;
+    }
+
+    public Transform GetAttackPoint()
+    {
+        return attackPoint;
+    }
+
+    public Vector3 GetAttackPointPosition()
+    {
+        if (attackPoint != null)
+        {
+            return attackPoint.position;
+        }
+
+        return transform.position;
+    }
 }

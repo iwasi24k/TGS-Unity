@@ -41,7 +41,7 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private SC_PlayerBaseState _currentState;
 
-    private float _strongPressStartTime;
+    private float _chargeFlagStartTime;
 
     // Describe the getter for each state pattern.
 
@@ -58,28 +58,24 @@ public class SC_PlayerStateManager : MonoBehaviour
         stateList.StrongAttack = strongAttack;
         stateList.JumpIn = jumpIn;
         stateList.ChargeAttack = chargeAttack;
-        _strongPressStartTime = -1;
+        _chargeFlagStartTime = -1;
     }
 
     private void OnEnable()
     {
-        if(weakAttackInput != null && weakAttackInput.action != null)
-            weakAttackInput.action.canceled += OnWeakAttackReleased;
-        if (strongAttackInput != null && strongAttackInput.action != null)
+        if (weakAttackInput != null && weakAttackInput.action != null)
         {
-            strongAttackInput.action.started += OnStrongAttackStart;
-            strongAttackInput.action.canceled += OnStrongAttackReleased;
+            weakAttackInput.action.started += OnWeakAttackStart;
+            weakAttackInput.action.canceled += OnWeakAttackReleased;
         }
     }
 
     private void OnDisable()
     {
-        if(weakAttackInput != null && weakAttackInput.action != null)
-            weakAttackInput.action.canceled -= OnWeakAttackReleased;
-        if (strongAttackInput != null && strongAttackInput.action != null)
+        if (weakAttackInput != null && weakAttackInput.action != null)
         {
-            strongAttackInput.action.started -= OnStrongAttackStart;
-            strongAttackInput.action.canceled -= OnStrongAttackReleased;
+            weakAttackInput.action.started -= OnWeakAttackStart;
+            weakAttackInput.action.canceled -= OnWeakAttackReleased;
         }
     }
 
@@ -90,9 +86,9 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void Update()
     {
-        if (Time.time - _strongPressStartTime >= requiredAttackPressDuration && _strongPressStartTime > 0)
+        if (Time.time - _chargeFlagStartTime >= requiredAttackPressDuration && _chargeFlagStartTime > 0)
         {
-            Debug.Log("_strongPressStartTime: " + _strongPressStartTime);
+            Debug.Log("_chargeFlagStartTime: " + _chargeFlagStartTime);
             animator.SetBool("bCharge", true);
         }
         _currentState.UpdateState(this.gameObject, stateList);
@@ -103,6 +99,18 @@ public class SC_PlayerStateManager : MonoBehaviour
         _currentState.FixedUpdateState(this.gameObject,stateList);
     }
 
+    private void OnWeakAttackStart(InputAction.CallbackContext context)
+    {
+        if (!_currentState) return;
+        if (_currentState == stateList.WeakAttack ||
+            _currentState == stateList.StrongAttack ||
+            _currentState == stateList.JumpIn) return;
+        
+        _chargeFlagStartTime = Time.time;
+
+        return;
+    }
+
     private void OnWeakAttackReleased(InputAction.CallbackContext context)
     {
         if (!_currentState) return;
@@ -111,47 +119,20 @@ public class SC_PlayerStateManager : MonoBehaviour
             _currentState == stateList.StrongAttack ||
             _currentState == stateList.JumpIn) return;
 
-        attackManager.AttackTransitionCheck(stateList, false);
-        return;
-    }
-
-    private void OnStrongAttackStart(InputAction.CallbackContext context)
-    {
-        if (!_currentState) return;
-
-        if (_currentState == stateList.WeakAttack ||
-            _currentState == stateList.StrongAttack ||
-            _currentState == stateList.JumpIn ||
-            _currentState == stateList.ChargeAttack) return;
-
-        _strongPressStartTime = Time.time;
-    }
-
-    private void OnStrongAttackReleased(InputAction.CallbackContext context)
-    {
-        if (!_currentState) return;
-
-        if (_currentState == stateList.WeakAttack ||
-            _currentState == stateList.StrongAttack ||
-            _currentState == stateList.JumpIn ||
-            _currentState == stateList.ChargeAttack) return;
-
-        if (_strongPressStartTime > 0)
+        if(_chargeFlagStartTime != -1)
         {
-            var pressDuration = Time.time - _strongPressStartTime;
-            if (pressDuration > 0 && pressDuration >= requiredAttackPressDuration)
+            if(Time.time - _chargeFlagStartTime >= requiredAttackPressDuration)
             {
                 // チャージ攻撃のトリガー
                 ChangeState(stateList.ChargeAttack);
-                _strongPressStartTime = -1; // タイマーリセット
+                _chargeFlagStartTime = -1; // タイマーリセット
                 return;
             }
-         
         }
 
-        attackManager.AttackTransitionCheck(stateList, true);
 
-        _strongPressStartTime = -1; // タイマーリセット
+        attackManager.AttackTransitionCheck(stateList);
+        _chargeFlagStartTime = -1; // タイマーリセット
         return;
     }
 
