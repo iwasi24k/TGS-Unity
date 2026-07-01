@@ -695,15 +695,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.913827
+      value: -5.9201
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.00000027772182
+      value: -0.00000029436683
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.158489
+      value: 0.51997566
       objectReference: {fileID: 0}
     - target: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}
       propertyPath: m_LocalRotation.w
@@ -859,12 +859,16 @@ MonoBehaviour:
   firePointList:
   - {fileID: 4492005654170811367}
   moveLookTarget: {fileID: 1944108334402936717}
+  blowAwayFollowParts:
+  - {fileID: 212205909659899710}
+  - {fileID: 3159593000790440689}
   canBlownAway: 1
   bossDownStateIndex: 6
   useBossDown: 0
   onlyTakePlayerDamageWhileDown: 0
   useBossDownDamageLimit: 0
   bossHpPartCount: 4
+  isBoss: 0
   useBossShield: 0
   bossShieldObject: {fileID: 0}
   maxBossShield: 3
@@ -965,10 +969,26 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5926048827469238780}
+    - targetCorrespondingSourceObject: {fileID: -424899449792629071, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 212205909659899710}
+    - targetCorrespondingSourceObject: {fileID: -2086301185172071794, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3159593000790440689}
     - targetCorrespondingSourceObject: {fileID: -3246245767721508202, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1944108334402936717}
   m_SourcePrefab: {fileID: 100100000, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+--- !u!4 &257472113332919939 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4255606442817761495, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+  m_PrefabInstance: {fileID: 4079216755992637012}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &291213996438650456 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4365909507929001996, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+  m_PrefabInstance: {fileID: 4079216755992637012}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &765788224590498293 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3620025846412601249, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
@@ -1006,6 +1026,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
   m_PrefabInstance: {fileID: 4079216755992637012}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4793587252802017509 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -424899449792629071, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+  m_PrefabInstance: {fileID: 4079216755992637012}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &212205909659899710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4793587252802017509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93d357746a725af488f3615d7b1a1716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PartFollowTarget
+  target: {fileID: 291213996438650456}
+  followPosition: 0
+  followRotation: 1
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  rotationOffsetEuler: {x: 0, y: 0, z: 0}
+  alwaysFollow: 0
+  useBlend: 0
+  positionBlendSpeed: 20
+  rotationBlendSpeed: 20
+--- !u!1 &6599939658796545242 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2086301185172071794, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
+  m_PrefabInstance: {fileID: 4079216755992637012}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3159593000790440689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6599939658796545242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93d357746a725af488f3615d7b1a1716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PartFollowTarget
+  target: {fileID: 257472113332919939}
+  followPosition: 0
+  followRotation: 1
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  rotationOffsetEuler: {x: 0, y: 0, z: 0}
+  alwaysFollow: 0
+  useBlend: 0
+  positionBlendSpeed: 20
+  rotationBlendSpeed: 20
 --- !u!4 &7117744130779927318 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6510802727302430018, guid: 7e5676c472b99014fbd51d46c816364d, type: 3}
