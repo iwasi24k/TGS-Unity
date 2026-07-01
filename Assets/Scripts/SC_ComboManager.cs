@@ -12,7 +12,12 @@ public class ComboManager : MonoBehaviour
     [SerializeField] private float noBlownAwayResetDelay = 0.2f;
     private float noBlownAwayTimer = 0.0f;
 
+    [SerializeField] private int maxComboCount = 0;
+
+    public int MaxComboCount => maxComboCount;
+
     public int ComboCount => comboCount;
+
     private void Awake()
     {
         Instance = this;
@@ -37,6 +42,11 @@ public class ComboManager : MonoBehaviour
     {
         comboCount += addCount;
         timer = comboResetTime;
+
+        if (comboCount > maxComboCount)
+        {
+            maxComboCount = comboCount;
+        }
 
         //Debug.Log("Combo : " + comboCount);
     }
@@ -86,5 +96,10 @@ public class ComboManager : MonoBehaviour
                 ResetCombo();
             }
         }
+    }
+
+    public int GetMaxComboCount()
+    {
+        return maxComboCount;
     }
 }

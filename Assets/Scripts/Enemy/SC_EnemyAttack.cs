@@ -110,7 +110,7 @@ public class SC_EnemyAttack : SC_EnemyBaceState
 
         // ”­Ë•ûŒü‚Æ¶¬ˆÊ’u
         Quaternion rot = Quaternion.Euler(0f, angleOffset, 0f) * Owner.transform.rotation;
-        Transform attackPoint = Manager.GetAttackPoint();
+        Transform attackPoint = Manager.GetFirePoint(0);
 
         Vector3 spawnPos;
 

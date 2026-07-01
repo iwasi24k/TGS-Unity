@@ -36,6 +36,14 @@ public class SC_Field : MonoBehaviour
     private SC_EnemyManager enemyManager;
 
     //==================================================
+    // Boss Flag
+    //==================================================
+    public static SC_Field Instance { get; private set; }
+
+    [Header("Boss Flag")]
+    [SerializeField] private bool bossDefeated = false;
+
+    //==================================================
     // Goal
     //==================================================
     [SerializeField]
@@ -48,6 +56,11 @@ public class SC_Field : MonoBehaviour
     private GameObject player;
 
     private Vector3 playerStartPos;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -87,6 +100,8 @@ public class SC_Field : MonoBehaviour
 
     void GenerateStage(int stageIndex)
     {
+        bossDefeated = false;
+
         if (stages == null ||
             stages.Length == 0)
         {
@@ -218,5 +233,20 @@ public class SC_Field : MonoBehaviour
         }
 
         Debug.Log("Playerリセット");
+    }
+
+    // ボス撃破フラグの設定
+    public bool IsBossDefeated()
+    {
+        return bossDefeated;
+    }
+
+    public void NotifyBossDefeated()
+    {
+        if (bossDefeated) return;
+
+        bossDefeated = true;
+
+        Debug.Log("Boss Defeated Flag ON");
     }
 }

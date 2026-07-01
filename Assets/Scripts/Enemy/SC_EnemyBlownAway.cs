@@ -24,8 +24,6 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("再生する距離間隔"), SerializeField] private float effectInterval = 1.0f;
 
     private bool isRotateMove = false;
-    private Vector3 rotateLeftDirection;
-    private float rotateCurrentPower = 0f;
     private float wallBounceCooldownTimer = 0f;
     private float timer;
 
@@ -135,7 +133,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     // 吹き飛ばされる力を設定するメソッド
     public void SetPower(float power)
     {
-        power = power;
+        blownAwayPower = power;
     }
 
     // 吹き飛ばされる方向を設定するメソッド

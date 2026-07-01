@@ -57,26 +57,34 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
         SC_ObjectPool pool = boss.GetStraightMissilePool();
         if (pool == null) return;
 
-        Vector3 spawnPos = Owner.transform.position;
-        spawnPos.y = 0.0f;
-        spawnPos += Vector3.up * spawnHeight;
+        Transform player = boss.GetPlayer();
 
         Vector3 baseDir = Owner.transform.forward;
 
-        Transform player = boss.GetPlayer();
-
         if (player != null)
         {
-            Vector3 toPlayer =
-                player.position -
-                Owner.transform.position;
-
-            toPlayer.y = 0f;
+            Vector3 toPlayer = player.position - Owner.transform.position;
 
             if (toPlayer.sqrMagnitude > 0.0001f)
             {
                 baseDir = toPlayer.normalized;
             }
+        }
+
+        Transform firePoint =
+            GetNearestFirePointToPlayer(Owner, player);
+
+        Vector3 spawnPos;
+
+        if (firePoint != null)
+        {
+            spawnPos = firePoint.position;
+        }
+        else
+        {
+            spawnPos = Owner.transform.position;
+            spawnPos.y = 0.0f;
+            spawnPos += Vector3.up * spawnHeight;
         }
 
         float randomAngle = Random.Range(
@@ -88,11 +96,15 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
             Quaternion.Euler(0f, randomAngle, 0f) *
             baseDir;
 
-        dir.y = 0f;
-
         if (dir.sqrMagnitude <= 0.0001f)
         {
             dir = Owner.transform.forward;
+            dir.y = 0f;
+        }
+
+        if (dir.sqrMagnitude <= 0.0001f)
+        {
+            dir = Vector3.forward;
         }
 
         dir.Normalize();
@@ -118,5 +130,53 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
                 0f
             );
         }
+    }
+
+    private Transform GetNearestFirePointToPlayer(
+    GameObject Owner,
+    Transform player
+)
+    {
+        if (Owner == null) return null;
+        if (player == null) return null;
+
+        SC_EnemyStatusManager statusManager =
+            Owner.GetComponent<SC_EnemyStatusManager>();
+
+        if (statusManager == null) return null;
+
+        Transform[] firePointList =
+            statusManager.GetFirePointList();
+
+        if (firePointList == null || firePointList.Length == 0)
+        {
+            return null;
+        }
+
+        Transform nearestFirePoint = null;
+        float nearestDistanceSqr = Mathf.Infinity;
+
+        for (int i = 0; i < firePointList.Length; i++)
+        {
+            Transform firePoint = firePointList[i];
+
+            if (firePoint == null) continue;
+
+            Vector3 diff =
+                player.position -
+                firePoint.position;
+
+            diff.y = 0f;
+
+            float distanceSqr = diff.sqrMagnitude;
+
+            if (distanceSqr < nearestDistanceSqr)
+            {
+                nearestDistanceSqr = distanceSqr;
+                nearestFirePoint = firePoint;
+            }
+        }
+
+        return nearestFirePoint;
     }
 }

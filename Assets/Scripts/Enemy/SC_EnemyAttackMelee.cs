@@ -24,9 +24,6 @@ public class SC_EnemyAttackMelee : SC_EnemyBaceState
 
     private Collider[] overlapCollision = new Collider[16];
 
-    [Tooltip("プレイヤーを探すタグ")]
-    [SerializeField] private string playerTag = "Player";
-
     private float timer;
     private bool attacked;
 
