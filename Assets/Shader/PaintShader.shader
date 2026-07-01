@@ -4,6 +4,7 @@ Shader "CustomRenderTexture/PaintShader"
     {
         _MainTex("Base (RGB)", 2D) = "white" {}
         _BrushTex("Brush Texture", 2D) = "white" {}
+        _FadeSpeed("Fade Speed", Float) = 1.0
      }
 
      SubShader
@@ -37,6 +38,7 @@ Shader "CustomRenderTexture/PaintShader"
             float2  _BrushUV;
             float   _BrushRadius;
             float   _BrushIntensity;
+            float   _FadeSpeed;
 
             v2f vert(appdata v)
             {
@@ -48,7 +50,11 @@ Shader "CustomRenderTexture/PaintShader"
 
             fixed4 frag(v2f i) : SV_Target
             {
+                float _fadeSpeed = _FadeSpeed;
+
                 fixed4 baseColor = tex2D(_MainTex, i.uv);
+
+                baseColor.r = saturate(baseColor.r - (_fadeSpeed));
                 float dist = distance(i.uv, _BrushUV);
                 float alpha = smoothstep(_BrushRadius, _BrushRadius * 0.5, dist);
 

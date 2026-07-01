@@ -11,6 +11,7 @@ public class SC_FootPrinter : MonoBehaviour
     [SerializeField] private float dragRadius = 0.05f;
     [SerializeField] private float paintIntensity = 1.0f; // 濃さ
     [SerializeField] private LayerMask groundRayer;
+    [SerializeField] private float fadeSpeed = 0.05f; // フェード速度 値が大きいほど早く消える
 
     private Material paintMaterial;
     private RenderTexture tempRT;
@@ -36,6 +37,10 @@ public class SC_FootPrinter : MonoBehaviour
 
     void Update()
     {
+
+        paintMaterial.SetFloat("_DeltaTime", Time.deltaTime);
+        paintMaterial.SetFloat("_FadeSpeed", fadeSpeed);
+
         Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
         RaycastHit hit;
 
@@ -53,6 +58,7 @@ public class SC_FootPrinter : MonoBehaviour
             if (isKnockback)
             {
                 DrawDragLine(lastUV, uv);
+                lastUV = uv;
             }
             else
             {
@@ -61,18 +67,33 @@ public class SC_FootPrinter : MonoBehaviour
                     PaintAtUV(uv, walkRadius);
                     lastUV = uv;
                 }
-            }
-
-            if(isKnockback)
-            {
-                lastUV = uv;
+                else
+                {
+                    ApplyOnlyFade(); // 動きが少ない場合はフェードのみ
+                }
             }
 
         }
+        else
+        {
+            ApplyOnlyFade(); // 地面に接触していない場合もフェードのみ
+        }
+    }
+
+    private void  ApplyOnlyFade()
+    {
+        paintMaterial.SetVector("_BrushUV", new Vector4(-1, -1, 0, 0)); // UVを無効にする
+        paintMaterial.SetFloat("_BrushRadius", 0); // 半径を0にする
+        paintMaterial.SetFloat("_BrushIntensity", 0); // 濃さを0にする
+
+        Graphics.Blit(renderTexture, tempRT, paintMaterial);
+        Graphics.Blit(tempRT, renderTexture);
     }
 
     private void PaintAtUV(Vector2 uv,float radius)
     {
+        paintMaterial.SetFloat("_FadeSpeed", fadeSpeed * Time.deltaTime);
+
         paintMaterial.SetVector("_BrushUV", new Vector4(uv.x, uv.y, 0, 0));
         paintMaterial.SetFloat("_BrushRadius", radius);
         paintMaterial.SetFloat("_BrushIntensity", paintIntensity);
