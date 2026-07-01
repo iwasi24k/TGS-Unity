@@ -16,6 +16,9 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
     private float timer;
     private bool initialized;
 
+    private bool stopYVelocityNearGround;
+    private float groundStopY;
+
     public void SetPool(SC_ObjectPool pool)
     {
         ownerPool = pool;
@@ -41,6 +44,12 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
         }
     }
 
+    public void SetStopYVelocityNearGround(bool enable,float groundY)
+    {
+        stopYVelocityNearGround = enable;
+        groundStopY = groundY;
+    }
+
     private void Update()
     {
         if (!initialized) return;
@@ -50,6 +59,16 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
         if (timer < 0f)
         {
             return;
+        }
+
+        if (stopYVelocityNearGround && transform.position.y <= groundStopY)
+        {
+            moveDirection.y = 0f;
+
+            if (moveDirection.sqrMagnitude > 0.0001f)
+            {
+                moveDirection.Normalize();
+            }
         }
 
         transform.position += moveDirection * speed * Time.deltaTime;

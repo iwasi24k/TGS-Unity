@@ -62,6 +62,8 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
 
     private MaterialPropertyBlock propertyBlock;
 
+    private bool stopYVelocityNearGround;
+    private float groundStopY;
     public void SetPool(SC_ObjectPool pool)
     {
         ownerPool = pool;
@@ -105,16 +107,29 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
         );
     }
 
+    public void SetStopYVelocityNearGround(bool enable, float groundY)
+    {
+        stopYVelocityNearGround = enable;
+        groundStopY = groundY;
+    }
+
     private void Update()
     {
         if (!initialized) return;
 
         timer += Time.deltaTime;
 
-        transform.position +=
-            moveDirection *
-            currentSpeed *
-            Time.deltaTime;
+        if (stopYVelocityNearGround && transform.position.y <= groundStopY)
+        {
+            moveDirection.y = 0f;
+
+            if (moveDirection.sqrMagnitude > 0.0001f)
+            {
+                moveDirection.Normalize();
+            }
+        }
+
+        transform.position += moveDirection * currentSpeed * Time.deltaTime;
 
         if (timer >= lifeTime)
         {

@@ -13,21 +13,17 @@ MonoBehaviour:
   m_Name: SO_Boss Circle Barrage FrontBack Reflectable State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossCircleBarrageState
   startDelay: 0.3
-  bulletCount: 16
   shotCountMax: 3
   shotInterval: 0.3
   missileSpeed: 8
-  spawnHeight: 1.5
-  spawnDistance: 2.5
-  rotateOffsetPerShot: 0
-  angleSectorList:
-  - useSector: 1
-    centerAngle: 0
-    angleRange: 45
-  - useSector: 1
-    centerAngle: 180
-    angleRange: 45
   endDelay: 0.5
+  firePointRangeList:
+  - startFirePointNumber: 12
+    endFirePointNumber: 2
+    useRange: 1
+  - startFirePointNumber: 6
+    endFirePointNumber: 8
+    useRange: 1
   missileType: 1
   showCircleWarning: 1
   warningRadius: 20
@@ -35,3 +31,4 @@ MonoBehaviour:
   sectorWarningRadius: 20
   warningHeightOffset: 0.03
   warningTime: 0.3
+  aimBaseType: 0

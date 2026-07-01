@@ -66,8 +66,7 @@ public class SC_WarningTelegraphSector : MonoBehaviour, SC_IPoolObject
         float radius,
         float centerAngle,
         float angleRange,
-        float duration
-    )
+        float duration)
     {
         this.radius = Mathf.Max(0.01f, radius);
         this.angleRange = Mathf.Clamp(angleRange, 0.1f, 360f);
@@ -97,6 +96,62 @@ public class SC_WarningTelegraphSector : MonoBehaviour, SC_IPoolObject
         //BuildSectorBorder();
     }
 
+    public void InitByWorldPoints(
+    Vector3 centerPosition,
+    Vector3 leftPointPosition,
+    Vector3 rightPointPosition,
+    float radius,
+    float duration)
+    {
+        Vector3 leftDir = leftPointPosition - centerPosition;
+        Vector3 rightDir = rightPointPosition - centerPosition;
+
+        leftDir.y = 0f;
+        rightDir.y = 0f;
+
+        if (leftDir.sqrMagnitude <= 0.0001f) return;
+        if (rightDir.sqrMagnitude <= 0.0001f) return;
+
+        leftDir.Normalize();
+        rightDir.Normalize();
+
+        float leftAngle = Mathf.Atan2(leftDir.x, leftDir.z) * Mathf.Rad2Deg;
+        float rightAngle = Mathf.Atan2(rightDir.x, rightDir.z) * Mathf.Rad2Deg;
+
+        float range = Mathf.Repeat(rightAngle - leftAngle, 360f);
+
+        if (range <= 0.01f)
+        {
+            range = 360f;
+        }
+
+        this.radius = Mathf.Max(0.01f, radius);
+        this.angleRange = Mathf.Clamp(range, 0.1f, 360f);
+        this.startAngle = leftAngle;
+        this.duration = Mathf.Max(0.01f, duration);
+
+        timer = 0f;
+        meshUpdateTimer = 0f;
+        initialized = true;
+
+        BuildSectorMesh(
+            areaMeshFilter,
+            ref areaMesh,
+            this.radius,
+            this.startAngle,
+            this.angleRange
+        );
+
+        BuildSectorMesh(
+            gaugeMeshFilter,
+            ref gaugeMesh,
+            0.01f,
+            this.startAngle,
+            this.angleRange
+        );
+
+        BuildSectorBorder();
+    }
     private void Update()
     {
         if (!initialized) return;

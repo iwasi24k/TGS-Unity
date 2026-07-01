@@ -118,7 +118,7 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
                 Owner.transform.rotation *
                 Quaternion.Euler(0f, angleOffset, 0f);
 
-            Transform attackPoint = Manager.GetAttackPoint();
+            Transform attackPoint = Manager.GetFirePoint(0);
 
             Vector3 spawnPos;
 

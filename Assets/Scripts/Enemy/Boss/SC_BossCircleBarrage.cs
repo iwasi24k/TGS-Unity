@@ -21,9 +21,6 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     [Tooltip("攻撃開始までの時間"), SerializeField]
     private float startDelay = 0.8f;
 
-    [Tooltip("1回の発射で出す弾数"), SerializeField]
-    private int bulletCount = 16;
-
     [Tooltip("何回発射するか"), SerializeField]
     private int shotCountMax = 3;
 
@@ -33,20 +30,46 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     [Tooltip("弾の速度"), SerializeField]
     private float missileSpeed = 8.0f;
 
-    [Tooltip("弾を発射する高さ"), SerializeField]
-    private float spawnHeight = 1.2f;
+    [Tooltip("発射時に下向きへどれくらい傾けるか")]
+    [SerializeField] private float downwardPower = 0.35f;
 
-    [Tooltip("ボス中心からどれくらい離して弾を生成するか"), SerializeField]
-    private float spawnDistance = 2.5f;
-
-    [Tooltip("発射ごとに角度をずらす量"), SerializeField]
-    private float rotateOffsetPerShot = 0.0f;
-
-    [Tooltip("細かい発射角度リスト。空なら360度全方向"), SerializeField]
-    private BossBarrageAngleSector[] angleSectorList;
+    [Tooltip("このY座標以下になったら、ミサイルのY方向移動を止める")]
+    [SerializeField] private float missileGroundY = 0.3f;
 
     [Tooltip("攻撃終了後の待ち時間"), SerializeField]
     private float endDelay = 0.5f;
+
+    [System.Serializable]
+    public class BossBarrageFirePointRange
+    {
+        [Tooltip("何番目のFirePointから使うか。1ならFirePoint1")]
+        [SerializeField] private int startFirePointNumber = 1;
+
+        [Tooltip("何番目のFirePointまで使うか。3ならFirePoint3")]
+        [SerializeField] private int endFirePointNumber = 3;
+
+        [Tooltip("この範囲を使うか")]
+        [SerializeField] private bool useRange = true;
+
+        public int GetStartIndex()
+        {
+            return Mathf.Max(0, startFirePointNumber - 1);
+        }
+
+        public int GetEndIndex()
+        {
+            return Mathf.Max(0, endFirePointNumber - 1);
+        }
+
+        public bool GetUseRange()
+        {
+            return useRange;
+        }
+    }
+
+    [Header("Fire Point Range")]
+    [Tooltip("発射に使うFirePoint範囲。例: 1～3 と 7～9")]
+    [SerializeField] private BossBarrageFirePointRange[] firePointRangeList;
 
     [Header("Missile Type")]
     [Tooltip("ミサイルの種類"), SerializeField] private BarrageMissileType missileType = BarrageMissileType.Straight;
@@ -95,6 +118,8 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         shotCount = 0;
         started = false;
         finishedFire = false;
+
+        RotateBossSoFirePoint1FacesPlayer(Owner);
 
         ShowWarning(Owner);
     }
@@ -160,153 +185,195 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     }
 
     private void FireCircleBarrage(
-        GameObject Owner,
-        SC_BossAttackController boss,
-        int currentShotIndex
-    )
+    GameObject Owner,
+    SC_BossAttackController boss,
+    int currentShotIndex)
     {
-        if (bulletCount <= 0) return;
         if (boss == null) return;
 
         SC_ObjectPool pool = GetMissilePool(boss);
 
         if (pool == null) return;
 
-        float rotateOffset =
-            rotateOffsetPerShot * currentShotIndex;
-
-        if (angleSectorList == null || angleSectorList.Length == 0)
-        {
-            FireSector(
-                Owner,
-                boss,
-                pool,
-                0f,
-                360f,
-                bulletCount,
-                rotateOffset
-            );
-
-            return;
-        }
-
-        int usableSectorCount = GetUsableSectorCount();
-
-        if (usableSectorCount <= 0)
-        {
-            FireSector(
-                Owner,
-                boss,
-                pool,
-                0f,
-                360f,
-                bulletCount,
-                rotateOffset
-            );
-
-            return;
-        }
-
-        int bulletPerSector = Mathf.Max(1, bulletCount / usableSectorCount);
-
-        for (int i = 0; i < angleSectorList.Length; i++)
-        {
-            BossBarrageAngleSector sector = angleSectorList[i];
-
-            if (sector == null) continue;
-            if (!sector.GetUseSector()) continue;
-
-            FireSector(
-                Owner,
-                boss,
-                pool,
-                sector.GetCenterAngle(),
-                sector.GetAngleRange(),
-                bulletPerSector,
-                rotateOffset
-            );
-        }
+        FireFromFirePoints(
+            Owner,
+            boss,
+            pool
+        );
     }
 
-    private int GetUsableSectorCount()
-    {
-        if (angleSectorList == null) return 0;
-
-        int count = 0;
-
-        for (int i = 0; i < angleSectorList.Length; i++)
-        {
-            if (angleSectorList[i] != null &&
-                angleSectorList[i].GetUseSector())
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private void FireSector(
-        GameObject Owner,
-        SC_BossAttackController boss,
-        SC_ObjectPool pool,
-        float centerAngle,
-        float angleRange,
-        int count,
-        float rotateOffset
-    )
-    {
-        if (count <= 0) return;
-
-        for (int i = 0; i < count; i++)
-        {
-            float angle;
-
-            if (angleRange >= 360f)
-            {
-                angle = 360f / count * i;
-            }
-            else if (count == 1)
-            {
-                angle = centerAngle;
-            }
-            else
-            {
-                float t = (float)i / (count - 1);
-
-                angle = Mathf.Lerp(
-                    centerAngle - angleRange * 0.5f,
-                    centerAngle + angleRange * 0.5f,
-                    t
-                );
-            }
-
-            angle += rotateOffset;
-
-            FireOneMissile(
-                Owner,
-                boss,
-                pool,
-                angle
-            );
-        }
-    }
-
-    private void FireOneMissile(
+    private void FireFromFirePoints(
     GameObject Owner,
     SC_BossAttackController boss,
-    SC_ObjectPool pool,
-    float angle)
+    SC_ObjectPool pool)
     {
         if (Owner == null) return;
         if (pool == null) return;
 
-        Vector3 baseDir = GetBaseFireDirection(Owner, boss);
+        SC_EnemyStatusManager statusManager =
+            Owner.GetComponent<SC_EnemyStatusManager>();
 
-        Vector3 dir =
-            Quaternion.Euler(0f, angle, 0f) *
-            baseDir;
+        if (statusManager == null)
+        {
+            Debug.LogWarning("SC_EnemyStatusManager がありません : " + Owner.name);
+            return;
+        }
 
+        Transform[] firePointList = statusManager.GetFirePointList();
+
+        if (firePointList == null || firePointList.Length == 0)
+        {
+            Debug.LogWarning("FirePointList が未設定です : " + Owner.name);
+            return;
+        }
+
+        bool fired = false;
+
+        // 範囲指定がない場合は全部発射
+        if (firePointRangeList == null || firePointRangeList.Length == 0)
+        {
+            for (int i = 0; i < firePointList.Length; i++)
+            {
+                Transform firePoint = firePointList[i];
+
+                if (firePoint == null)
+                {
+                    Debug.LogWarning("FirePointList[" + i + "] が null です");
+                    continue;
+                }
+
+                FireOneMissileFromPoint(
+                    Owner,
+                    boss,
+                    pool,
+                    firePoint
+                );
+
+                fired = true;
+            }
+
+            return;
+        }
+
+        for (int rangeIndex = 0; rangeIndex < firePointRangeList.Length; rangeIndex++)
+        {
+            BossBarrageFirePointRange range = firePointRangeList[rangeIndex];
+
+            if (range == null)
+            {
+                Debug.LogWarning("FirePointRange[" + rangeIndex + "] が null です");
+                continue;
+            }
+
+            if (!range.GetUseRange())
+            {
+                Debug.LogWarning("FirePointRange[" + rangeIndex + "] は UseRange が false です");
+                continue;
+            }
+
+            int startIndex = Mathf.Clamp(
+                range.GetStartIndex(),
+                0,
+                firePointList.Length - 1
+            );
+
+            int endIndex = Mathf.Clamp(
+                range.GetEndIndex(),
+                0,
+                firePointList.Length - 1
+            );
+
+            Debug.Log(
+                "FirePointRange 使用 : " +
+                (startIndex + 1) + " ～ " + (endIndex + 1)
+            );
+
+            if (startIndex <= endIndex)
+            {
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    Transform firePoint = firePointList[i];
+
+                    if (firePoint == null)
+                    {
+                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        continue;
+                    }
+
+                    FireOneMissileFromPoint(
+                        Owner,
+                        boss,
+                        pool,
+                        firePoint
+                    );
+
+                    fired = true;
+                }
+            }
+            else
+            {
+                for (int i = startIndex; i < firePointList.Length; i++)
+                {
+                    Transform firePoint = firePointList[i];
+
+                    if (firePoint == null)
+                    {
+                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        continue;
+                    }
+
+                    FireOneMissileFromPoint(
+                        Owner,
+                        boss,
+                        pool,
+                        firePoint
+                    );
+
+                    fired = true;
+                }
+
+                for (int i = 0; i <= endIndex; i++)
+                {
+                    Transform firePoint = firePointList[i];
+
+                    if (firePoint == null)
+                    {
+                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        continue;
+                    }
+
+                    FireOneMissileFromPoint(
+                        Owner,
+                        boss,
+                        pool,
+                        firePoint
+                    );
+
+                    fired = true;
+                }
+            }
+        }
+
+        if (!fired)
+        {
+            Debug.LogWarning(
+                "FirePointRangeList はあるが、1発も発射されませんでした : " +
+                Owner.name
+            );
+        }
+    }
+
+    private void FireOneMissileFromPoint(
+    GameObject Owner,
+    SC_BossAttackController boss,
+    SC_ObjectPool pool,
+    Transform firePoint)
+    {
+        if (Owner == null) return;
+        if (pool == null) return;
+        if (firePoint == null) return;
+
+        Vector3 dir = firePoint.position - Owner.transform.position;
         dir.y = 0f;
 
         if (dir.sqrMagnitude <= 0.0001f)
@@ -315,20 +382,29 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
             dir.y = 0f;
         }
 
+        if (dir.sqrMagnitude <= 0.0001f)
+        {
+            dir = Vector3.forward;
+        }
 
         dir.Normalize();
 
-        Vector3 spawnPos = Owner.transform.position + dir * spawnDistance;
+        dir.y = -downwardPower;
+        dir.Normalize();
 
-        // 地面基準にしたいならこっち
-        spawnPos.y = spawnHeight;
+        Vector3 spawnPos = firePoint.position;
+
 
         GameObject missileObj = pool.GetObject(
             spawnPos,
             Quaternion.LookRotation(dir)
         );
 
-        if (missileObj == null) return;
+        if (missileObj == null)
+        {
+            Debug.LogWarning("Missile Pool から取得できませんでした");
+            return;
+        }
 
         switch (missileType)
         {
@@ -345,8 +421,11 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
                         straightMissile.Init(
                             dir,
                             missileSpeed,
-                            0f
-                        );
+                            0f);
+
+                        straightMissile.SetStopYVelocityNearGround(
+                            true,
+                            missileGroundY);
                     }
 
                     break;
@@ -364,8 +443,11 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
                         reflectableMissile.Init(
                             dir,
-                            missileSpeed
-                        );
+                            missileSpeed);
+
+                        reflectableMissile.SetStopYVelocityNearGround(
+                            true,
+                            missileGroundY);
                     }
 
                     break;
@@ -379,9 +461,9 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         if (boss == null) return;
 
-        if (HasUsableSectorList() && showSectorWarningWhenListExists)
+        if (HasUsableFirePointRangeList() && showSectorWarningWhenListExists)
         {
-            ShowWarningSectors(Owner,boss);
+            ShowWarningSectors(Owner, boss);
             return;
         }
 
@@ -425,24 +507,63 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
     private void ShowWarningSectors(GameObject Owner, SC_BossAttackController boss)
     {
+        if (Owner == null) return;
         if (boss == null) return;
 
         SC_ObjectPool pool = boss.GetWarningSectorPool();
         if (pool == null) return;
 
-        for (int i = 0; i < angleSectorList.Length; i++)
-        {
-            BossBarrageAngleSector sector = angleSectorList[i];
+        SC_EnemyStatusManager statusManager =
+            Owner.GetComponent<SC_EnemyStatusManager>();
 
-            if (sector == null) continue;
-            if (!sector.GetUseSector()) continue;
+        if (statusManager == null) return;
+
+        Transform[] firePointList = statusManager.GetFirePointList();
+
+        if (firePointList == null || firePointList.Length == 0)
+        {
+            ShowWarningCircle(Owner, boss);
+            return;
+        }
+
+        // 範囲指定がない場合は円Warningに戻す
+        if (firePointRangeList == null || firePointRangeList.Length == 0)
+        {
+            ShowWarningCircle(Owner, boss);
+            return;
+        }
+
+        for (int rangeIndex = 0; rangeIndex < firePointRangeList.Length; rangeIndex++)
+        {
+            BossBarrageFirePointRange range = firePointRangeList[rangeIndex];
+
+            if (range == null) continue;
+            if (!range.GetUseRange()) continue;
+
+            int startIndex = Mathf.Clamp(
+                range.GetStartIndex(),
+                0,
+                firePointList.Length - 1
+            );
+
+            int endIndex = Mathf.Clamp(
+                range.GetEndIndex(),
+                0,
+                firePointList.Length - 1
+            );
+
+            Transform startFirePoint = firePointList[startIndex];
+            Transform endFirePoint = firePointList[endIndex];
+
+            if (startFirePoint == null) continue;
+            if (endFirePoint == null) continue;
 
             ShowOneWarningSector(
                 Owner,
                 boss,
                 pool,
-                sector.GetCenterAngle(),
-                sector.GetAngleRange()
+                startFirePoint,
+                endFirePoint
             );
         }
     }
@@ -451,21 +572,21 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     GameObject Owner,
     SC_BossAttackController boss,
     SC_ObjectPool pool,
-    float centerAngle,
-    float angleRange)
+    Transform startFirePoint,
+    Transform endFirePoint)
     {
+        if (Owner == null) return;
+        if (pool == null) return;
+        if (startFirePoint == null) return;
+        if (endFirePoint == null) return;
+
         Vector3 spawnPos = Owner.transform.position;
         spawnPos.y = 0.0f;
         spawnPos += Vector3.up * warningHeightOffset;
 
-        Vector3 baseDir = GetBaseFireDirection(Owner, boss);
-
-        Quaternion rotation =
-            Quaternion.LookRotation(baseDir);
-
         GameObject warningObj = pool.GetObject(
             spawnPos,
-            rotation
+            Quaternion.identity
         );
 
         if (warningObj == null) return;
@@ -473,31 +594,157 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
         SC_WarningTelegraphSector warning =
             warningObj.GetComponent<SC_WarningTelegraphSector>();
 
-        if (warning != null)
-        {
-            warning.SetPool(pool);
-            warning.OnGetFromPool();
+        if (warning == null) return;
 
-            warning.Init(
-                sectorWarningRadius,
-                centerAngle,
-                angleRange,
-                warningTime
-            );
-        }
+        warning.SetPool(pool);
+        warning.OnGetFromPool();
+
+        warning.InitByWorldPoints(
+            Owner.transform.position,
+            startFirePoint.position,
+            endFirePoint.position,
+            sectorWarningRadius,
+            warningTime
+        );
     }
 
-
-    private bool HasUsableSectorList()
+    private Vector3 GetAimRotatedDirectionFromFirePoint(
+    GameObject Owner,
+    SC_BossAttackController boss,
+    Transform firePoint)
     {
-        if (angleSectorList == null) return false;
-        if (angleSectorList.Length == 0) return false;
+        if (Owner == null) return Vector3.forward;
+        if (firePoint == null) return Vector3.forward;
 
-        for (int i = 0; i < angleSectorList.Length; i++)
+        Vector3 ownerForward = Owner.transform.forward;
+        ownerForward.y = 0f;
+
+        if (ownerForward.sqrMagnitude <= 0.0001f)
         {
-            if (angleSectorList[i] == null) continue;
+            ownerForward = Vector3.forward;
+        }
 
-            if (angleSectorList[i].GetUseSector())
+        ownerForward.Normalize();
+
+        Vector3 firePointDir =
+            firePoint.position - Owner.transform.position;
+
+        firePointDir.y = 0f;
+
+        if (firePointDir.sqrMagnitude <= 0.0001f)
+        {
+            return ownerForward;
+        }
+
+        firePointDir.Normalize();
+
+        // Boss正面から見て、このFirePointが何度ズレているか
+        float localAngle =
+            Vector3.SignedAngle(
+                ownerForward,
+                firePointDir,
+                Vector3.up
+            );
+
+        // aimBaseType による基準方向
+        // BossForwardならBoss正面
+        // ToPlayerならプレイヤー方向
+        Vector3 baseDir = GetBaseFireDirection(Owner, boss);
+        baseDir.y = 0f;
+
+        if (baseDir.sqrMagnitude <= 0.0001f)
+        {
+            baseDir = ownerForward;
+        }
+
+        baseDir.Normalize();
+
+        // FirePointの相対角度を、基準方向へ回転して適用
+        Vector3 rotatedDir =
+            Quaternion.Euler(0f, localAngle, 0f) *
+            baseDir;
+
+        rotatedDir.y = 0f;
+
+        if (rotatedDir.sqrMagnitude <= 0.0001f)
+        {
+            return baseDir;
+        }
+
+        return rotatedDir.normalized;
+    }
+
+    private void RotateBossSoFirePoint1FacesPlayer(GameObject Owner)
+    {
+        if (Owner == null) return;
+
+        if (aimBaseType != BarrageAimBaseType.ToPlayer)
+        {
+            return;
+        }
+
+        SC_BossAttackController boss =
+            Owner.GetComponent<SC_BossAttackController>();
+
+        if (boss == null) return;
+
+        Transform player = boss.GetPlayer();
+
+        if (player == null) return;
+
+        SC_EnemyStatusManager statusManager =
+            Owner.GetComponent<SC_EnemyStatusManager>();
+
+        if (statusManager == null) return;
+
+        Transform[] firePointList = statusManager.GetFirePointList();
+
+        if (firePointList == null || firePointList.Length == 0) return;
+
+        Transform firePoint1 = firePointList[0];
+
+        if (firePoint1 == null) return;
+
+        Vector3 firePoint1Dir =
+            firePoint1.position - Owner.transform.position;
+
+        firePoint1Dir.y = 0f;
+
+        if (firePoint1Dir.sqrMagnitude <= 0.0001f) return;
+
+        firePoint1Dir.Normalize();
+
+        Vector3 toPlayer =
+            player.position - Owner.transform.position;
+
+        toPlayer.y = 0f;
+
+        if (toPlayer.sqrMagnitude <= 0.0001f) return;
+
+        toPlayer.Normalize();
+
+        float angle =
+            Vector3.SignedAngle(
+                firePoint1Dir,
+                toPlayer,
+                Vector3.up
+            );
+
+        Owner.transform.rotation =
+            Quaternion.AngleAxis(angle, Vector3.up) *
+            Owner.transform.rotation;
+    }
+
+    private bool HasUsableFirePointRangeList()
+    {
+        if (firePointRangeList == null) return false;
+        if (firePointRangeList.Length == 0) return false;
+
+        for (int i = 0; i < firePointRangeList.Length; i++)
+        {
+            if (firePointRangeList[i] == null) continue;
+
+            if (firePointRangeList[i].GetUseRange())
             {
                 return true;
             }
@@ -505,7 +752,6 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         return false;
     }
-
 
     private SC_ObjectPool GetMissilePool(SC_BossAttackController boss)
     {
