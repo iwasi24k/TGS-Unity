@@ -16,37 +16,70 @@ public class SC_EnemyMove : SC_EnemyBaceState
     private Vector3 startPosition;
     private Rigidbody rb;
 
-    private Vector3 lastPosition; 
+    private Vector3 lastPosition;
     private float stuckTimer = 0f;
+
+    private SC_MoveLookTarget moveLookTarget;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         rb = Owner.GetComponent<Rigidbody>();
 
-        // 開始位置記録
         startPosition = Owner.transform.position;
 
         lastPosition = Owner.transform.position;
         stuckTimer = 0f;
 
-        // ランダム方向（XZ平面）
-        moveDirection = new Vector3
-            (
-            Random.Range(-1f, 1f),0f,Random.Range(-1f, 1f)
-            ).normalized;
+        moveDirection = new Vector3(
+            Random.Range(-1f, 1f),
+            0f,
+            Random.Range(-1f, 1f)
+        ).normalized;
+
+        if (moveDirection.sqrMagnitude <= 0.0001f)
+        {
+            moveDirection = Owner.transform.forward;
+            moveDirection.y = 0f;
+
+            if (moveDirection.sqrMagnitude <= 0.0001f)
+            {
+                moveDirection = Vector3.forward;
+            }
+
+            moveDirection.Normalize();
+        }
 
         animator = Owner.GetComponentInChildren<Animator>();
 
-        animator.SetBool("bMove", true);
+        if (animator != null)
+        {
+            animator.SetBool("bMove", true);
+        }
+
+        moveLookTarget = Manager.GetMoveLookTarget();
+
+        if (moveLookTarget != null)
+        {
+            moveLookTarget.SetLookDirection(moveDirection);
+        }
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        animator.SetBool("bMove", false);
+        if (animator != null)
+        {
+            animator.SetBool("bMove", false);
+        }
+
+        if (moveLookTarget != null)
+        {
+            moveLookTarget.ClearLookDirection();
+        }
 
         if (rb != null)
         {
             rb.angularVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         }
     }
 
@@ -55,18 +88,23 @@ public class SC_EnemyMove : SC_EnemyBaceState
         if (rb == null) return;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if(player == null) return;
+        if (player == null) return;
 
         Vector3 direction = player.transform.position - Owner.transform.position;
         direction.y = 0f;
 
-        // 向き変更
-        rb.MoveRotation(Quaternion.LookRotation(direction));
+        if (direction.sqrMagnitude > 0.0001f)
+        {
+            rb.MoveRotation(Quaternion.LookRotation(direction.normalized));
+        }
 
-        // velocityで移動
         rb.linearVelocity = moveDirection * moveSpeed;
 
-        // 移動距離チェック
+        if (moveLookTarget != null)
+        {
+            moveLookTarget.SetLookDirection(moveDirection);
+        }
+
         float distance = Vector3.Distance(startPosition, Owner.transform.position);
 
         float movedDistance = Vector3.Distance(lastPosition, Owner.transform.position);
@@ -80,15 +118,11 @@ public class SC_EnemyMove : SC_EnemyBaceState
             stuckTimer = 0f;
         }
 
-        // 位置更新
         lastPosition = Owner.transform.position;
 
         if (distance >= moveDistance || stuckTimer >= stuckCheckTime)
         {
-            // 停止
             rb.linearVelocity = Vector3.zero;
-
-            // 次のステートへ
             Manager.TransitionToNext();
         }
     }

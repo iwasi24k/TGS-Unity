@@ -18,6 +18,8 @@ public class SC_Field : MonoBehaviour
     public class StageData
     {
         public ObjData[] objects;
+
+        public Vector3 goalPosition;
     }
 
     [SerializeField] private StageData[] stages;
@@ -34,6 +36,14 @@ public class SC_Field : MonoBehaviour
     private SC_EnemyManager enemyManager;
 
     //==================================================
+    // Boss Flag
+    //==================================================
+    public static SC_Field Instance { get; private set; }
+
+    [Header("Boss Flag")]
+    [SerializeField] private bool bossDefeated = false;
+
+    //==================================================
     // Goal
     //==================================================
     [SerializeField]
@@ -46,6 +56,11 @@ public class SC_Field : MonoBehaviour
     private GameObject player;
 
     private Vector3 playerStartPos;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -85,6 +100,8 @@ public class SC_Field : MonoBehaviour
 
     void GenerateStage(int stageIndex)
     {
+        bossDefeated = false;
+
         if (stages == null ||
             stages.Length == 0)
         {
@@ -101,6 +118,12 @@ public class SC_Field : MonoBehaviour
         enemyManager.ClearEnemies();
 
         StageData stage = stages[stageIndex];
+
+        //ゴールの位置設定
+        goal.transform.position =
+            transform.position +
+            stage.goalPosition;
+
 
         foreach (ObjData data in stage.objects)
         {
@@ -146,7 +169,7 @@ public class SC_Field : MonoBehaviour
 
         enemyManager.ClearEnemies();
 
-        SC_EnemyStartGate.ResetGate();
+        //SC_EnemyStartGate.ResetGate();
 
         GenerateStage(currentStage);
 
@@ -210,5 +233,20 @@ public class SC_Field : MonoBehaviour
         }
 
         Debug.Log("Playerリセット");
+    }
+
+    // ボス撃破フラグの設定
+    public bool IsBossDefeated()
+    {
+        return bossDefeated;
+    }
+
+    public void NotifyBossDefeated()
+    {
+        if (bossDefeated) return;
+
+        bossDefeated = true;
+
+        Debug.Log("Boss Defeated Flag ON");
     }
 }
