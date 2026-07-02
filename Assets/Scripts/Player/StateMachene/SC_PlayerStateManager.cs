@@ -21,6 +21,7 @@ public class SC_PlayerStateManager : MonoBehaviour
     [field: SerializeField] public ComboManager comboManager { get; private set; }
     [field: SerializeField] public SC_PlayerAttackManager attackManager { get; private set; }
     [field: SerializeField] public SC_PlayerKnockback knockback { get; private set; }
+    [field: SerializeField] public SC_FootPrinter footPrinter { get; private set; }
 
     [Header("Input Actions")]
     [field: SerializeField] public InputActionReference moveInput { get; private set; }
@@ -52,6 +53,7 @@ public class SC_PlayerStateManager : MonoBehaviour
         if(comboManager == null) comboManager = GameObject.FindGameObjectWithTag("ComboManager").GetComponent<ComboManager>();
         if(attackManager == null) attackManager = GetComponent<SC_PlayerAttackManager>();
         if(knockback == null) knockback = GetComponent<SC_PlayerKnockback>();
+        if(footPrinter == null) footPrinter = GetComponent<SC_FootPrinter>();
         stateList.Idle = idle;
         stateList.Move = move;
         stateList.WeakAttack = weakAttack;
