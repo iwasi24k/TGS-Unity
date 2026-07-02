@@ -18,7 +18,6 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
         timer = 0f;
         fireTimer = 0f;
         firedCount = 0;
-
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -50,6 +49,7 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
+        
     }
 
     private void FireOneMissile(GameObject Owner, SC_BossAttackController boss)

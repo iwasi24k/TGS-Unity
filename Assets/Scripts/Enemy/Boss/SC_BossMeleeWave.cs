@@ -9,12 +9,17 @@ public class SC_BossMeleeWaveState : SC_EnemyBaceState
     private float timer;
     private bool attacked;
 
+    private Animator animator;
+
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Melee Wave State Enter");
 
         timer = 0f;
         attacked = false;
+
+        animator = Owner.GetComponentInChildren<Animator>();
+        animator.SetBool("tBush", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -36,6 +41,8 @@ public class SC_BossMeleeWaveState : SC_EnemyBaceState
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Melee Wave State Exit");
+
+        animator.SetBool("tBush", false);
     }
 
     private void ExecuteMeleeWave(GameObject Owner)

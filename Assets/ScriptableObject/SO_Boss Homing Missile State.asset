@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad229abc529019246913086edc9e44dd, type: 3}
   m_Name: SO_Boss Homing Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossHomingMissileState
-  fireDelay: 0.5
+  fireDelay: 2
   endDelay: 2
   spawnHeight: 5
   spawnRadius: 5

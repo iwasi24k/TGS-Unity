@@ -3,6 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Boss/Split Falling Missile State")]
 public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
 {
+    [Tooltip("çUåÇäJénÇ‹Ç≈ÇÃë“Çøéûä‘"), SerializeField]
+    private float startDelay = 0.5f;
+
     [Tooltip("çUåÇStateÇèIóπÇ∑ÇÈÇ‹Ç≈ÇÃéûä‘"), SerializeField]
     private float endDelay = 4.0f;
 
@@ -13,29 +16,38 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
     private float fireTimer;
     private int firedCount;
 
+    private Animator animator;
+
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         timer = 0f;
         fireTimer = 0f;
         firedCount = 0;
+
+        animator = Owner.GetComponentInChildren<Animator>();
+        animator.SetBool("tMissileShot", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         timer += Time.deltaTime;
-        fireTimer += Time.deltaTime;
 
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
-        if (firedCount < boss.GetSplitFallingMissileCount())
+        if (timer >= startDelay)
         {
-            if (fireTimer >= boss.GetSplitFallingInterval())
-            {
-                fireTimer = 0f;
-                firedCount++;
+            fireTimer += Time.deltaTime;
 
-                SpawnSplitFallingMissile(Owner, boss);
+            if (firedCount < boss.GetSplitFallingMissileCount())
+            {
+                if (fireTimer >= boss.GetSplitFallingInterval())
+                {
+                    fireTimer = 0f;
+                    firedCount++;
+
+                    SpawnSplitFallingMissile(Owner, boss);
+                }
             }
         }
 
@@ -47,6 +59,7 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
+        animator.SetBool("tMissileShot", false);
     }
 
     private void SpawnSplitFallingMissile(GameObject Owner, SC_BossAttackController boss)
