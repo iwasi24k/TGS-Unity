@@ -59,6 +59,9 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("Move中に進行方向へ向けたい子オブジェクトの制御スクリプト")]
     [SerializeField] private SC_MoveLookTarget moveLookTarget;
 
+    [Header("BlowAway Follow Parts")]
+    [SerializeField] private SC_PartFollowTarget[] blowAwayFollowParts;
+
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
     [Tooltip("この敵が吹っ飛び状態になるかどうか"),SerializeField] private bool canBlownAway = true;
@@ -1086,5 +1089,17 @@ public class SC_EnemyStatusManager : MonoBehaviour
     public SC_MoveLookTarget GetMoveLookTarget()
     {
         return moveLookTarget;
+    }
+
+    public void SetBlowAwayFollowPartsEnabled(bool enabled)
+    {
+        if (blowAwayFollowParts == null) return;
+
+        for (int i = 0; i < blowAwayFollowParts.Length; i++)
+        {
+            if (blowAwayFollowParts[i] == null) continue;
+
+            blowAwayFollowParts[i].SetFollowEnabled(enabled);
+        }
     }
 }

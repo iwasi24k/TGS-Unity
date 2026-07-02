@@ -71,6 +71,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         }
 
         rb.linearVelocity = velocity;
+
+        Manager.SetBlowAwayFollowPartsEnabled(true);
     }
 
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -81,6 +83,8 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         rb.linearVelocity = Vector3.zero;
 
         animator.SetBool("bBlownAway", false);
+
+        Manager.SetBlowAwayFollowPartsEnabled(false);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
