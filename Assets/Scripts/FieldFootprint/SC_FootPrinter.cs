@@ -10,6 +10,7 @@ public class SC_FootPrinter : MonoBehaviour
     [SerializeField] private float walkRadius = 0.02f;
     [SerializeField] private float dragRadius = 0.05f;
     [SerializeField] private float paintIntensity = 1.0f; // 濃さ
+    [SerializeField] private float printInterval = 0.03f; // スタンプ間隔
     [SerializeField] private LayerMask groundRayer;
     [SerializeField] private float fadeSpeed = 0.05f; // フェード速度 値が大きいほど早く消える
 
@@ -18,7 +19,7 @@ public class SC_FootPrinter : MonoBehaviour
     private Vector2 lastUV;
     private bool isFirstFrame = true;
 
-    public bool isKnockback{get; set; } = false;
+    public bool isDrag{get; set; } = false;
 
     void Start()
     {
@@ -55,14 +56,14 @@ public class SC_FootPrinter : MonoBehaviour
                 return;
             }
 
-            if (isKnockback)
+            if (isDrag)
             {
                 DrawDragLine(lastUV, uv);
                 lastUV = uv;
             }
             else
             {
-                if(Vector2.Distance(lastUV, uv) > 0.03f) // 一定量動いたらスタンプ
+                if(Vector2.Distance(lastUV, uv) > printInterval) // 一定量動いたらスタンプ
                 {
                     PaintAtUV(uv, walkRadius);
                     lastUV = uv;
