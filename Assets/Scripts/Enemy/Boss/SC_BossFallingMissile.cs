@@ -3,12 +3,21 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Boss/Falling Missile State")]
 public class SC_BossFallingMissileState : SC_EnemyBaceState
 {
-    [Tooltip("攻撃Stateを終了してIdleに戻るまでの時間"), SerializeField] private float endDelay = 2.0f;
-    [Tooltip("ミサイルを落下させる開始高度"), SerializeField] private float fallHeight = 10.0f;
+
+    [Tooltip("攻撃開始までの待ち時間"), SerializeField] 
+    private float startDelay = 0.5f;
+
+    [Tooltip("攻撃Stateを終了してIdleに戻るまでの時間"), SerializeField] 
+    private float endDelay = 2.0f;
+
+    [Tooltip("ミサイルを落下させる開始高度"), SerializeField] 
+    private float fallHeight = 10.0f;
 
     private float timer;
     private float fireTimer;
     private int firedCount;
+
+    private Animator animator;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -16,24 +25,31 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
         timer = 0f;
         fireTimer = 0f;
         firedCount = 0;
+
+        animator = Owner.GetComponentInChildren<Animator>();
+        animator.SetBool("tMissileShot", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         timer += Time.deltaTime;
-        fireTimer += Time.deltaTime;
 
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
-        if (firedCount < boss.GetFallingMissileCount())
+        if (timer >= startDelay)
         {
-            if (fireTimer >= boss.GetFallingInterval())
-            {
-                fireTimer = 0f;
-                firedCount++;
+            fireTimer += Time.deltaTime;
 
-                SpawnFallingMissile(Owner, boss);
+            if (firedCount < boss.GetFallingMissileCount())
+            {
+                if (fireTimer >= boss.GetFallingInterval())
+                {
+                    fireTimer = 0f;
+                    firedCount++;
+
+                    SpawnFallingMissile(Owner, boss);
+                }
             }
         }
 
@@ -46,6 +62,8 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Falling Missile State Exit");
+
+        animator.SetBool("tMissileShot", false);
     }
 
     private void SpawnFallingMissile(GameObject Owner, SC_BossAttackController boss)

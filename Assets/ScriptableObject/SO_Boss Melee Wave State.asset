@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e083b74a7485c9b49864db3c9d9338cf, type: 3}
   m_Name: SO_Boss Melee Wave State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossMeleeWaveState
-  attackDelay: 0.5
+  attackDelay: 1
   endDelay: 1

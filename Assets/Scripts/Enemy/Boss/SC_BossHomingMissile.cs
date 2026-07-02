@@ -11,11 +11,16 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
     private float timer;
     private bool fired;
 
+    private Animator animator;
+
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Homing Missile State Enter");
         timer = 0f;
         fired = false;
+
+        animator = Owner.GetComponentInChildren<Animator>();
+        animator.SetBool("tMissileShot", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -37,6 +42,8 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Homing Missile State Exit");
+
+        animator.SetBool("tMissileShot", false);
     }
 
     private void FireMissiles(GameObject Owner)

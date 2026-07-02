@@ -9,6 +9,7 @@ public class SC_BossDownState : SC_EnemyBaceState
 
     private float timer;
 
+    private Animator animator;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
@@ -27,6 +28,9 @@ public class SC_BossDownState : SC_EnemyBaceState
                 rb.angularVelocity = Vector3.zero;
             }
         }
+
+        animator = Owner.GetComponentInChildren<Animator>();
+        animator.SetBool("bShieldBreak", true);
     }
 
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
@@ -52,6 +56,8 @@ public class SC_BossDownState : SC_EnemyBaceState
         Debug.Log("Boss Down State Exited");
 
         Manager.ResetBossShield();
+
+        animator.SetBool("bShieldBreak", false);
 
         // Down後は前の攻撃パターンを破棄する
         Manager.ClearBossAttackList();

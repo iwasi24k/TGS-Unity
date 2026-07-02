@@ -607,6 +607,7 @@ MonoBehaviour:
   - {fileID: 5099350959840912098}
   - {fileID: 5185409624725832116}
   moveLookTarget: {fileID: 0}
+  blowAwayFollowParts: []
   canBlownAway: 0
   bossDownStateIndex: 2
   useBossDown: 1
@@ -620,7 +621,7 @@ MonoBehaviour:
   currentBossShield: 50
   downWhenShieldBreak: 1
   shieldLightningEffect: {fileID: 0}
-  useStartLock: 1
+  useStartLock: 0
 --- !u!114 &5880420886448220101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,7 +693,7 @@ MonoBehaviour:
     stateList: 170000001800000019000000
   - usePattern: 1
     patternName: test
-    stateList: 07000000
+    stateList: 04000000
 --- !u!1 &9168442487182502983
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,6 +777,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boss
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 90a95dc27358b424aae3f827b4d58727, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2fafb48f7f16d6b4bafe64936d11c926, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
