@@ -65,34 +65,3 @@ public class BossAttackPattern
         return stateList;
     }
 }
-
-// ボスの弾幕の発射範囲を定義するクラス
-[Serializable]
-public class BossBarrageAngleSector
-{
-    [Tooltip("この発射範囲を使うか"), SerializeField]
-    private bool useSector = true;
-
-    [Tooltip("中心角度。前方0度、右90度、後ろ180度、左-90度")]
-    [SerializeField]
-    private float centerAngle = 0f;
-
-    [Tooltip("角度幅。45なら中心角度から左右22.5度")]
-    [SerializeField]
-    private float angleRange = 45f;
-
-    public bool GetUseSector()
-    {
-        return useSector;
-    }
-
-    public float GetCenterAngle()
-    {
-        return centerAngle;
-    }
-
-    public float GetAngleRange()
-    {
-        return angleRange;
-    }
-}

@@ -51,8 +51,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
 
-    [Header("Attack Point")]
-    [Tooltip("弾を出す位置。銃口や腕などを登録する"), SerializeField] private Transform attackPoint;
+    [Header("Fire Points")]
+    [Tooltip("複数弾用の発射位置。FirePoint1～FirePoint12を登録する")]
+    [SerializeField] private Transform[] firePointList;
+
+    [Header("Move Look Target")]
+    [Tooltip("Move中に進行方向へ向けたい子オブジェクトの制御スクリプト")]
+    [SerializeField] private SC_MoveLookTarget moveLookTarget;
+
+    [Header("BlowAway Follow Parts")]
+    [SerializeField] private SC_PartFollowTarget[] blowAwayFollowParts;
 
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
@@ -66,6 +74,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("ボスHPを何分割するか。4なら1回のDownで最大HPの1/4まで削れる"), SerializeField] private int bossHpPartCount = 4;
     
     [Header("Boss Shield")]
+    [SerializeField] private bool isBoss = false;
     [Tooltip("ボスシールドを使うか"), SerializeField] private bool useBossShield = false;
     [Tooltip("ボスシールドの表示オブジェクト"), SerializeField] private GameObject bossShieldObject;
     [Tooltip("ボスシールドの最大値"), SerializeField] private int maxBossShield = 3;
@@ -73,7 +82,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("シールドが0になった時にDownするか"), SerializeField] private bool downWhenShieldBreak = true;
     [Tooltip("シールドの稲妻演出"), SerializeField]
     private SC_ShieldLightningEffect shieldLightningEffect;
-    
+    private bool bossDefeatNotified = false;
+
     // 攻撃リスト
     private int[] currentBossAttackList;
     private int currentBossAttackListIndex;
@@ -276,6 +286,16 @@ public class SC_EnemyStatusManager : MonoBehaviour
         if (HP <= 0)
         {
             HP = 0;
+
+            if (isBoss && !bossDefeatNotified)
+            {
+                bossDefeatNotified = true;
+
+                if (SC_Field.Instance != null)
+                {
+                    SC_Field.Instance.NotifyBossDefeated();
+                }
+            }
 
             if (canBlownAway)
             {
@@ -1046,18 +1066,40 @@ public class SC_EnemyStatusManager : MonoBehaviour
         return stunAttackType;
     }
 
-    public Transform GetAttackPoint()
+    public Transform[] GetFirePointList()
     {
-        return attackPoint;
+        return firePointList;
     }
 
-    public Vector3 GetAttackPointPosition()
+    public Transform GetFirePoint(int index)
     {
-        if (attackPoint != null)
-        {
-            return attackPoint.position;
-        }
+        if (firePointList == null) return null;
+        if (index < 0 || index >= firePointList.Length) return null;
 
-        return transform.position;
+        return firePointList[index];
+    }
+
+    public int GetFirePointCount()
+    {
+        if (firePointList == null) return 0;
+
+        return firePointList.Length;
+    }
+
+    public SC_MoveLookTarget GetMoveLookTarget()
+    {
+        return moveLookTarget;
+    }
+
+    public void SetBlowAwayFollowPartsEnabled(bool enabled)
+    {
+        if (blowAwayFollowParts == null) return;
+
+        for (int i = 0; i < blowAwayFollowParts.Length; i++)
+        {
+            if (blowAwayFollowParts[i] == null) continue;
+
+            blowAwayFollowParts[i].SetFollowEnabled(enabled);
+        }
     }
 }
