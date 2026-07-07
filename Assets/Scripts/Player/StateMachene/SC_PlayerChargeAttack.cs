@@ -22,6 +22,12 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         animator.SetBool("bCharge", false);
         animator.SetBool("bStraight", true);
 
+        var playerHP = owner.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.SetStar(true);
+        }
+
         _startPosition = owner.transform.position;
         _isCharging = true;
         _wasHit = false;
@@ -104,6 +110,13 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         animator.SetBool("bStraight", false);
         _wasHit = false;
         _startTime = -1f;
+
+        var playerHP = owner.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.SetStar(false);
+        }
+
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList, GameObject[] targets, string tag)
