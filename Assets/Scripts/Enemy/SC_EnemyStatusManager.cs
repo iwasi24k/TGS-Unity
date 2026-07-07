@@ -85,6 +85,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
     private SC_ShieldLightningEffect shieldLightningEffect;
     private bool bossDefeatNotified = false;
 
+    [Header("Boss Defeat")]
+    [Tooltip("ボス死亡時に周囲の敵へ与えるダメージ")]
+    [SerializeField] private int bossDefeatDamageToEnemies = 9999;
+
+    [Tooltip("ボス死亡時に周囲の敵を吹っ飛ばす威力")]
+    [SerializeField] private float bossDefeatBlowAwayPower = 50.0f;
+
     // 攻撃リスト
     private int[] currentBossAttackList;
     private int currentBossAttackListIndex;
@@ -291,6 +298,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
             if (isBoss && !bossDefeatNotified)
             {
                 bossDefeatNotified = true;
+
+                BlowAwayAllEnemiesOnBossDefeat();
 
                 if (SC_Field.Instance != null)
                 {
@@ -1108,5 +1117,48 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             blowAwayFollowParts[i].SetFollowEnabled(enabled);
         }
+    }
+
+    private void BlowAwayAllEnemiesOnBossDefeat()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy == null) continue;
+            if (enemy == this.gameObject) continue;
+
+            SC_EnemyStatusManager enemyStatus =
+                enemy.GetComponent<SC_EnemyStatusManager>();
+
+            if (enemyStatus == null)
+            {
+                enemyStatus = enemy.GetComponentInParent<SC_EnemyStatusManager>();
+            }
+
+            if (enemyStatus == null) continue;
+
+            enemyStatus.TakeBossDefeatDamageAndBlowAway(bossDefeatDamageToEnemies,bossDefeatBlowAwayPower,this.transform.position);
+        }
+    }
+
+    public void TakeBossDefeatDamageAndBlowAway(
+    int damage,
+    float blowPower,
+    Vector3 bossPosition)
+    {
+        CollisionDamage(damage);
+
+        if (HP < 0)
+        {
+            HP = 0;
+        }
+
+        ForceBlowAway(
+            blowPower,
+            bossPosition,
+            0,
+            true
+        );
     }
 }
