@@ -46,7 +46,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("衝突判定円")]
     [Tooltip("敵同士の衝突判定円中心"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
     [Tooltip("敵同士の衝突判定円半径"),SerializeField] private float collisionRadius = 0.5f;
-    [Tooltip("敵同士の衝突時のダメージ量"), SerializeField] private int DamageOnCollision = 5;
+    [Tooltip("敵同士の衝突時のダメージ基数"), SerializeField] private int DamageOnCollision = 10;
+    [Tooltip("連鎖数1つごとに加算されるダメージ"), SerializeField] private int chainDamageBonus = 5;
     [Tooltip("敵同士の衝突時の吹っ飛びの威力"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
@@ -579,7 +580,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
             otherStatusManager.RegisterEnemyCollision(this.gameObject);
          
             int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
-            int damage = DamageOnCollision * ComboManager.Instance.GetComboCount();
+            
+            int chainCount = ComboManager.Instance.GetComboCount();
+            int chainBonusCount = Mathf.Max(0, chainCount - 1);
+
+            int damage = DamageOnCollision + chainBonusCount * chainDamageBonus;
 
             // 相手がシールド持ちボス
             if (otherStatusManager.UseBossShield())
