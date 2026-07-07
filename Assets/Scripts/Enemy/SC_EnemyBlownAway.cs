@@ -6,8 +6,8 @@ using static UnityEngine.UI.GridLayoutGroup;
 public class SC_EnemyBlownAway : SC_EnemyBaceState
 {
     [Header("Settings")]
-    [Tooltip("吹き飛ばされる力"), SerializeField] private float blownAwayPower = 5.0f;
-    [Tooltip("受け取った吹き飛ばし力に掛ける倍率"), SerializeField] private float blownAwayPowerMultiplier = 1.0f;
+    [Tooltip("吹き飛ばされる力基数"), SerializeField] private float blownAwayPowerBase = 1.0f;
+    [Tooltip("受け取った吹き飛ばし力に掛ける倍率"), SerializeField] private float blownAwayPowerMultiplier = 5.0f;
     [Tooltip("吹き飛ばされる方向"), SerializeField] private Vector3 blownAwayDirection = new Vector3(0, 0, 0);
     [Tooltip("この速度以下で終了"), SerializeField] private float endSpeed = 0.1f;
     [Tooltip("力の減衰速度"), SerializeField] private float decaySpeed = 5f;
@@ -23,6 +23,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("エフェクトのキー"), SerializeField] private string effectKey;
     [Tooltip("再生する距離間隔"), SerializeField] private float effectInterval = 1.0f;
 
+    private float blownAwayPower = 0f;
     private bool isRotateMove = false;
     private float wallBounceCooldownTimer = 0f;
     private float timer;
@@ -55,7 +56,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         //HPと吹き飛ばされる力を連動する、HPが高いほど吹き飛ばされる力が弱くなる
         float hpRatio = (float)Manager.GetHP() / Manager.GetMaxHP();
 
-        float adjustedPower = blownAwayPower * (1f - hpRatio) * blownAwayPowerMultiplier;
+        float adjustedPower = blownAwayPowerBase + blownAwayPower * (1f - hpRatio) * blownAwayPowerMultiplier;
 
         Vector3 velocity;
 
@@ -63,7 +64,7 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
 
         if(receivedAttackType == AttackType.Door)
         {
-            velocity = blownAwayDirection.normalized * blownAwayPower;
+            velocity = blownAwayDirection.normalized * blownAwayPowerMultiplier;
         }
         else
         {

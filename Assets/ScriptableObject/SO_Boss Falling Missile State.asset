@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f261e9c191f504a908d13b2e1b46e6, type: 3}
   m_Name: SO_Boss Falling Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossFallingMissileState
+  startDelay: 2.2
   endDelay: 2
   fallHeight: 10

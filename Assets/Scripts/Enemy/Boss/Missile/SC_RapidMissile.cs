@@ -16,9 +16,24 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private float startDelay;
 
     private float timer;
-    private bool launched;
     private bool initialized;
     private Vector3 moveDirection;
+
+    private enum MissileState
+    {
+        CurveSpread,
+        Launch
+    }
+
+    private MissileState missileState;
+
+    private float curveTime;
+    private Vector3 curveStartPos;
+    private Vector3 curveControlPos;
+    private Vector3 curveEndPos;
+    private Vector3 spreadOffset;
+    private float rotateSpeed;
+    private float stateTimer;
 
     [Header("Lock On Mark")]
     [Tooltip("ロックオンマークを表示するか")]
@@ -54,27 +69,50 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         startDelay = 0f;
 
         timer = 0f;
-        launched = false;
+        stateTimer = 0f;
         initialized = false;
         moveDirection = transform.forward;
+
+        missileState = MissileState.CurveSpread;
+
+        curveStartPos = Vector3.zero;
+        curveControlPos = Vector3.zero;
+        curveEndPos = Vector3.zero;
 
         useThisLockOnMark = true;
         warningMarkObj = null;
         warningMark = null;
     }
 
-    public void Init(Transform target, float speed, float startDelay)
+    public void Init(
+    Transform target,
+    float speed,
+    float startDelay,
+    float curveTime,
+    Vector3 curveControlOffset,
+    Vector3 curveEndOffset,
+    float rotateSpeed)
     {
         this.target = target;
         this.speed = speed;
         this.startDelay = Mathf.Max(0f, startDelay);
 
-        timer = 0f;
-        launched = false;
-        initialized = true;
-        moveDirection = transform.forward;
+        this.curveTime = Mathf.Max(0.01f, curveTime);
+        this.rotateSpeed = rotateSpeed;
 
-        CreateLockOnMark();
+        timer = 0f;
+        stateTimer = 0f;
+        initialized = true;
+
+        missileState = MissileState.CurveSpread;
+
+        curveStartPos = transform.position;
+        curveControlPos = curveStartPos + curveControlOffset;
+        curveEndPos = curveStartPos + curveEndOffset;
+
+        moveDirection = Vector3.up;
+
+        transform.rotation = Quaternion.LookRotation(Vector3.up);
     }
 
     private void Update()
@@ -82,21 +120,18 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         if (!initialized) return;
 
         timer += Time.deltaTime;
+        stateTimer += Time.deltaTime;
 
-        if (!launched)
+        switch (missileState)
         {
-            if (timer < startDelay)
-            {
-                return;
-            }
+            case MissileState.CurveSpread:
+                UpdateCurveSpread();
+                break;
 
-            // 発射する瞬間のPlayer位置を見る
-            Launch();
-
-            ReturnWarningMark();
+            case MissileState.Launch:
+                UpdateLaunch();
+                break;
         }
-
-        transform.position += moveDirection * speed * Time.deltaTime;
 
         if (timer >= lifeTime)
         {
@@ -104,10 +139,65 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         }
     }
 
+    private void UpdateCurveSpread()
+    {
+        float t = stateTimer / curveTime;
+        t = Mathf.Clamp01(t);
+
+        float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+        Vector3 oldPos = transform.position;
+
+        transform.position = QuadraticBezier(
+            curveStartPos,
+            curveControlPos,
+            curveEndPos,
+            smoothT
+        );
+
+        Vector3 dir = transform.position - oldPos;
+
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            transform.rotation = Quaternion.LookRotation(dir.normalized);
+        }
+
+        transform.Rotate(
+            Vector3.forward,
+            rotateSpeed * Time.deltaTime,
+            Space.Self
+        );
+
+        if (t >= 1.0f)
+        {
+            // 曲線展開が終わった瞬間にPlayer方向を決める
+            Launch();
+
+            // ロックオンマークを消す
+            ReturnWarningMark();
+
+            missileState = MissileState.Launch;
+            stateTimer = 0f;
+        }
+    }
+
+    private Vector3 QuadraticBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    {
+        float u = 1.0f - t;
+
+        return
+            u * u * p0 +
+            2.0f * u * t * p1 +
+            t * t * p2;
+    }
+
+    private void UpdateLaunch()
+    {
+        transform.position += moveDirection * speed * Time.deltaTime;
+    }
+
     private void Launch()
     {
-        launched = true;
-
         if (target != null)
         {
             // 発射瞬間のPlayer位置を見る
@@ -223,8 +313,9 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
     public void ReturnToPool()
     {
+        ReturnWarningMark();
+
         initialized = false;
-        launched = false;
         target = null;
 
         if (ownerPool != null)

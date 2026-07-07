@@ -46,7 +46,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("衝突判定円")]
     [Tooltip("敵同士の衝突判定円中心"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
     [Tooltip("敵同士の衝突判定円半径"),SerializeField] private float collisionRadius = 0.5f;
-    [Tooltip("敵同士の衝突時の吹っ飛びの威力"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
+    [Tooltip("敵同士の衝突時のダメージ基数"), SerializeField] private int damageOnCollision = 10;
+    [Tooltip("連鎖数1つごとに加算されるダメージ"), SerializeField] private int chainDamageBonus = 5;
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
@@ -384,6 +385,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
         blownAway.Enter(this.gameObject, this);
     }
+
     public void ReturnFromBlownAway()
     {
         //もしHPが0以下なら、消滅する
@@ -576,7 +578,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
             RegisterEnemyCollision(otherEnemy);
             otherStatusManager.RegisterEnemyCollision(this.gameObject);
          
-            int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
+            int myPower = (int)(mySpeed) + ComboManager.Instance.GetComboCount();
+            
+            int chainCount = ComboManager.Instance.GetComboCount();
+            int chainBonusCount = Mathf.Max(0, chainCount - 1);
+
+            int damage = damageOnCollision + chainBonusCount * chainDamageBonus;
 
             // 相手がシールド持ちボス
             if (otherStatusManager.UseBossShield())
@@ -584,14 +591,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 // シールドが残っているならシールドダメージ
                 if (otherStatusManager.HasBossShield())
                 {
-                    otherStatusManager.TakeBossShieldDamage(myPower);
+                    otherStatusManager.TakeBossShieldDamage(damage);
                 }
 
                 // シールドが無く、Down中ならHPダメージ
                 else if (otherStatusManager.IsBossDown())
                 {
                     otherStatusManager.TakeDamage(
-                        myPower,
+                        damage,
                         this.transform.position,
                         false,
                         0,
@@ -608,7 +615,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
                     true
                 );
 
-                CollisionDamage(myPower);
+                CollisionDamage(damage);
 
                 continue;
             }
@@ -616,7 +623,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             // ここから普通の敵同士の衝突処理
             TransitionToBlownAway(myPower, otherEnemy.transform.position, 0, true);
-            CollisionDamage(myPower);
+            CollisionDamage(damage);
 
             otherStatusManager.TransitionToBlownAway(
                 myPower,
@@ -625,7 +632,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
                 true
             );
 
-            otherStatusManager.CollisionDamage(myPower);
+            otherStatusManager.CollisionDamage(damage);
 
         }
     }

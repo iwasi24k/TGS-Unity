@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed61ec7183facb2499080ccb40f8ed23, type: 3}
   m_Name: SO_Boss Split Falling Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossSplitFallingMissileState
+  startDelay: 2.2
   endDelay: 4
   fallHeight: 10

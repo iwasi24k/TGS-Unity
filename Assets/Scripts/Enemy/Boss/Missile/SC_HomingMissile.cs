@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.iOS;
 
 public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 {
-    [Tooltip("生成後、動き始めるまでの待機時間"), SerializeField]
+    [Tooltip("空中展開後、追尾開始まで止まる時間"), SerializeField]
     private float startDelay = 0.5f;
 
     [Tooltip("生存時間"), SerializeField]
@@ -20,12 +19,32 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     private float homingTime;
 
     private float timer;
-    private float delayTimer;
+    private float stateTimer;
     private float lifeTimer;
 
     private Vector3 moveDirection;
-    private bool isStarted;
     private bool initialized;
+
+    private enum MissileState
+    {
+        CurveSpread,
+        Wait,
+        Homing,
+        Straight
+    }
+
+    private MissileState missileState;
+
+    [Header("Curve Spread")]
+    [Tooltip("傘の骨のように広がる時間")]
+    [SerializeField] private float curveTime = 0.8f;
+
+    [Tooltip("曲線中の回転速度")]
+    [SerializeField] private float rotateSpeed = 720.0f;
+
+    private Vector3 curveStartPos;
+    private Vector3 curveControlPos;
+    private Vector3 curveEndPos;
 
     [Header("Lock On Mark")]
     [Tooltip("ロックオンマークを表示するか")]
@@ -52,6 +71,11 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         warningPool = pool;
     }
 
+    public void SetUseLockOnMark(bool use)
+    {
+        useThisLockOnMark = use;
+    }
+
     public void OnGetFromPool()
     {
         ReturnWarningMark();
@@ -61,50 +85,54 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         homingTime = 0f;
 
         timer = 0f;
-        delayTimer = 0f;
+        stateTimer = 0f;
         lifeTimer = 0f;
 
         moveDirection = transform.forward;
-        isStarted = false;
         initialized = false;
+
+        missileState = MissileState.CurveSpread;
+
+        curveStartPos = Vector3.zero;
+        curveControlPos = Vector3.zero;
+        curveEndPos = Vector3.zero;
 
         useThisLockOnMark = true;
         warningMarkObj = null;
         warningMark = null;
     }
 
-    public void Init(Transform target, float speed, float homingTime)
+    public void Init(
+        Transform target,
+        float speed,
+        float homingTime,
+        float curveTime,
+        Vector3 curveControlOffset,
+        Vector3 curveEndOffset,
+        float rotateSpeed
+    )
     {
         this.target = target;
         this.speed = speed;
-        this.homingTime = homingTime;
+        this.homingTime = Mathf.Max(0f, homingTime);
+
+        this.curveTime = Mathf.Max(0.01f, curveTime);
+        this.rotateSpeed = rotateSpeed;
 
         timer = 0f;
-        delayTimer = 0f;
+        stateTimer = 0f;
         lifeTimer = 0f;
-        isStarted = false;
+
         initialized = true;
+        missileState = MissileState.CurveSpread;
 
-        if (target != null)
-        {
-            Vector3 dir = target.position - transform.position;
+        curveStartPos = transform.position;
+        curveControlPos = curveStartPos + curveControlOffset;
+        curveEndPos = curveStartPos + curveEndOffset;
 
-            if (dir.sqrMagnitude <= 0.0001f)
-            {
-                dir = transform.forward;
-            }
-
-            moveDirection = dir.normalized;
-            transform.rotation = Quaternion.LookRotation(moveDirection);
-        }
-        else
-        {
-            moveDirection = transform.forward;
-        }
-
-        CreateLockOnMark();
+        moveDirection = Vector3.up;
+        transform.rotation = Quaternion.LookRotation(Vector3.up);
     }
-
 
     private void Update()
     {
@@ -118,32 +146,112 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
             return;
         }
 
-        if (!isStarted)
+        stateTimer += Time.deltaTime;
+
+        switch (missileState)
         {
-            delayTimer += Time.deltaTime;
+            case MissileState.CurveSpread:
+                UpdateCurveSpread();
+                break;
 
-            if (delayTimer < startDelay)
-            {
-                return;
-            }
+            case MissileState.Wait:
+                UpdateWait();
+                break;
 
-            isStarted = true;
+            case MissileState.Homing:
+                UpdateHoming();
+                break;
 
-            ReturnWarningMark();
+            case MissileState.Straight:
+                UpdateStraight();
+                break;
+        }
+    }
+
+    private void UpdateCurveSpread()
+    {
+        float t = stateTimer / curveTime;
+        t = Mathf.Clamp01(t);
+
+        float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+        Vector3 oldPos = transform.position;
+
+        transform.position = QuadraticBezier(
+            curveStartPos,
+            curveControlPos,
+            curveEndPos,
+            smoothT
+        );
+
+        Vector3 dir = transform.position - oldPos;
+
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            transform.rotation = Quaternion.LookRotation(dir.normalized);
         }
 
+        transform.Rotate(
+            Vector3.forward,
+            rotateSpeed * Time.deltaTime,
+            Space.Self
+        );
+
+        if (t >= 1.0f)
+        {
+            missileState = MissileState.Wait;
+            stateTimer = 0f;
+
+            // 空中に展開してからロックオン表示
+            CreateLockOnMark(startDelay);
+        }
+    }
+
+    private void UpdateWait()
+    {
+        // 空中で止まって回転だけする
+        transform.Rotate(
+            Vector3.forward,
+            rotateSpeed * Time.deltaTime,
+            Space.Self
+        );
+
+        if (stateTimer >= startDelay)
+        {
+            ReturnWarningMark();
+
+            missileState = MissileState.Homing;
+            stateTimer = 0f;
+            timer = 0f;
+
+            SetDirectionToPlayer();
+        }
+    }
+
+    private void UpdateHoming()
+    {
         timer += Time.deltaTime;
 
         if (timer <= homingTime && target != null)
         {
-            Vector3 dir = target.position - transform.position;
-
-            if (dir.sqrMagnitude > 0.0001f)
-            {
-                moveDirection = dir.normalized;
-            }
+            SetDirectionToPlayer();
+        }
+        else
+        {
+            missileState = MissileState.Straight;
+            stateTimer = 0f;
         }
 
+        MoveForward();
+    }
+
+    private void UpdateStraight()
+    {
+        MoveForward();
+    }
+
+    private void MoveForward()
+    {
         transform.position += moveDirection * speed * Time.deltaTime;
 
         if (moveDirection.sqrMagnitude > 0.0001f)
@@ -152,13 +260,41 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         }
     }
 
+    private void SetDirectionToPlayer()
+    {
+        if (target != null)
+        {
+            Vector3 dir = target.position - transform.position;
+
+            if (dir.sqrMagnitude <= 0.0001f)
+            {
+                dir = transform.forward;
+            }
+
+            moveDirection = dir.normalized;
+        }
+        else
+        {
+            moveDirection = transform.forward;
+        }
+    }
+
+    private Vector3 QuadraticBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    {
+        float u = 1.0f - t;
+
+        return
+            u * u * p0 +
+            2.0f * u * t * p1 +
+            t * t * p2;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
 
-            // Player本体ではなく子Colliderに当たった場合用
             if (playerHP == null)
             {
                 playerHP = other.GetComponentInParent<SC_PlayerHP>();
@@ -180,7 +316,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         }
     }
 
-    private void CreateLockOnMark()
+    private void CreateLockOnMark(float duration)
     {
         if (!useThisLockOnMark) return;
         if (!useLockOnMark) return;
@@ -211,7 +347,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
         warningMark.Init(
             lockOnRadius,
-            startDelay
+            duration
         );
 
         warningMark.SetFollowTarget(
@@ -236,12 +372,10 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         warningMarkObj = null;
     }
 
-    public void SetUseLockOnMark(bool use)
-    {
-        useThisLockOnMark = use;
-    }
     public void ReturnToPool()
     {
+        ReturnWarningMark();
+
         initialized = false;
         target = null;
 

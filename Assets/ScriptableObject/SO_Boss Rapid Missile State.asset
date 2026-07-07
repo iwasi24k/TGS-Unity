@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fb3a902648d3dd49b21c664f976c20a, type: 3}
   m_Name: SO_Boss Rapid Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossRapidMissileState
-  fireDelay: 2
+  fireDelay: 2.2
   endDelay: 2
-  spawnHeight: 3
-  spawnRadius: 5
+  firePointIndex: 12
+  curveTime: 0.8
+  curveUpHeight: 5
+  spreadRadius: 5
+  rotateSpeed: 720
