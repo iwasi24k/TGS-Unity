@@ -1759,6 +1759,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
@@ -1825,23 +1833,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[0].message
-      value: "WASD\u3067\u79FB\u52D5"
+      value: "W\u30FBA\u30FBS\u30FBD\u30AD\u30FC\u3067\u5143\u6C17\u306B\u99C6\u3051\u56DE\u308D\u3046\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[1].message
-      value: "Shift\u3067\u30C0\u30C3\u30B7\u30E5"
+      value: "Shift\u30AD\u30FC\u3092\u62BC\u3057\u3066\u4E00\u6C17\u306B\u30C0\u30C3\u30B7\u30E5\u3060\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[2].message
-      value: "\u653B\u64833\u9023\u6253\u3067\u5439\u304D\u98DB\u3070\u3057\uFF01"
+      value: "\u653B\u6483\u30DC\u30BF\u30F3\u30923\u9023\u6253\u3057\u3066\u3001\u6575\u3092\u7A7A\u306E\u5F7C\u65B9\u3078\u3076\u3063\u98DB\u3070\u305B\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[3].message
-      value: "\u653B\u6483\u30DC\u30BF\u30F3\u9577\u62BC\u3057\u3067\u6E9C\u3081\u653B\u6483\uFF01"
+      value: "\u653B\u6483\u30DC\u30BF\u30F3\u3092\u9577\u62BC\u3057\uFF01\u529B\u3092\u6E9C\u3081\u3066\u5F37\u529B\u306A\u4E00\u6483\u3092\u53E9\u304D\u8FBC\u3081\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[4].message
-      value: "Q\u30AD\u30FC\u3067\u6575\u3092\u30ED\u30C3\u30AF\uFF01\n\u30ED\u30C3\u30AF\u4E2D\u306F\u98DB\u3073\u3064\u304D\u306E\u8DDD\u96E2\u304C\u5EF6\u3073\u308B\u305E\uFF01"
+      value: "Q\u30AD\u30FC\u3067\u6575\u3092\u30ED\u30C3\u30AF\u30AA\u30F3\uFF01\n\u30ED\u30C3\u30AF\u4E2D\u306F\u98DB\u3073\u3064\u304D\u8DDD\u96E2\u304C\u3050\u30FC\u3093\u3068\u4F38\u3073\u308B\u305E\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[5].message
@@ -1849,15 +1857,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[6].message
-      value: "\u8FD1\u63A5\u653B\u6483\u3092\u4E3B\u4F53\u3068\u3057\u305F\u6575\r\n\u8FD1\u3065\u304B\u308C\u308B\u524D\u306B\u3076\u3063\u98DB\u3070\u305B\uFF01"
+      value: "\u8FD1\u63A5\u653B\u6483\u304C\u5F97\u610F\u306A\u6575\u3060\uFF01\n\u8FD1\u3065\u304B\u308C\u308B\u524D\u306B\u5148\u5236\u653B\u6483\u3067\u3076\u3063\u98DB\u3070\u3057\u3066\u3084\u308D\u3046\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[7].message
-      value: "\u9060\u8DDD\u96E2\u653B\u6483\u4E3B\u4F53\u306E\u6575\n\u653B\u6483\u306F\u907F\u3051\u308B\u307B\u304B\u306A\u3044\u305E\uFF01"
+      value: "\u9060\u304F\u304B\u3089\u653B\u6483\u3057\u3066\u304F\u308B\u5384\u4ECB\u306A\u6575\u3060\uFF01\n\u653B\u6483\u306F\u907F\u3051\u308B\u306E\u304C\u4E00\u756A\u3060\u305E\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[8].message
-      value: "\u7279\u6B8A\u306A\u9060\u8DDD\u96E2\u653B\u6483\u3092\u884C\u3046\u6575\n\u653B\u6483\u3067\u8DF3\u306D\u8FD4\u3059\u3053\u3068\u304C\u3067\u304D\u308B"
+      value: "\u7279\u6B8A\u306A\u653B\u6483\u3092\u7E70\u308A\u51FA\u3059\u5F37\u6575\u3060\uFF01\n\u3053\u3061\u3089\u306E\u653B\u6483\u3067\u8DF3\u306D\u8FD4\u3059\u3053\u3068\u304C\u3067\u304D\u308B\u305E\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[9].message
