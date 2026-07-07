@@ -26,6 +26,12 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         {
             footPrinter.isDrag = true;
         }
+        var playerHP = owner.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.SetStar(true);
+        }
+
         _startPosition = owner.transform.position;
         _isCharging = true;
         _wasHit = false;
@@ -114,6 +120,13 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         {
             footPrinter.isDrag = false;
         }
+
+        var playerHP = owner.GetComponent<SC_PlayerHP>();
+        if (playerHP != null)
+        {
+            playerHP.SetStar(false);
+        }
+
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList, GameObject[] targets, string tag)

@@ -6,6 +6,9 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
 
+    [SerializeField] private float effectInterval = 0.5f; // 足跡エフェクトの間隔
+
+    private float effectTimer = 0f;
     public override void Enter(GameObject owner, PlayerState stateList)
     {
         var animator = owner.GetComponent<Animator>();
@@ -101,7 +104,29 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
     }
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
     {
+        // 足跡エフェクトの生成
+        var Manager = owner.GetComponent<SC_PlayerStateManager>();
+        var SprintIA = Manager.sprintInput;
+        var SprintSC = owner.GetComponent<SC_PlayerSprintManager>();
 
+        if (SprintIA.action.ReadValue<float>() > 0.1f)
+        {
+            if (effectTimer <= 0f)
+            {
+                SC_EffectManager.Instance.PlayEffect("DustSmoke", owner.transform.position);
+                effectTimer = effectInterval / 2; // エフェクトの再生間隔を設定
+            }
+        }
+        else
+        {
+            if (effectTimer <= 0f)
+            {
+                SC_EffectManager.Instance.PlayEffect("DustSmoke", owner.transform.position);
+                effectTimer = effectInterval; // エフェクトの再生間隔を設定
+            }
+        }
+
+        effectTimer -= Time.fixedDeltaTime;
     }
     public override void Exit(GameObject owner, PlayerState stateList)
     {

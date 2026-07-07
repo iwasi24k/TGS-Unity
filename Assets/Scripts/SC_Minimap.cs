@@ -12,6 +12,13 @@ public class SC_Minimap : MonoBehaviour
 
 
     // =========================
+    // フィールド
+    // =========================
+
+    private Transform field;
+
+
+    // =========================
     // 表示中のUI管理
     // =========================
 
@@ -29,6 +36,9 @@ public class SC_Minimap : MonoBehaviour
     [SerializeField] private float radarRange = 30f;
 
     [SerializeField] private RectTransform radarUI;
+
+    [Tooltip("ミニマップの縮尺（1mあたり何px動かすか）")]
+    [SerializeField] private float mapScale = 5f;
 
 
     // =========================
@@ -52,6 +62,8 @@ public class SC_Minimap : MonoBehaviour
 
     [SerializeField] private RectTransform playerArrow;
 
+    [SerializeField] private RectTransform fieldImage;
+
 
     // =========================
     // 初期化
@@ -64,6 +76,25 @@ public class SC_Minimap : MonoBehaviour
         if (p != null)
         {
             player = p.transform;
+        }
+
+        GameObject f = GameObject.FindWithTag("Field");
+
+        if (f != null)
+        {
+            field = f.transform;
+
+            Renderer renderer = field.GetComponent<Renderer>();
+
+            if (renderer != null)
+            {
+                Vector3 size = renderer.bounds.size;
+
+                fieldImage.sizeDelta = new Vector2(
+                    size.x * mapScale,
+                    size.z * mapScale
+                );
+            }
         }
     }
 
@@ -90,6 +121,20 @@ public class SC_Minimap : MonoBehaviour
 
 
         // =========================
+        // フィールド移動
+        // =========================
+
+        if (fieldImage != null)
+        {
+            fieldImage.anchoredPosition =
+                new Vector2(
+                    -player.position.x * mapScale,
+                    -player.position.z * mapScale
+                );
+        }
+
+
+        // =========================
         // 既存UI削除
         // =========================
 
@@ -109,70 +154,52 @@ public class SC_Minimap : MonoBehaviour
             GameObject.FindGameObjectsWithTag("Enemy");
 
 
+        // レーダー半径
+        float radius =
+            radarUI.rect.width * 0.35f;
+
+
         // =========================
         // 敵ごとの処理
         // =========================
 
         foreach (var enemy in enemies)
         {
-            // プレイヤー → 敵方向
             Vector3 dir =
-                enemy.transform.position
-                - player.position;
+                enemy.transform.position - player.position;
 
-            // 距離
             float distance = dir.magnitude;
 
-            // XZ平面へ変換
             Vector2 pos =
                 new Vector2(dir.x, dir.z);
 
-            // レーダー半径
-            float radius =
-                radarUI.rect.width * 0.35f;
-
-
-            // =========================
-            // レーダー内
-            // =========================
-
             if (distance <= radarRange)
             {
-                // レーダー座標へ変換
                 Vector2 radarPos =
                     (pos / radarRange) * radius;
 
-                // 赤点生成
                 GameObject blip =
                     Instantiate(
                         enemyBlipPrefab,
                         blipParent
                     );
 
-                // UI位置設定
                 RectTransform rt =
                     blip.GetComponent<RectTransform>();
 
                 rt.anchoredPosition =
                     radarPos;
 
-                // 管理リスト追加
                 blips.Add(blip);
             }
-            // =========================
-            // レーダー外
-            // =========================
             else
             {
-                // 方向だけ取得
                 Vector2 dirNormalized =
                     pos.normalized;
 
-                // 円端位置
                 Vector2 edgePos =
                     dirNormalized * radius;
 
-                // 矢印生成
                 GameObject arrow =
                     Instantiate(
                         enemyArrowPrefab,
@@ -182,18 +209,15 @@ public class SC_Minimap : MonoBehaviour
                 RectTransform rt =
                     arrow.GetComponent<RectTransform>();
 
-                // 位置設定
                 rt.anchoredPosition =
                     edgePos;
 
-                // 回転角度計算
                 float angle =
                     Mathf.Atan2(
                         dirNormalized.y,
                         dirNormalized.x
                     ) * Mathf.Rad2Deg;
 
-                // 矢印回転
                 rt.localEulerAngles =
                     new Vector3(
                         0,
@@ -201,7 +225,6 @@ public class SC_Minimap : MonoBehaviour
                         angle - 90f
                     );
 
-                // 管理リスト追加
                 blips.Add(arrow);
             }
         }

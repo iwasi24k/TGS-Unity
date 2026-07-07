@@ -16,6 +16,9 @@ public class SC_PlayerHP : MonoBehaviour
     private int currentHP;
     public int GetCurrentHP() => currentHP;
 
+    private bool isStar = false;
+    public void SetStar(bool value) => isStar = value;
+
     private void Awake()
     {
         currentHP = maxHP;
@@ -31,6 +34,11 @@ public class SC_PlayerHP : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if(isStar)
+        {
+            return;
+        }
+
         currentHP -= damage;
         if (currentHP < 0)
         {
