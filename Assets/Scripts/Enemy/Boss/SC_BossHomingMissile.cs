@@ -3,10 +3,28 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Boss/Homing Missile State")]
 public class SC_BossHomingMissileState : SC_EnemyBaceState
 {
-    [Tooltip("ミサイルを発射するまでの時間"), SerializeField] private float fireDelay = 0.5f;
-    [Tooltip("攻撃Stateを終了してIdleに戻るまでの時間"), SerializeField] private float endDelay = 2.0f;
-    [Tooltip("ミサイルを生成する高さ"), SerializeField] private float spawnHeight = 1.5f;
-    [Tooltip("ボス中心からどれくらい離してミサイルを生成するか"), SerializeField] private float spawnRadius = 1.0f;
+    [Tooltip("ミサイルを生成するまでの時間"), SerializeField]
+    private float fireDelay = 0.5f;
+
+    [Tooltip("攻撃Stateを終了するまでの時間"), SerializeField]
+    private float endDelay = 2.0f;
+
+    [Header("Fire Point")]
+    [Tooltip("SC_EnemyStatusManager の firePointList の番号")]
+    [SerializeField] private int firePointIndex = 13;
+
+    [Header("Missile Motion")]
+    [Tooltip("傘の骨のように広がる時間")]
+    [SerializeField] private float curveTime = 0.8f;
+
+    [Tooltip("最初にどれくらい上へ持ち上げるか")]
+    [SerializeField] private float curveUpHeight = 5.0f;
+
+    [Tooltip("最終的に外側へ広がる半径")]
+    [SerializeField] private float spreadRadius = 3.0f;
+
+    [Tooltip("曲線中の回転速度")]
+    [SerializeField] private float rotateSpeed = 720.0f;
 
     private float timer;
     private bool fired;
@@ -15,7 +33,6 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
-        Debug.Log("Boss Homing Missile State Enter");
         timer = 0f;
         fired = false;
 
@@ -30,10 +47,13 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
         if (!fired && timer >= fireDelay)
         {
             fired = true;
-            FireMissiles(Owner);
+
+            FireMissiles(Owner, Manager);
+
+            timer = 0f;
         }
 
-        if (timer >= endDelay)
+        if (fired && timer >= endDelay)
         {
             Manager.ChangeNextBossAttackInList();
         }
@@ -46,7 +66,7 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
         animator.SetBool("tMissileShot", false);
     }
 
-    private void FireMissiles(GameObject Owner)
+    private void FireMissiles(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
@@ -60,23 +80,39 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
         int missileCount = boss.GetHomingMissileCount();
         if (missileCount <= 0) return;
 
+        Transform firePoint = Manager.GetFirePoint(firePointIndex);
+
+        Vector3 spawnPos = Owner.transform.position + Vector3.up * 1.5f;
+        Quaternion spawnRot = Quaternion.identity;
+
+        if (firePoint != null)
+        {
+            spawnPos = firePoint.position;
+            spawnRot = firePoint.rotation;
+        }
+        else
+        {
+            Debug.LogWarning($"FirePoint が見つかりません。index = {firePointIndex}");
+        }
+
         for (int i = 0; i < missileCount; i++)
         {
             float angle = 360f / missileCount * i;
 
-            Vector3 offset =
+            Vector3 radialDir =
                 Quaternion.Euler(0f, angle, 0f) *
-                Vector3.forward *
-                spawnRadius;
+                Vector3.forward;
 
-            Vector3 spawnPos =
-                Owner.transform.position +
-                offset +
-                Vector3.up * spawnHeight;
+            Vector3 curveControlOffset =
+                Vector3.up * curveUpHeight;
+
+            Vector3 curveEndOffset =
+                Vector3.up * curveUpHeight +
+                radialDir * spreadRadius;
 
             GameObject missileObj = pool.GetObject(
                 spawnPos,
-                Quaternion.identity
+                spawnRot
             );
 
             if (missileObj == null) continue;
@@ -89,14 +125,17 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
                 missile.SetPool(pool);
                 missile.SetWarningPool(boss.GetWarningCirclePool());
                 missile.OnGetFromPool();
-
                 missile.SetUseLockOnMark(i == 0);
 
-                missile.Init(
+                missile.Init(                        
                     player,
-                    boss.GetHomingMissileSpeed(),
-                    boss.GetHomingTime()
-                );
+                    boss.GetHomingMissileSpeed(),  
+                    boss.GetHomingTime(),   
+                    curveTime,   
+                    curveControlOffset,    
+                    curveEndOffset,
+                    rotateSpeed);
+
             }
         }
     }

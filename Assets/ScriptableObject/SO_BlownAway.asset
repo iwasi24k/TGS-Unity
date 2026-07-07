@@ -18,13 +18,6 @@ MonoBehaviour:
   endSpeed: 0.1
   decaySpeed: 2
   minBlownAwayTime: 0.3
-  uppercutHorizontalSpeed: 8
-  uppercutVerticalSpeed: 10
-  rotateInitialSpeed: 40
-  rotateRightRate: 1
-  rotateLeftAcceleration: 60
-  rotateSelfAngularSpeed: 15
-  rotateDecaySpeed: 25
   wallBounceMultiplier: 3
   minBounceSpeed: 6
   maxBounceSpeed: 30

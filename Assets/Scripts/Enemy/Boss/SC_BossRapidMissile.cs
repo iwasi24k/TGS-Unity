@@ -9,11 +9,22 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
     [Tooltip("UŒ‚State‚ðI—¹‚·‚é‚Ü‚Å‚ÌŽžŠÔ"), SerializeField]
     private float endDelay = 2.0f;
 
-    [Tooltip("ƒ~ƒTƒCƒ‹‚ð¶¬‚·‚é‚‚³"), SerializeField]
-    private float spawnHeight = 1.5f;
+    [Header("Fire Point")]
+    [Tooltip("SC_EnemyStatusManager ‚Ì firePointList ‚Ì”Ô†")]
+    [SerializeField] private int firePointIndex = 13;
 
-    [Tooltip("ƒ{ƒX’†S‚©‚ç‚Ç‚ê‚­‚ç‚¢—£‚µ‚Ä¶¬‚·‚é‚©"), SerializeField]
-    private float spawnRadius = 1.0f;
+    [Header("Missile Motion")]
+    [Tooltip("ŽP‚Ìœ‚Ì‚æ‚¤‚ÉL‚ª‚éŽžŠÔ")]
+    [SerializeField] private float curveTime = 0.8f;
+
+    [Tooltip("Å‰‚É‚Ç‚ê‚­‚ç‚¢ã‚ÖŽ‚¿ã‚°‚é‚©")]
+    [SerializeField] private float curveUpHeight = 5.0f;
+
+    [Tooltip("ÅI“I‚ÉŠO‘¤‚ÖL‚ª‚é”¼Œa")]
+    [SerializeField] private float spreadRadius = 3.0f;
+
+    [Tooltip("‹Èü’†‚Ì‰ñ“]‘¬“x")]
+    [SerializeField] private float rotateSpeed = 720.0f;
 
     private float timer;
     private bool fired;
@@ -32,14 +43,17 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
     public override void UpdateState(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         timer += Time.deltaTime;
-
+      
         if (!fired && timer >= fireDelay)
         {
             fired = true;
-            FireRapidMissiles(Owner);
+
+            FireRapidMissiles(Owner, Manager);
+
+            timer= 0f;
         }
 
-        if (timer >= endDelay)
+        if (fired && timer >= endDelay)
         {
             Manager.ChangeNextBossAttackInList();
         }
@@ -50,7 +64,7 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
         animator.SetBool("tMissileShot", false);
     }
 
-    private void FireRapidMissiles(GameObject Owner)
+    private void FireRapidMissiles(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
@@ -64,23 +78,39 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
         int missileCount = boss.GetRapidMissileCount();
         if (missileCount <= 0) return;
 
+        Transform firePoint = Manager.GetFirePoint(firePointIndex);
+
+        Vector3 spawnPos = Owner.transform.position + Vector3.up * 1.5f;
+        Quaternion spawnRot = Quaternion.identity;
+
+        if (firePoint != null)
+        {
+            spawnPos = firePoint.position;
+            spawnRot = firePoint.rotation;
+        }
+        else
+        {
+            Debug.LogWarning($"FirePoint ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñBindex = {firePointIndex}");
+        }
+
         for (int i = 0; i < missileCount; i++)
         {
             float angle = 360f / missileCount * i;
 
-            Vector3 offset =
+            Vector3 radialDir =
                 Quaternion.Euler(0f, angle, 0f) *
-                Vector3.forward *
-                spawnRadius;
+                Vector3.forward;
 
-            Vector3 spawnPos =
-                Owner.transform.position +
-                offset +
-                Vector3.up * spawnHeight;
+            Vector3 curveControlOffset =
+                Vector3.up * curveUpHeight;
+
+            Vector3 curveEndOffset =
+                Vector3.up * curveUpHeight +
+                radialDir * spreadRadius;
 
             GameObject missileObj = pool.GetObject(
                 spawnPos,
-                Quaternion.identity
+                spawnRot
             );
 
             if (missileObj == null) continue;
@@ -98,7 +128,11 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
                 missile.Init(
                     player,
                     boss.GetRapidMissileSpeed(),
-                    boss.GetRapidMissileStartDelay()
+                    boss.GetRapidMissileStartDelay(),
+                    curveTime,
+                    curveControlOffset,
+                    curveEndOffset,
+                    rotateSpeed
                 );
             }
         }
