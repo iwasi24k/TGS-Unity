@@ -20,6 +20,7 @@ public class SC_Field : MonoBehaviour
         public ObjData[] objects;
 
         public Vector3 goalPosition;
+        public Vector3 playerStartPosition;
     }
 
     [SerializeField] private StageData[] stages;
@@ -124,6 +125,10 @@ public class SC_Field : MonoBehaviour
             transform.position +
             stage.goalPosition;
 
+        // プレイヤー初期位置設定
+        playerStartPos =
+            transform.position +
+            stage.playerStartPosition;
 
         foreach (ObjData data in stage.objects)
         {
@@ -198,9 +203,10 @@ public class SC_Field : MonoBehaviour
             yield break;
         }
 
-        ResetPlayer();
 
         Refresh();
+
+        ResetPlayer();
 
         yield return new WaitForSeconds(0.5f);
     }
