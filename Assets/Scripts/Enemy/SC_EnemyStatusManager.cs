@@ -48,7 +48,6 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("敵同士の衝突判定円半径"),SerializeField] private float collisionRadius = 0.5f;
     [Tooltip("敵同士の衝突時のダメージ基数"), SerializeField] private int damageOnCollision = 10;
     [Tooltip("連鎖数1つごとに加算されるダメージ"), SerializeField] private int chainDamageBonus = 5;
-    [Tooltip("敵同士の衝突時の吹っ飛びの威力"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
     [Tooltip("敵同士の衝突最低速度"), SerializeField] private float minCollisionSpeed = 1.0f;
     [Tooltip("敵同士の衝突クールタイム"), SerializeField] private float enemyCollisionCooldown = 0.5f;
@@ -579,7 +578,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
             RegisterEnemyCollision(otherEnemy);
             otherStatusManager.RegisterEnemyCollision(this.gameObject);
          
-            int myPower = (int)(mySpeed * blowAwayPowerOnCollision) + ComboManager.Instance.GetComboCount();
+            int myPower = (int)(mySpeed) + ComboManager.Instance.GetComboCount();
             
             int chainCount = ComboManager.Instance.GetComboCount();
             int chainBonusCount = Mathf.Max(0, chainCount - 1);
