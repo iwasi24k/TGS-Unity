@@ -584,7 +584,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
             int chainCount = ComboManager.Instance.GetComboCount();
             int chainBonusCount = Mathf.Max(0, chainCount - 1);
 
-            int damage = DamageOnCollision + chainBonusCount * chainDamageBonus;
+            int damage = damageOnCollision + chainBonusCount * chainDamageBonus;
 
             // 相手がシールド持ちボス
             if (otherStatusManager.UseBossShield())
