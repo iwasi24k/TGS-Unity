@@ -46,7 +46,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("衝突判定円")]
     [Tooltip("敵同士の衝突判定円中心"), SerializeField] private Vector3 collisionCenter = Vector3.zero;
     [Tooltip("敵同士の衝突判定円半径"),SerializeField] private float collisionRadius = 0.5f;
-    [Tooltip("敵同士の衝突時のダメージ基数"), SerializeField] private int DamageOnCollision = 10;
+    [Tooltip("敵同士の衝突時のダメージ基数"), SerializeField] private int damageOnCollision = 10;
     [Tooltip("連鎖数1つごとに加算されるダメージ"), SerializeField] private int chainDamageBonus = 5;
     [Tooltip("敵同士の衝突時の吹っ飛びの威力"), SerializeField] private float blowAwayPowerOnCollision = 0.5f;
     [Tooltip("サーチの角度"), SerializeField] private float searchAngleThreshold = 30f;
