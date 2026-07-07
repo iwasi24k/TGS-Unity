@@ -620,7 +620,8 @@ MonoBehaviour:
   fallDeathY: -10
   collisionCenter: {x: 0, y: 0, z: 0}
   collisionRadius: 2.6
-  blowAwayPowerOnCollision: 0.5
+  damageOnCollision: 10
+  chainDamageBonus: 5
   searchAngleThreshold: 30
   minCollisionSpeed: 1
   enemyCollisionCooldown: 0.5
@@ -637,6 +638,7 @@ MonoBehaviour:
   - {fileID: 388518200165263464}
   - {fileID: 5099350959840912098}
   - {fileID: 5185409624725832116}
+  - {fileID: 1420535824060585814}
   moveLookTarget: {fileID: 0}
   blowAwayFollowParts: []
   canBlownAway: 0
