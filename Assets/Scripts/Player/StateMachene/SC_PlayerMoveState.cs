@@ -21,7 +21,10 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
         if (SprintIA.action.ReadValue<float>() > 0.1f)
         {
             animator.SetBool("bBoost", true);
-            Manager.footPrinter.isDrag = true;
+            if (Manager.footPrinter != null)
+            {
+                Manager.footPrinter.isDrag = true;
+            }
             SprintSC.TrySprint();
         }
 
@@ -48,14 +51,20 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
         if (SprintIA.action.triggered)
         {
             animator.SetBool("bBoost", true);
-            Manager.footPrinter.isDrag = true;
+            if (Manager.footPrinter != null)
+            {
+                Manager.footPrinter.isDrag = true;
+            }
             SprintSC.TrySprint();
         }
 
         if(SprintIA.action.WasReleasedThisFrame())
         {
             animator.SetBool("bBoost", false);
-            Manager.footPrinter.isDrag = false;
+            if (Manager.footPrinter != null)
+            {
+                Manager.footPrinter.isDrag = true;
+            }
         }
 
         var ccon = Manager.cController;
@@ -124,7 +133,10 @@ public class SC_PlayerMoveState : SC_PlayerBaseState
         var Manager = owner.GetComponent<SC_PlayerStateManager>();
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bBoost", false);
-        Manager.footPrinter.isDrag = false;
+        if(Manager.footPrinter != null)
+        {
+            Manager.footPrinter.isDrag = false;
+        }
         animator.SetBool("bWalk", false);
     }
 }

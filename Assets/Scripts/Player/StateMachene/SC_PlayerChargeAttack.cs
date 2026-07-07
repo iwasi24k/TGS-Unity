@@ -21,7 +21,11 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bCharge", false);
         animator.SetBool("bStraight", true);
-
+        var footPrinter = owner.GetComponent<SC_FootPrinter>();
+        if (footPrinter)
+        {
+            footPrinter.isDrag = true;
+        }
         var playerHP = owner.GetComponent<SC_PlayerHP>();
         if (playerHP != null)
         {
@@ -110,6 +114,12 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         animator.SetBool("bStraight", false);
         _wasHit = false;
         _startTime = -1f;
+
+        var footPrinter = owner.GetComponent<SC_FootPrinter>();
+        if (footPrinter)
+        {
+            footPrinter.isDrag = false;
+        }
 
         var playerHP = owner.GetComponent<SC_PlayerHP>();
         if (playerHP != null)

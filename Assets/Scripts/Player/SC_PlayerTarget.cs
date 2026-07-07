@@ -170,6 +170,12 @@ public class SC_PlayerTarget : MonoBehaviour
         return currentTarget;
     }
 
+    public void SelectNearTarget()
+    {
+        currentTarget = enemyManager.GetNearestEnemy();
+        isTargeting = currentTarget != null;
+    }
+
     //ƒJƒƒ‰‚É‰f‚Á‚Ä‚¢‚é“G‚ğæ“¾‚·‚éŠÖ”
     private List<GameObject> GetTargetsInView()
     {

@@ -28,10 +28,6 @@ public class SC_PlayerAttackManager : MonoBehaviour
     public int GetWeakDamage() => weakDamage;
     [SerializeField] private int straightDamage = 3;
     public int GetStraightDamage() => straightDamage;
-    [SerializeField] private int rotateDamage = 4;
-    public int GetRotateDamage() => rotateDamage;
-    [SerializeField] private int uppercutDamage = 5;
-    public int GetUppercutDamage() => uppercutDamage;
     [SerializeField] private int chargeDamage = 5;
     public int GetChargeDamage() => chargeDamage;
 
@@ -87,7 +83,7 @@ public class SC_PlayerAttackManager : MonoBehaviour
         }
         else
         {
-            if (currentComboCount >= 3)
+            if (currentComboCount >= 2)
             {
                 stateManager.ChangeState(statList.StrongAttack);
             }
