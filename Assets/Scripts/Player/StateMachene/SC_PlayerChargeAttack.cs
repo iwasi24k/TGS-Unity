@@ -21,7 +21,11 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bCharge", false);
         animator.SetBool("bStraight", true);
-
+        var footPrinter = owner.GetComponent<SC_FootPrinter>();
+        if (footPrinter)
+        {
+            footPrinter.isDrag = true;
+        }
         _startPosition = owner.transform.position;
         _isCharging = true;
         _wasHit = false;
@@ -104,6 +108,12 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         animator.SetBool("bStraight", false);
         _wasHit = false;
         _startTime = -1f;
+
+        var footPrinter = owner.GetComponent<SC_FootPrinter>();
+        if (footPrinter)
+        {
+            footPrinter.isDrag = false;
+        }
     }
 
     private void ChargeAttackExe(GameObject owner, PlayerState stateList, GameObject[] targets, string tag)
