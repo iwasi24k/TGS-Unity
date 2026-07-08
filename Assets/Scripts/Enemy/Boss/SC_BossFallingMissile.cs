@@ -15,16 +15,21 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
 
     private float timer;
     private float fireTimer;
+    private float endTimer;
     private int firedCount;
+    private bool isFireFinished;
 
     private Animator animator;
 
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         Debug.Log("Boss Falling Missile State Enter");
+
         timer = 0f;
         fireTimer = 0f;
+        endTimer = 0f;
         firedCount = 0;
+        isFireFinished = false;
 
         animator = Owner.GetComponentInChildren<Animator>();
         animator.SetBool("tMissileShot", true);
@@ -37,8 +42,12 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
-        if (timer >= startDelay)
+        // Ç‹Çæî≠éÀÇ™èIÇÌÇ¡ÇƒÇ¢Ç»Ç¢
+        if (!isFireFinished)
         {
+            // çUåÇäJénë“Çø
+            if (timer < startDelay) return;
+
             fireTimer += Time.deltaTime;
 
             if (firedCount < boss.GetFallingMissileCount())
@@ -51,9 +60,21 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
                     SpawnFallingMissile(Owner, boss);
                 }
             }
+
+            // ëSíeî≠éÀäÆóπ
+            if (firedCount >= boss.GetFallingMissileCount())
+            {
+                isFireFinished = true;
+                endTimer = 0f;
+            }
+
+            return;
         }
 
-        if (timer >= endDelay)
+        // ëSíeî≠éÀå„Ç©ÇÁ endDelay ÇêîÇ¶ÇÈ
+        endTimer += Time.deltaTime;
+
+        if (endTimer >= endDelay)
         {
             Manager.ChangeNextBossAttackInList();
         }
@@ -106,6 +127,8 @@ public class SC_BossFallingMissileState : SC_EnemyBaceState
 
         SC_FallingMissile missile =
             missileObj.GetComponent<SC_FallingMissile>();
+
+        Debug.Log($"Spawn Falling Missile at {targetPos}, spawnPos: {spawnPos}");
 
         if (missile != null)
         {
