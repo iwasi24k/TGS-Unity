@@ -129,6 +129,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   lifeTime: 5
   playerDamage: 1
+  attackCurveTime: 1.2
+  curveUpHeight: 5
+  targetHeightOffset: 2
   useLockOnMark: 1
   lockOnRadius: 1.2
   lockOnGroundOffset: 0.05

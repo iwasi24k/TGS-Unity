@@ -9,6 +9,21 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     [Tooltip("プレイヤーに与えるダメージ"), SerializeField]
     private int playerDamage = 1;
 
+    [Header("Curve Attack")]
+    [Tooltip("曲線でPlayerへ向かう時間")]
+    [SerializeField] private float attackCurveTime = 1.0f;
+
+    [Tooltip("最初にどれくらい上へ膨らませるか")]
+    [SerializeField] private float curveUpHeight = 5.0f;
+
+    [Tooltip("Playerの少し上を狙う高さ")]
+    [SerializeField] private float targetHeightOffset = 1.0f;
+
+    private Vector3 attackStartPos;
+    private Vector3 attackControlPos1;
+    private Vector3 attackControlPos2;
+    private Vector3 attackTargetPos;
+
     private SC_ObjectPool ownerPool;
 
     private Transform target;
@@ -21,8 +36,8 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
     private enum MissileState
     {
-        CurveSpread,
-        Launch
+        CurveAttack,
+        Straight
     }
 
     private MissileState missileState;
@@ -31,7 +46,7 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private Vector3 curveStartPos;
     private Vector3 curveControlPos;
     private Vector3 curveEndPos;
-    private Vector3 spreadOffset;
+
     private float rotateSpeed;
     private float stateTimer;
 
@@ -73,7 +88,7 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         initialized = false;
         moveDirection = transform.forward;
 
-        missileState = MissileState.CurveSpread;
+        missileState = MissileState.CurveAttack;
 
         curveStartPos = Vector3.zero;
         curveControlPos = Vector3.zero;
@@ -88,31 +103,46 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     Transform target,
     float speed,
     float startDelay,
-    float curveTime,
-    Vector3 curveControlOffset,
-    Vector3 curveEndOffset,
-    float rotateSpeed)
+    Vector3 curveSpreadOffset
+)
     {
         this.target = target;
         this.speed = speed;
         this.startDelay = Mathf.Max(0f, startDelay);
 
-        this.curveTime = Mathf.Max(0.01f, curveTime);
-        this.rotateSpeed = rotateSpeed;
-
         timer = 0f;
         stateTimer = 0f;
         initialized = true;
 
-        missileState = MissileState.CurveSpread;
+        missileState = MissileState.CurveAttack;
 
-        curveStartPos = transform.position;
-        curveControlPos = curveStartPos + curveControlOffset;
-        curveEndPos = curveStartPos + curveEndOffset;
+        attackStartPos = transform.position;
+
+        if (target != null)
+        {
+            attackTargetPos = target.position + Vector3.up * targetHeightOffset;
+        }
+        else
+        {
+            attackTargetPos = transform.position + transform.forward * 10f;
+        }
+
+        // P1: まず上へ向かう感じを作る
+        attackControlPos1 =
+            attackStartPos +
+            Vector3.up * curveUpHeight;
+
+        // P2: 傘の展開点を制御点にする
+        attackControlPos2 =
+            attackStartPos +
+            Vector3.up * curveUpHeight +
+            curveSpreadOffset;
 
         moveDirection = Vector3.up;
 
         transform.rotation = Quaternion.LookRotation(Vector3.up);
+
+        CreateLockOnMark();
     }
 
     private void Update()
@@ -124,12 +154,12 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
         switch (missileState)
         {
-            case MissileState.CurveSpread:
-                UpdateCurveSpread();
+            case MissileState.CurveAttack:
+                UpdateCurveAttack();
                 break;
 
-            case MissileState.Launch:
-                UpdateLaunch();
+            case MissileState.Straight:
+                UpdateStraight();
                 break;
         }
 
@@ -139,20 +169,19 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         }
     }
 
-    private void UpdateCurveSpread()
+    private void UpdateCurveAttack()
     {
-        float t = stateTimer / curveTime;
+        float t = stateTimer / attackCurveTime;
         t = Mathf.Clamp01(t);
-
-        float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
         Vector3 oldPos = transform.position;
 
-        transform.position = QuadraticBezier(
-            curveStartPos,
-            curveControlPos,
-            curveEndPos,
-            smoothT
+        transform.position = CubicBezier(
+            attackStartPos,
+            attackControlPos1,
+            attackControlPos2,
+            attackTargetPos,
+            t
         );
 
         Vector3 dir = transform.position - oldPos;
@@ -162,64 +191,50 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
             transform.rotation = Quaternion.LookRotation(dir.normalized);
         }
 
-        transform.Rotate(
-            Vector3.forward,
-            rotateSpeed * Time.deltaTime,
-            Space.Self
-        );
-
         if (t >= 1.0f)
         {
-            // 曲線展開が終わった瞬間にPlayer方向を決める
-            Launch();
-
-            // ロックオンマークを消す
             ReturnWarningMark();
 
-            missileState = MissileState.Launch;
+            Vector3 straightDir = attackTargetPos - attackControlPos2;
+
+            if (straightDir.sqrMagnitude <= 0.0001f)
+            {
+                straightDir = transform.forward;
+            }
+
+            moveDirection = straightDir.normalized;
+
+            missileState = MissileState.Straight;
             stateTimer = 0f;
         }
     }
 
-    private Vector3 QuadraticBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-    {
-        float u = 1.0f - t;
 
-        return
-            u * u * p0 +
-            2.0f * u * t * p1 +
-            t * t * p2;
-    }
-
-    private void UpdateLaunch()
+    private void UpdateStraight()
     {
         transform.position += moveDirection * speed * Time.deltaTime;
-    }
-
-    private void Launch()
-    {
-        if (target != null)
-        {
-            // 発射瞬間のPlayer位置を見る
-            // Y方向も含めるので、高い位置からでもPlayerへ向かう
-            Vector3 dir = target.position - transform.position;
-
-            if (dir.sqrMagnitude <= 0.0001f)
-            {
-                dir = transform.forward;
-            }
-
-            moveDirection = dir.normalized;
-        }
-        else
-        {
-            moveDirection = transform.forward;
-        }
 
         if (moveDirection.sqrMagnitude > 0.0001f)
         {
             transform.rotation = Quaternion.LookRotation(moveDirection);
         }
+    }
+
+    private Vector3 CubicBezier(
+    Vector3 p0,
+    Vector3 p1,
+    Vector3 p2,
+    Vector3 p3,
+    float t
+)
+    {
+        float u = 1.0f - t;
+
+        return
+            u * u * u * p0 +
+            3.0f * u * u * t * p1 +
+            3.0f * u * t * t * p2 +
+            t * t * t * p3;
     }
 
     private void OnTriggerEnter(Collider other)

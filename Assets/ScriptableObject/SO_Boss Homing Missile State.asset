@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossHomingMissileState
   fireDelay: 2.2
   endDelay: 2
-  spawnHeight: 5
-  spawnRadius: 5
+  firePointIndex: 12
+  curveTime: 0.8
+  curveUpHeight: 5
+  spreadRadius: 3
+  rotateSpeed: 720
