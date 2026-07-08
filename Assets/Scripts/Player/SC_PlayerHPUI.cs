@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SC_PlayerUI : MonoBehaviour
+public class SC_PlayerHPUI : MonoBehaviour
 {
     [Header("Player HP")]
     [SerializeField] private Image hpPointPrefab;

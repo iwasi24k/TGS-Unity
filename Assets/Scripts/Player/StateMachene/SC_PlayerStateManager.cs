@@ -93,7 +93,10 @@ public class SC_PlayerStateManager : MonoBehaviour
         {
             Debug.Log("_chargeFlagStartTime: " + _chargeFlagStartTime);
             animator.SetBool("bCharge", true);
-            targetSC.SelectNearTarget();
+            if (!targetSC.GetCurrentTarget())
+            {
+                targetSC.SelectNearTarget();
+            }
             if (targetSC.GetCurrentTarget())
             {
                 transform.LookAt(targetSC.GetCurrentTarget().transform.position);

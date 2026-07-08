@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SC_PlayerHP : MonoBehaviour
 {
     [Header("Ref")]
-    [SerializeField] private SC_PlayerUI playerUI;
+    [SerializeField] private SC_PlayerHPUI playerUI;
     [SerializeField] private SC_PlayerKnockback Knockback;
 
     [Header("HP Settings")]
