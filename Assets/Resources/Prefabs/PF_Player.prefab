@@ -16224,6 +16224,7 @@ GameObject:
   - component: {fileID: 2704060741432435773}
   - component: {fileID: 49864444771289709}
   - component: {fileID: 7423312423919074663}
+  - component: {fileID: 9033127910909413643}
   m_Layer: 0
   m_Name: PF_Player
   m_TagString: Player
@@ -16331,7 +16332,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86f2f0d70aa251a47b180a7f236627a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerHP
-  animator: {fileID: 0}
+  playerUI: {fileID: 0}
+  Knockback: {fileID: 0}
   maxHP: 10
 --- !u!114 &8775131050968773556
 MonoBehaviour:
@@ -16350,6 +16352,7 @@ MonoBehaviour:
   <comboManager>k__BackingField: {fileID: 0}
   <attackManager>k__BackingField: {fileID: 0}
   <knockback>k__BackingField: {fileID: 0}
+  <footPrinter>k__BackingField: {fileID: 0}
   <moveInput>k__BackingField: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   <weakAttackInput>k__BackingField: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   <strongAttackInput>k__BackingField: {fileID: -3731289544162771032, guid: 052faaac586de48259a63d0c4782560b, type: 3}
@@ -16382,8 +16385,6 @@ MonoBehaviour:
   snapDistance: 0.5
   weakDamage: 1
   straightDamage: 3
-  rotateDamage: 4
-  uppercutDamage: 5
   chargeDamage: 5
   comboResetTime: 2
 --- !u!114 &2704060741432435773
@@ -16416,6 +16417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85009f6faecd09341beda7023dfea89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerSprintManager
+  sprintInput: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   sprintSpeedMultiplier: 1.5
   boostSpeedMultiplier: 4
   boostLerpTime: 2
@@ -16434,9 +16436,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_AfterImage
   spawnInterval: 0.02
   lifeTime: 0.05
-  skinnedMeshRenderer: {fileID: 0}
+  skinnedMeshRenderers: []
   ghostMaterial: {fileID: 2100000, guid: 7d4f2af7cba0cdc408abf92a0300581e, type: 2}
+  sprintInput: {fileID: 0}
+  inputThreshold: 0.1
   startAlpha: 0.2
+--- !u!114 &9033127910909413643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4667677693108112289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b75e8467e415614ba31ca89ef24b394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_FootPrinter
+  renderTexture: {fileID: 8400000, guid: ff9d45ea25e727846ac3c16e4b690d9b, type: 2}
+  paintShader: {fileID: 4800000, guid: 44ed871e1bb26814aae362f4d5823772, type: 3}
+  walkRadius: 0.02
+  dragRadius: 0.05
+  paintIntensity: 1
+  printInterval: 0.03
+  groundRayer:
+    serializedVersion: 2
+    m_Bits: 0
+  fadeSpeed: 0.05
 --- !u!1 &4677235033568736721
 GameObject:
   m_ObjectHideFlags: 0

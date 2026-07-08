@@ -341,31 +341,21 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   scTarget: {fileID: 0}
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  NonTargetCameraOffset: {x: 0, y: 3, z: -5}
+  fieldCenter: {fileID: 0}
   TargetCameraOffset: {x: 0, y: 2, z: -2}
-  CameraMoveSpeed: 5
-  DashCameraMoveSpeed: 15
-  TargetingCameraMoveSpeed: 10
   CameraRotateSpeed: 8
   CameraHorizontalOffset: 0.5
   targetBlendSpeed: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  cameraRadius: 0.3
+  cameraPitch: 45
+  nonTargetDistance: 6
+  nonTargetHeightOffset: 0
+  yawFollowSpeed: 3
   cameraShakeDecay: 5
-  tiltAmount: 0.1
-  tiltSpeed: 0.01
   normalFOV: 60
   targetFOV: 65
   dashFOV: 70
   fovSpeed: 1
   enemyManager: {fileID: 0}
-  awareEnemyAngle: 60
-  awareEnemyDistance: 10
-  awareEnemyBlend: 0.3
-  minPitch: 10
-  maxPitch: 50
   zoomOutDistance: 3
   zoomTriggerDistance: 8
   zoomSpeed: 2
@@ -829,6 +819,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8195359599589257546, guid: c1262066f28093c48ba3ac38a679368d, type: 3}
+      propertyPath: _effectConfigs.Array.data[1].effectPrefab
+      value: 
+      objectReference: {fileID: 398400712804724652, guid: df2c6c34ac7ed3a40b69ad611caebbee, type: 3}
     - target: {fileID: 8286613217406669650, guid: c1262066f28093c48ba3ac38a679368d, type: 3}
       propertyPath: m_Name
       value: PF_Managers
