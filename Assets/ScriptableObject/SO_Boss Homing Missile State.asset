@@ -17,5 +17,5 @@ MonoBehaviour:
   firePointIndex: 12
   curveTime: 0.8
   curveUpHeight: 5
-  spreadRadius: 3
-  rotateSpeed: 720
+  spreadRadius: 5
+  turnSpeed: 720

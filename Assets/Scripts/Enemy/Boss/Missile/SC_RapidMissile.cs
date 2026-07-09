@@ -1,23 +1,37 @@
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 {
-    [Tooltip("¶‘¶ŠÔ"), SerializeField]
+    [Tooltip("ç”Ÿå­˜æ™‚é–“"), SerializeField]
     private float lifeTime = 5.0f;
 
     [Header("Damage")]
-    [Tooltip("ƒvƒŒƒCƒ„[‚É—^‚¦‚éƒ_ƒ[ƒW"), SerializeField]
+    [Tooltip("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ä¸ãˆã‚‹ãƒ€ãƒ¡ãƒ¼ã‚¸"), SerializeField]
     private int playerDamage = 1;
 
     [Header("Curve Attack")]
-    [Tooltip("‹Èü‚ÅPlayer‚ÖŒü‚©‚¤ŠÔ")]
+    [Tooltip("æ›²ç·šã§Playerã¸å‘ã‹ã†æ™‚é–“")]
     [SerializeField] private float attackCurveTime = 1.0f;
 
-    [Tooltip("Å‰‚É‚Ç‚ê‚­‚ç‚¢ã‚Ö–c‚ç‚Ü‚¹‚é‚©")]
+    [Tooltip("æœ€åˆã«ã©ã‚Œãã‚‰ã„ä¸Šã¸è†¨ã‚‰ã¾ã›ã‚‹ã‹")]
     [SerializeField] private float curveUpHeight = 5.0f;
 
-    [Tooltip("Player‚Ì­‚µã‚ğ‘_‚¤‚‚³")]
+    [Tooltip("Playerã®å°‘ã—ä¸Šã‚’ç‹™ã†é«˜ã•")]
     [SerializeField] private float targetHeightOffset = 1.0f;
+
+    [Header("Rotation")]
+    [Tooltip("ãƒŸã‚µã‚¤ãƒ«ã®å›è»¢é€Ÿåº¦")]
+    [SerializeField] private float rotateSpeed = 720.0f;
+
+    [Tooltip("å³åº§ã«é€²è¡Œæ–¹å‘ã¸å‘ã‘ã‚‹ã‹")]
+    [SerializeField] private bool instantRotation = false;
+
+    [Header("Hit Check")]
+    [Tooltip("é«˜é€Ÿç§»å‹•æ™‚ã®ã™ã‚ŠæŠœã‘é˜²æ­¢ç”¨ã®åˆ¤å®šåŠå¾„")]
+    [SerializeField] private float hitCheckRadius = 0.2f;
+
+    private ParticleSystem[] fireParticles;
 
     private Vector3 attackStartPos;
     private Vector3 attackControlPos1;
@@ -47,17 +61,16 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private Vector3 curveControlPos;
     private Vector3 curveEndPos;
 
-    private float rotateSpeed;
     private float stateTimer;
 
     [Header("Lock On Mark")]
-    [Tooltip("ƒƒbƒNƒIƒ“ƒ}[ƒN‚ğ•\¦‚·‚é‚©")]
+    [Tooltip("ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒãƒ¼ã‚¯ã‚’è¡¨ç¤ºã™ã‚‹ã‹")]
     [SerializeField] private bool useLockOnMark = true;
 
-    [Tooltip("ƒƒbƒNƒIƒ“ƒ}[ƒN‚Ì”¼Œa")]
+    [Tooltip("ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒãƒ¼ã‚¯ã®åŠå¾„")]
     [SerializeField] private float lockOnRadius = 1.2f;
 
-    [Tooltip("’n–Ê‚©‚ç­‚µ•‚‚©‚¹‚é‚‚³")]
+    [Tooltip("åœ°é¢ã‹ã‚‰å°‘ã—æµ®ã‹ã›ã‚‹é«˜ã•")]
     [SerializeField] private float lockOnGroundOffset = 0.05f;
 
     private SC_ObjectPool warningPool;
@@ -79,6 +92,15 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     {
         ReturnWarningMark();
 
+        if (fireParticles != null)
+        {
+            foreach (ParticleSystem ps in fireParticles)
+            {
+                ps.Clear();
+                ps.Play();
+            }
+        }
+
         target = null;
         speed = 0f;
         startDelay = 0f;
@@ -97,6 +119,11 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         useThisLockOnMark = true;
         warningMarkObj = null;
         warningMark = null;
+    }
+
+    private void Awake()
+    {
+        fireParticles = GetComponentsInChildren<ParticleSystem>(true);
     }
 
     public void Init(
@@ -127,12 +154,12 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
             attackTargetPos = transform.position + transform.forward * 10f;
         }
 
-        // P1: ‚Ü‚¸ã‚ÖŒü‚©‚¤Š´‚¶‚ğì‚é
+        // P1: ã¾ãšä¸Šã¸å‘ã‹ã†æ„Ÿã˜ã‚’ä½œã‚‹
         attackControlPos1 =
             attackStartPos +
             Vector3.up * curveUpHeight;
 
-        // P2: P‚Ì“WŠJ“_‚ğ§Œä“_‚É‚·‚é
+        // P2: å‚˜ã®å±•é–‹ç‚¹ã‚’åˆ¶å¾¡ç‚¹ã«ã™ã‚‹
         attackControlPos2 =
             attackStartPos +
             Vector3.up * curveUpHeight +
@@ -140,7 +167,7 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
         moveDirection = Vector3.up;
 
-        transform.rotation = Quaternion.LookRotation(Vector3.up);
+        transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
 
         CreateLockOnMark();
     }
@@ -174,9 +201,7 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         float t = stateTimer / attackCurveTime;
         t = Mathf.Clamp01(t);
 
-        Vector3 oldPos = transform.position;
-
-        transform.position = CubicBezier(
+        Vector3 nextPos = CubicBezier(
             attackStartPos,
             attackControlPos1,
             attackControlPos2,
@@ -184,12 +209,20 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
             t
         );
 
-        Vector3 dir = transform.position - oldPos;
-
-        if (dir.sqrMagnitude > 0.0001f)
+        if (MoveWithHitCheck(nextPos))
         {
-            transform.rotation = Quaternion.LookRotation(dir.normalized);
+            return;
         }
+
+        Vector3 dir = CubicBezierTangent(
+            attackStartPos,
+            attackControlPos1,
+            attackControlPos2,
+            attackTargetPos,
+            t
+        );
+
+        RotateToDirection(dir);
 
         if (t >= 1.0f)
         {
@@ -212,12 +245,14 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
     private void UpdateStraight()
     {
-        transform.position += moveDirection * speed * Time.deltaTime;
+        Vector3 nextPos = transform.position + moveDirection * speed * Time.deltaTime;
 
-        if (moveDirection.sqrMagnitude > 0.0001f)
+        if (MoveWithHitCheck(nextPos))
         {
-            transform.rotation = Quaternion.LookRotation(moveDirection);
+            return;
         }
+
+        RotateToDirection(moveDirection);
     }
 
     private Vector3 CubicBezier(
@@ -240,29 +275,9 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private void OnTriggerEnter(Collider other)
     {
 
-        if (other.CompareTag("Player"))
-        {
-            SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
+        if (!IsMissileHitTarget(other)) return;
 
-            if (playerHP == null)
-            {
-                playerHP = other.GetComponentInParent<SC_PlayerHP>();
-            }
-
-            if (playerHP != null)
-            {
-                playerHP.TakeDamage(playerDamage, transform.position);
-            }
-
-            ReturnToPool();
-            return;
-        }
-
-        if (other.CompareTag("Wall"))
-        {
-            ReturnToPool();
-            return;
-        }
+        HandleHit(other);
     }
 
     private void CreateLockOnMark()
@@ -305,6 +320,147 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
         );
     }
 
+    private void RotateToDirection(Vector3 dir)
+    {
+        if (dir.sqrMagnitude <= 0.0001f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir.normalized, Vector3.up);
+
+        if (instantRotation)
+        {
+            transform.rotation = targetRot;
+        }
+        else
+        {
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRot,
+                rotateSpeed * Time.deltaTime
+            );
+        }
+    }
+
+    private Vector3 CubicBezierTangent(
+    Vector3 p0,
+    Vector3 p1,
+    Vector3 p2,
+    Vector3 p3,
+    float t
+)
+    {
+        float u = 1.0f - t;
+
+        return
+            3.0f * u * u * (p1 - p0) +
+            6.0f * u * t * (p2 - p1) +
+            3.0f * t * t * (p3 - p2);
+    }
+
+    private void HandleHit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
+
+            if (playerHP == null)
+            {
+                playerHP = other.GetComponentInParent<SC_PlayerHP>();
+            }
+
+            if (playerHP != null)
+            {
+                playerHP.TakeDamage(playerDamage);
+            }
+
+            ReturnToPool();
+            return;
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            ReturnToPool();
+            return;
+        }
+
+        if (other.CompareTag("Field"))
+        {
+            ReturnToPool();
+            return;
+        }
+    }
+
+    private bool MoveWithHitCheck(Vector3 nextPos)
+    {
+        Vector3 currentPos = transform.position;
+        Vector3 move = nextPos - currentPos;
+        float distance = move.magnitude;
+
+        if (distance <= 0.0001f)
+        {
+            transform.position = nextPos;
+            return false;
+        }
+
+        Vector3 dir = move / distance;
+
+        RaycastHit[] hits = Physics.SphereCastAll(
+            currentPos,
+            hitCheckRadius,
+            dir,
+            distance,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Collide
+            );
+
+        RaycastHit nearestHit = default;
+        bool hasHit = false;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (RaycastHit hit in hits)
+        {
+            Collider col = hit.collider;
+
+            if (col == null) continue;
+
+            // è‡ªåˆ†è‡ªèº«ã‚„å­Colliderã«å½“ãŸã£ãŸå ´åˆã¯ç„¡è¦–
+            if (col.transform == transform || col.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            // å¿…è¦ãªTagã ã‘åˆ¤å®š
+            if (!IsMissileHitTarget(col))
+            {
+                continue;
+            }
+
+            if (hit.distance < nearestDistance)
+            {
+                nearestDistance = hit.distance;
+                nearestHit = hit;
+                hasHit = true;
+            }
+        }
+
+        if (hasHit)
+        {
+            transform.position = nearestHit.point;
+            HandleHit(nearestHit.collider);
+            return true;
+        }
+
+        transform.position = nextPos;
+        return false;
+    }
+
+    private bool IsMissileHitTarget(Collider other)
+    {
+        return
+            other.CompareTag("Player") ||
+            other.CompareTag("Wall") ||
+            other.CompareTag("Field");
+    }
+
     private void ReturnWarningMark()
     {
         if (warningMark != null)
@@ -328,7 +484,17 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
     public void ReturnToPool()
     {
+        SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
+
         ReturnWarningMark();
+
+        if (fireParticles != null)
+        {
+            foreach (ParticleSystem ps in fireParticles)
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+        }
 
         initialized = false;
         target = null;

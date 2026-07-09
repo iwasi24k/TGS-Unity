@@ -12,6 +12,8 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     [Tooltip("プレイヤーに与えるダメージ"), SerializeField]
     private int playerDamage = 1;
 
+    private ParticleSystem[] fireParticles;
+
     private SC_ObjectPool ownerPool;
 
     private Transform target;
@@ -21,6 +23,9 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     private float timer;
     private float stateTimer;
     private float lifeTimer;
+
+    private float curveTime;
+    private float turnSpeed;
 
     private Vector3 moveDirection;
     private bool initialized;
@@ -35,12 +40,14 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
     private MissileState missileState;
 
-    [Header("Curve Spread")]
-    [Tooltip("傘の骨のように広がる時間")]
-    [SerializeField] private float curveTime = 0.8f;
 
-    [Tooltip("曲線中の回転速度")]
-    [SerializeField] private float rotateSpeed = 720.0f;
+    [Header("Rotation")]
+
+    [Tooltip("ミサイル自身をロール回転させる速度")]
+    [SerializeField] private float rollSpeed = 360.0f;
+
+    [Tooltip("ロール回転を使うか")]
+    [SerializeField] private bool useRoll = false;
 
     private Vector3 curveStartPos;
     private Vector3 curveControlPos;
@@ -80,6 +87,15 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     {
         ReturnWarningMark();
 
+        if (fireParticles != null)
+        {
+            foreach (ParticleSystem ps in fireParticles)
+            {
+                ps.Clear();
+                ps.Play();
+            }
+        }
+
         target = null;
         speed = 0f;
         homingTime = 0f;
@@ -102,6 +118,11 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         warningMark = null;
     }
 
+    private void Awake()
+    {
+        fireParticles = GetComponentsInChildren<ParticleSystem>(true);
+    }
+
     public void Init(
         Transform target,
         float speed,
@@ -109,7 +130,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         float curveTime,
         Vector3 curveControlOffset,
         Vector3 curveEndOffset,
-        float rotateSpeed
+        float turnSpeed
     )
     {
         this.target = target;
@@ -117,7 +138,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         this.homingTime = Mathf.Max(0f, homingTime);
 
         this.curveTime = Mathf.Max(0.01f, curveTime);
-        this.rotateSpeed = rotateSpeed;
+        this.turnSpeed = turnSpeed;
 
         timer = 0f;
         stateTimer = 0f;
@@ -131,7 +152,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
         curveEndPos = curveStartPos + curveEndOffset;
 
         moveDirection = Vector3.up;
-        transform.rotation = Quaternion.LookRotation(Vector3.up);
+        transform.rotation = Quaternion.LookRotation(moveDirection, Vector3.forward);
     }
 
     private void Update()
@@ -175,8 +196,6 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
         float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
-        Vector3 oldPos = transform.position;
-
         transform.position = QuadraticBezier(
             curveStartPos,
             curveControlPos,
@@ -184,18 +203,14 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
             smoothT
         );
 
-        Vector3 dir = transform.position - oldPos;
-
-        if (dir.sqrMagnitude > 0.0001f)
-        {
-            transform.rotation = Quaternion.LookRotation(dir.normalized);
-        }
-
-        transform.Rotate(
-            Vector3.forward,
-            rotateSpeed * Time.deltaTime,
-            Space.Self
+        Vector3 dir = QuadraticBezierTangent(
+            curveStartPos,
+            curveControlPos,
+            curveEndPos,
+            smoothT
         );
+
+        RotateToDirection(dir);
 
         if (t >= 1.0f)
         {
@@ -209,12 +224,16 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
     private void UpdateWait()
     {
-        // 空中で止まって回転だけする
-        transform.Rotate(
-            Vector3.forward,
-            rotateSpeed * Time.deltaTime,
-            Space.Self
-        );
+        // 空中で止まったまま、Playerの方向へ向く
+        if (target != null)
+        {
+            Vector3 dir = target.position - transform.position;
+
+            if (dir.sqrMagnitude > 0.0001f)
+            {
+                RotateToDirection(dir);
+            }
+        }
 
         if (stateTimer >= startDelay)
         {
@@ -254,10 +273,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     {
         transform.position += moveDirection * speed * Time.deltaTime;
 
-        if (moveDirection.sqrMagnitude > 0.0001f)
-        {
-            transform.rotation = Quaternion.LookRotation(moveDirection);
-        }
+        RotateToDirection(moveDirection);
     }
 
     private void SetDirectionToPlayer()
@@ -314,6 +330,41 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
             ReturnToPool();
             return;
         }
+
+        if (other.CompareTag("Field"))
+        {
+            ReturnToPool();
+            return;
+        }
+    }
+
+    private void RotateToDirection(Vector3 dir)
+    {
+        if (dir.sqrMagnitude <= 0.0001f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir.normalized, Vector3.up);
+
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRot,
+            turnSpeed * Time.deltaTime
+        );
+
+        if (useRoll)
+        {
+            transform.Rotate(
+                Vector3.forward,
+                rollSpeed * Time.deltaTime,
+                Space.Self
+            );
+        }
+    }
+
+    private Vector3 QuadraticBezierTangent(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    {
+        return
+            2.0f * (1.0f - t) * (p1 - p0) +
+            2.0f * t * (p2 - p1);
     }
 
     private void CreateLockOnMark(float duration)
@@ -374,7 +425,17 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
     public void ReturnToPool()
     {
+        SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
+
         ReturnWarningMark();
+
+        if (fireParticles != null)
+        {
+            foreach (ParticleSystem ps in fireParticles)
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+        }
 
         initialized = false;
         target = null;

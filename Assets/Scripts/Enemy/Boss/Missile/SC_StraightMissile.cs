@@ -96,6 +96,7 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
                 playerHP.TakeDamage(playerDamage, transform.position);
             }
 
+
             ReturnToPool();
             return;
         }
@@ -109,6 +110,8 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
 
     public void ReturnToPool()
     {
+        SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
+
         initialized = false;
 
         if (ownerPool != null)
