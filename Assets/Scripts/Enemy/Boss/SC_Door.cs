@@ -147,6 +147,11 @@ public class SC_Door : MonoBehaviour
         timer = 0f;
         hasHitEnemy = false;
         hasExploded = false;
+
+        if (SC_GameSceneAudio.Instance != null)
+            SC_GameSceneAudio.Instance.StartBattleBgm();
+        if (SC_DisplaySlow.Instance != null)
+            SC_DisplaySlow.Instance.Enter(4.0f);
     }
 
     private void CheckEnemyHitBySphereCast()

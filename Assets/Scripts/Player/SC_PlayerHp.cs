@@ -6,11 +6,13 @@ using UnityEngine.UI;
 public class SC_PlayerHP : MonoBehaviour
 {
     [Header("Ref")]
-    [SerializeField] private SC_PlayerUI playerUI;
+    [SerializeField] private SC_PlayerHPUI playerUI;
     [SerializeField] private SC_PlayerKnockback Knockback;
 
     [Header("HP Settings")]
     [SerializeField] private int maxHP = 10;
+    [Tooltip("プレイヤーが硬直する時間")] [SerializeField] private float stunDuration = 0.05f;
+
     public int GetMaxHP() => maxHP;
 
     private int currentHP;
@@ -32,9 +34,13 @@ public class SC_PlayerHP : MonoBehaviour
 
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 sourcePsition)
     {
-        if(isStar)
+        Vector3 lookpos = sourcePsition;
+        lookpos.y = transform.position.y; // プレイヤーの高さに合わせる
+        transform.LookAt(lookpos);
+
+        if (isStar)
         {
             return;
         }
@@ -52,7 +58,7 @@ public class SC_PlayerHP : MonoBehaviour
 
         if(Knockback)
         {
-            Knockback.AddKnockback(-this.transform.forward, 0.1f, 0.05f, false);
+            Knockback.AddKnockback(-this.transform.forward, 0.1f, stunDuration, false);
         }
 
         if(currentHP <= 0)

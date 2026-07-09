@@ -3,32 +3,32 @@ using static UnityEngine.ParticleSystem;
 
 public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 {
-    [Tooltip("¶‘¶ŠÔ"), SerializeField]
+    [Tooltip("ç”Ÿå­˜æ™‚é–“"), SerializeField]
     private float lifeTime = 5.0f;
 
     [Header("Damage")]
-    [Tooltip("ƒvƒŒƒCƒ„[‚É—^‚¦‚éƒ_ƒ[ƒW"), SerializeField]
+    [Tooltip("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ä¸ãˆã‚‹ãƒ€ãƒ¡ãƒ¼ã‚¸"), SerializeField]
     private int playerDamage = 1;
 
     [Header("Curve Attack")]
-    [Tooltip("‹Èü‚ÅPlayer‚ÖŒü‚©‚¤ŠÔ")]
+    [Tooltip("æ›²ç·šã§Playerã¸å‘ã‹ã†æ™‚é–“")]
     [SerializeField] private float attackCurveTime = 1.0f;
 
-    [Tooltip("Å‰‚É‚Ç‚ê‚­‚ç‚¢ã‚Ö–c‚ç‚Ü‚¹‚é‚©")]
+    [Tooltip("æœ€åˆã«ã©ã‚Œãã‚‰ã„ä¸Šã¸è†¨ã‚‰ã¾ã›ã‚‹ã‹")]
     [SerializeField] private float curveUpHeight = 5.0f;
 
-    [Tooltip("Player‚Ì­‚µã‚ğ‘_‚¤‚‚³")]
+    [Tooltip("Playerã®å°‘ã—ä¸Šã‚’ç‹™ã†é«˜ã•")]
     [SerializeField] private float targetHeightOffset = 1.0f;
 
     [Header("Rotation")]
-    [Tooltip("ƒ~ƒTƒCƒ‹‚Ì‰ñ“]‘¬“x")]
+    [Tooltip("ãƒŸã‚µã‚¤ãƒ«ã®å›è»¢é€Ÿåº¦")]
     [SerializeField] private float rotateSpeed = 720.0f;
 
-    [Tooltip("‘¦À‚Éis•ûŒü‚ÖŒü‚¯‚é‚©")]
+    [Tooltip("å³åº§ã«é€²è¡Œæ–¹å‘ã¸å‘ã‘ã‚‹ã‹")]
     [SerializeField] private bool instantRotation = false;
 
     [Header("Hit Check")]
-    [Tooltip("‚‘¬ˆÚ“®‚Ì‚·‚è”²‚¯–h~—p‚Ì”»’è”¼Œa")]
+    [Tooltip("é«˜é€Ÿç§»å‹•æ™‚ã®ã™ã‚ŠæŠœã‘é˜²æ­¢ç”¨ã®åˆ¤å®šåŠå¾„")]
     [SerializeField] private float hitCheckRadius = 0.2f;
 
     private ParticleSystem[] fireParticles;
@@ -64,13 +64,13 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
     private float stateTimer;
 
     [Header("Lock On Mark")]
-    [Tooltip("ƒƒbƒNƒIƒ“ƒ}[ƒN‚ğ•\¦‚·‚é‚©")]
+    [Tooltip("ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒãƒ¼ã‚¯ã‚’è¡¨ç¤ºã™ã‚‹ã‹")]
     [SerializeField] private bool useLockOnMark = true;
 
-    [Tooltip("ƒƒbƒNƒIƒ“ƒ}[ƒN‚Ì”¼Œa")]
+    [Tooltip("ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒãƒ¼ã‚¯ã®åŠå¾„")]
     [SerializeField] private float lockOnRadius = 1.2f;
 
-    [Tooltip("’n–Ê‚©‚ç­‚µ•‚‚©‚¹‚é‚‚³")]
+    [Tooltip("åœ°é¢ã‹ã‚‰å°‘ã—æµ®ã‹ã›ã‚‹é«˜ã•")]
     [SerializeField] private float lockOnGroundOffset = 0.05f;
 
     private SC_ObjectPool warningPool;
@@ -154,12 +154,12 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
             attackTargetPos = transform.position + transform.forward * 10f;
         }
 
-        // P1: ‚Ü‚¸ã‚ÖŒü‚©‚¤Š´‚¶‚ğì‚é
+        // P1: ã¾ãšä¸Šã¸å‘ã‹ã†æ„Ÿã˜ã‚’ä½œã‚‹
         attackControlPos1 =
             attackStartPos +
             Vector3.up * curveUpHeight;
 
-        // P2: P‚Ì“WŠJ“_‚ğ§Œä“_‚É‚·‚é
+        // P2: å‚˜ã®å±•é–‹ç‚¹ã‚’åˆ¶å¾¡ç‚¹ã«ã™ã‚‹
         attackControlPos2 =
             attackStartPos +
             Vector3.up * curveUpHeight +
@@ -422,13 +422,13 @@ public class SC_RapidMissile : MonoBehaviour, SC_IPoolObject
 
             if (col == null) continue;
 
-            // ©•ª©g‚âqCollider‚É“–‚½‚Á‚½ê‡‚Í–³‹
+            // è‡ªåˆ†è‡ªèº«ã‚„å­Colliderã«å½“ãŸã£ãŸå ´åˆã¯ç„¡è¦–
             if (col.transform == transform || col.transform.IsChildOf(transform))
             {
                 continue;
             }
 
-            // •K—v‚ÈTag‚¾‚¯”»’è
+            // å¿…è¦ãªTagã ã‘åˆ¤å®š
             if (!IsMissileHitTarget(col))
             {
                 continue;

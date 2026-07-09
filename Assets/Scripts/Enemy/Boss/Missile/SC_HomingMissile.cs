@@ -318,7 +318,7 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
 
             if (playerHP != null)
             {
-                playerHP.TakeDamage(playerDamage);
+                playerHP.TakeDamage(playerDamage, transform.position);
             }
 
             ReturnToPool();

@@ -155,7 +155,7 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
 
                 if (playerHP != null)
                 {
-                    playerHP.TakeDamage(playerDamage);
+                    playerHP.TakeDamage(playerDamage, transform.position);
                 }
 
                 ReturnToPool();

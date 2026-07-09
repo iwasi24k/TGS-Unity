@@ -2,6 +2,7 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public struct PlayerState
 {
@@ -88,13 +89,15 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void Update()
     {
-        var targetSC = GetComponent<SC_PlayerTarget>();
         if (Time.time - _chargeFlagStartTime >= requiredAttackPressDuration && _chargeFlagStartTime > 0)
         {
             Debug.Log("_chargeFlagStartTime: " + _chargeFlagStartTime);
             animator.SetBool("bCharge", true);
-            targetSC.SelectNearTarget();
-            transform.LookAt(targetSC.GetCurrentTarget().transform.position);
+            var targetSC = GetComponent<SC_PlayerTarget>();
+            if (!targetSC.GetCurrentTarget())
+            {
+                targetSC.SelectNearTarget();
+            }
         }
         _currentState.UpdateState(this.gameObject, stateList);
     }

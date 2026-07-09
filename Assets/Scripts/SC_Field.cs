@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class SC_Field : MonoBehaviour
 {
+    public enum CameraType
+    {
+        Normal,
+        Boss
+    }
+
     [System.Serializable]
     public class ObjData
     {
@@ -21,10 +27,15 @@ public class SC_Field : MonoBehaviour
 
         public Vector3 goalPosition;
         public Vector3 playerStartPosition;
+
+        public CameraType cameraType;
     }
 
     [SerializeField] private StageData[] stages;
     [SerializeField] private int currentStage = 0;
+
+    [SerializeField] private GameObject normalCamera;
+    [SerializeField] private GameObject bossCamera;
 
     // 生成したObject管理
     private List<GameObject> objects =
@@ -120,6 +131,8 @@ public class SC_Field : MonoBehaviour
 
         StageData stage = stages[stageIndex];
 
+        ChangeCamera(stage.cameraType);
+
         //ゴールの位置設定
         goal.transform.position =
             transform.position +
@@ -153,6 +166,18 @@ public class SC_Field : MonoBehaviour
             {
                 //enemyManager.AddEnemy(obj);
             }
+        }
+    }
+    private void ChangeCamera(CameraType type)
+    {
+        if (normalCamera != null)
+        {
+            normalCamera.SetActive(type == CameraType.Normal);
+        }
+
+        if (bossCamera != null)
+        {
+            bossCamera.SetActive(type == CameraType.Boss);
         }
     }
 
@@ -255,4 +280,5 @@ public class SC_Field : MonoBehaviour
 
         Debug.Log("Boss Defeated Flag ON");
     }
+
 }

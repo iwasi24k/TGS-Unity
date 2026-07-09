@@ -341,31 +341,21 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   scTarget: {fileID: 0}
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  NonTargetCameraOffset: {x: 0, y: 3, z: -5}
+  fieldCenter: {fileID: 0}
   TargetCameraOffset: {x: 0, y: 2, z: -2}
-  CameraMoveSpeed: 5
-  DashCameraMoveSpeed: 15
-  TargetingCameraMoveSpeed: 10
   CameraRotateSpeed: 8
   CameraHorizontalOffset: 0.5
   targetBlendSpeed: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  cameraRadius: 0.3
+  cameraPitch: 45
+  nonTargetDistance: 6
+  nonTargetHeightOffset: 0
+  yawFollowSpeed: 3
   cameraShakeDecay: 5
-  tiltAmount: 0.1
-  tiltSpeed: 0.01
   normalFOV: 60
   targetFOV: 65
   dashFOV: 70
   fovSpeed: 1
   enemyManager: {fileID: 0}
-  awareEnemyAngle: 60
-  awareEnemyDistance: 10
-  awareEnemyBlend: 0.3
-  minPitch: 10
-  maxPitch: 50
   zoomOutDistance: 3
   zoomTriggerDistance: 8
   zoomSpeed: 2
@@ -601,6 +591,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1332377894}
     m_Modifications:
+    - target: {fileID: 2141683224385259429, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629496748344287030, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629496748344287030, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3671153616666822992, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3671153616666822992, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Color.b
+      value: 0.47058824
+      objectReference: {fileID: 0}
+    - target: {fileID: 3671153616666822992, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 3671153616666822992, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Color.r
+      value: 0.5019608
+      objectReference: {fileID: 0}
     - target: {fileID: 4921671881663729557, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
       propertyPath: m_Name
       value: PF_PlayerUI
@@ -685,10 +703,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6931361788875051233, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7481403742394529301, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Name
+      value: Sprint_Panel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8412695738149790255, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      propertyPath: m_Value
+      value: 0.528
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7481403742394529301, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1721095407}
   m_SourcePrefab: {fileID: 100100000, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
 --- !u!114 &330844473 stripped
 MonoBehaviour:
@@ -829,6 +862,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8195359599589257546, guid: c1262066f28093c48ba3ac38a679368d, type: 3}
+      propertyPath: _effectConfigs.Array.data[1].effectPrefab
+      value: 
+      objectReference: {fileID: 398400712804724652, guid: df2c6c34ac7ed3a40b69ad611caebbee, type: 3}
     - target: {fileID: 8286613217406669650, guid: c1262066f28093c48ba3ac38a679368d, type: 3}
       propertyPath: m_Name
       value: PF_Managers
@@ -1203,6 +1240,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 49864444771289709, guid: c47c78307a03b0d4cb8a160768b7fa71, type: 3}
+      propertyPath: sprintUI
+      value: 
+      objectReference: {fileID: 1721095407}
     - target: {fileID: 4667677693108112289, guid: c47c78307a03b0d4cb8a160768b7fa71, type: 3}
       propertyPath: m_Name
       value: PF_Player
@@ -1260,6 +1301,47 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c47c78307a03b0d4cb8a160768b7fa71, type: 3}
+--- !u!1 &1721095404 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7481403742394529301, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+  m_PrefabInstance: {fileID: 228197450}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1721095406 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8412695738149790255, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+  m_PrefabInstance: {fileID: 228197450}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721095404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+--- !u!114 &1721095407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721095404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 101993358eff8734080e03d3a8b96886, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerSprintUI
+  sprintSlider: {fileID: 1721095406}
+  Fill: {fileID: 2035129861}
+--- !u!114 &2035129861 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2141683224385259429, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
+  m_PrefabInstance: {fileID: 228197450}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!4 &2095572265 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7127669392970454083, guid: c1262066f28093c48ba3ac38a679368d, type: 3}

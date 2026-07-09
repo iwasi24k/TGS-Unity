@@ -76,12 +76,12 @@ public class SC_TutorialManager : MonoBehaviour
     // ¡Stageó‘Ô
     // =================================================
     private int currentDisplayStage = -1;
-    private float stageTimer = 0f;
 
     private bool stageCleared = false;
     private bool stageLock = false;
 
     private int lastCombo = 0;
+    private bool weakComboStarted = false;
 
     // =================================================
     // ¡UI
@@ -235,7 +235,7 @@ public class SC_TutorialManager : MonoBehaviour
 
             lastCombo = 0;
 
-            stageTimer = 0f;
+            weakComboStarted = false;
 
             isFailing = false;
 
@@ -307,12 +307,34 @@ public class SC_TutorialManager : MonoBehaviour
             // =========================================
             case TutorialType.WeakCombo:
 
-                if (!stageCleared &&combo >= 3)
+                // ƒRƒ“ƒ{‚ª2‚Ü‚Å“’B‚µ‚½‚±‚Æ‚ğ‹L˜^
+                if (combo >= 2)
+                {
+                    weakComboStarted = true;
+                }
+
+                // ‹­UŒ‚‚Å“G‚ğ“|‚µ‚½
+                if (!stageCleared &&
+                    weakComboStarted &&
+                    field.GetEnemyCount() <= 0)
                 {
                     Debug.Log("WeakCombo Success");
 
                     stageCleared = true;
                     TryNextStage();
+
+                    return;
+                }
+
+                // “r’†‚Å“G‚ª“|‚ê‚½
+                if (!stageCleared &&
+                    !weakComboStarted &&
+                    field.GetEnemyCount() <= 0)
+                {
+                    Debug.Log("WeakCombo Failed");
+
+                    FailStage(
+                        stages[currentDisplayStage].failMessage);
 
                     return;
                 }

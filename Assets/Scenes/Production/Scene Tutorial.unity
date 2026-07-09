@@ -1759,13 +1759,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
+      propertyPath: m_fontSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 11400000, guid: 92d4480e1c1817941a9b418c801b157b, type: 2}
+    - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: -6925506292411210441, guid: 92d4480e1c1817941a9b418c801b157b, type: 2}
     - target: {fileID: 9050771384927179850, guid: c4035c96a8fc9be4881527049538e300, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1841,11 +1849,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[2].message
-      value: "\u653B\u6483\u30DC\u30BF\u30F3\u30923\u9023\u6253\u3057\u3066\u3001\u6575\u3092\u7A7A\u306E\u5F7C\u65B9\u3078\u3076\u3063\u98DB\u3070\u305B\uFF01"
+      value: "\u653B\u6483\u30DC\u30BF\u30F3\u30923\u9023\u6253\u3057\u3066\u3001\n\u6575\u3092\u7A7A\u306E\u5F7C\u65B9\u3078\u3076\u3063\u98DB\u3070\u305B\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[3].message
-      value: "\u653B\u6483\u30DC\u30BF\u30F3\u3092\u9577\u62BC\u3057\uFF01\u529B\u3092\u6E9C\u3081\u3066\u5F37\u529B\u306A\u4E00\u6483\u3092\u53E9\u304D\u8FBC\u3081\uFF01"
+      value: "\u653B\u6483\u30DC\u30BF\u30F3\u3092\u9577\u62BC\u3057\uFF01\n\u529B\u3092\u6E9C\u3081\u3066\u5F37\u529B\u306A\u4E00\u6483\u3092\u53E9\u304D\u8FBC\u3081\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[4].message
@@ -1853,7 +1861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[5].message
-      value: "\u5439\u3063\u98DB\u3070\u3057\u305F\u6575\u304C\u4ED6\u306E\u6575\u306B\u5F53\u305F\u308B\u3068\u30B3\u30F3\u30DC\u304C\u767A\u751F\uFF01"
+      value: "\u5439\u3063\u98DB\u3070\u3057\u305F\u6575\u304C\u4ED6\u306E\u6575\u306B\n\u5F53\u305F\u308B\u3068\u30B3\u30F3\u30DC\u304C\u767A\u751F\uFF01"
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[6].message
@@ -1870,6 +1878,10 @@ PrefabInstance:
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[9].message
       value: "\u30C1\u30E5\u30FC\u30C8\u30EA\u30A2\u30EB\u306F\u4EE5\u4E0A\uFF01"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
+      propertyPath: stages.Array.data[2].failMessage
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5157126786660544706, guid: 8448e233dfeeb874a9238df955001806, type: 3}
       propertyPath: stages.Array.data[3].failMessage

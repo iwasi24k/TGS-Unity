@@ -36,6 +36,12 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         _isCharging = true;
         _wasHit = false;
         _startTime = Time.time;
+
+        var targetSC = owner.GetComponent<SC_PlayerTarget>();
+        if (targetSC.GetCurrentTarget())
+        {
+            owner.transform.LookAt(targetSC.GetCurrentTarget().transform.position);
+        }
     }
 
     public override void UpdateState(GameObject owner, PlayerState stateList)
@@ -105,7 +111,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
     public override void FixedUpdateState(GameObject owner, PlayerState stateList)
     {
-
+        SC_EffectManager.Instance.PlayEffect("DustSmoke", owner.transform.position, owner.transform.rotation);
     }
 
     public override void Exit(GameObject owner, PlayerState stateList)
@@ -146,8 +152,8 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
                 case "Enemy":
                     var Enemy = target.GetComponent<SC_EnemyStatusManager>();
 
-                    Debug.Log("Straight Attack");
-                    Enemy.TakeDamage(attackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+                    Debug.Log("Charge Attack");
+                    Enemy.TakeDamage(attackManager.GetChargeDamage(), owner.transform.position, true, AttackType.Strong);
                     _wasHit = true;
                     break;
 

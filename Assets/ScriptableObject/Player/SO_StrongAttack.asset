@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 842bc2a91f9ef6541a092fba7ed4a9df, type: 3}
   m_Name: SO_StrongAttack
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerStrongAttackState
-  Duration: 0.8
+  Duration: 0.3

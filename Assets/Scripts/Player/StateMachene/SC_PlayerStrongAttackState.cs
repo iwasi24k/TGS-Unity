@@ -15,6 +15,7 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
         var attackManager = owner.GetComponent<SC_PlayerAttackManager>();
         animator.SetTrigger("tStraight");
         once = false;
+
         Debug.Log("Enter Strong Attack State");
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
