@@ -11,6 +11,8 @@ public class SC_PlayerHP : MonoBehaviour
 
     [Header("HP Settings")]
     [SerializeField] private int maxHP = 10;
+    [Tooltip("ƒvƒŒƒCƒ„[‚ªd’¼‚·‚éŽžŠÔ")] [SerializeField] private float stunDuration = 0.05f;
+
     public int GetMaxHP() => maxHP;
 
     private int currentHP;
@@ -56,7 +58,7 @@ public class SC_PlayerHP : MonoBehaviour
 
         if(Knockback)
         {
-            Knockback.AddKnockback(-this.transform.forward, 0.1f, 0.05f, false);
+            Knockback.AddKnockback(-this.transform.forward, 0.1f, stunDuration, false);
         }
 
         if(currentHP <= 0)
