@@ -15,7 +15,4 @@ MonoBehaviour:
   fireDelay: 2.2
   endDelay: 2
   firePointIndex: 12
-  curveTime: 0.8
-  curveUpHeight: 5
-  spreadRadius: 5
-  rotateSpeed: 720
+  spreadRadius: 10

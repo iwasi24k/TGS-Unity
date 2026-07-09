@@ -615,16 +615,13 @@ public class SC_EnemyStatusManager : MonoBehaviour
                     );
                 }
 
-                // ボスは吹っ飛ばさない
-                // 飛ばされた自分だけ衝突後の処理
-                TransitionToBlownAway(
-                    myPower,
-                    otherEnemy.transform.position,
-                    0, 
-                    true
-                );
+                // ボスに当たった敵は反射せず爆発
+                if (SC_EffectManager.Instance != null)
+                {
+                    SC_EffectManager.Instance.PlayEffect("Explosion", transform.position);
+                }
 
-                CollisionDamage(damage);
+                Destroy(gameObject);
 
                 continue;
             }
@@ -1121,6 +1118,11 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
     private void BlowAwayAllEnemiesOnBossDefeat()
     {
+        if (SC_EffectManager.Instance != null)
+        {
+            SC_EffectManager.Instance.PlayEffect("Explosion", transform.position);
+        }
+
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         foreach (GameObject enemy in enemies)

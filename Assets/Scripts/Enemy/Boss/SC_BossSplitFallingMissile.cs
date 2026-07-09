@@ -14,7 +14,9 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
 
     private float timer;
     private float fireTimer;
+    private float endTimer;
     private int firedCount;
+    private bool isFireFinished;
 
     private Animator animator;
 
@@ -22,7 +24,9 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
     {
         timer = 0f;
         fireTimer = 0f;
+        endTimer = 0f;
         firedCount = 0;
+        isFireFinished = false;
 
         animator = Owner.GetComponentInChildren<Animator>();
         animator.SetBool("tMissileShot", true);
@@ -35,8 +39,10 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
         SC_BossAttackController boss = Owner.GetComponent<SC_BossAttackController>();
         if (boss == null) return;
 
-        if (timer >= startDelay)
+        if (!isFireFinished)
         {
+            if (timer < startDelay) return;
+
             fireTimer += Time.deltaTime;
 
             if (firedCount < boss.GetSplitFallingMissileCount())
@@ -49,14 +55,23 @@ public class SC_BossSplitFallingMissileState : SC_EnemyBaceState
                     SpawnSplitFallingMissile(Owner, boss);
                 }
             }
+
+            if (firedCount >= boss.GetSplitFallingMissileCount())
+            {
+                isFireFinished = true;
+                endTimer = 0f;
+            }
+
+            return;
         }
 
-        if (timer >= endDelay)
+        endTimer += Time.deltaTime;
+
+        if (endTimer >= endDelay)
         {
             Manager.ChangeNextBossAttackInList();
         }
     }
-
     public override void Exit(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         animator.SetBool("tMissileShot", false);

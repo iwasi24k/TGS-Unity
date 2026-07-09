@@ -14,17 +14,9 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
     [SerializeField] private int firePointIndex = 13;
 
     [Header("Missile Motion")]
-    [Tooltip("P‚Ìœ‚Ì‚æ‚¤‚ÉL‚ª‚éŠÔ")]
-    [SerializeField] private float curveTime = 0.8f;
-
-    [Tooltip("Å‰‚É‚Ç‚ê‚­‚ç‚¢ã‚Ö‚¿ã‚°‚é‚©")]
-    [SerializeField] private float curveUpHeight = 5.0f;
-
     [Tooltip("ÅI“I‚ÉŠO‘¤‚ÖL‚ª‚é”¼Œa")]
     [SerializeField] private float spreadRadius = 3.0f;
 
-    [Tooltip("‹Èü’†‚Ì‰ñ“]‘¬“x")]
-    [SerializeField] private float rotateSpeed = 720.0f;
 
     private float timer;
     private bool fired;
@@ -101,12 +93,7 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
                 Quaternion.Euler(0f, angle, 0f) *
                 Vector3.forward;
 
-            Vector3 curveControlOffset =
-                Vector3.up * curveUpHeight;
-
-            Vector3 curveEndOffset =
-                Vector3.up * curveUpHeight +
-                radialDir * spreadRadius;
+            Vector3 curveSpreadOffset = radialDir * spreadRadius;
 
             GameObject missileObj = pool.GetObject(
                 spawnPos,
@@ -125,15 +112,10 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
                 missile.OnGetFromPool();
                 missile.SetUseLockOnMark(i == 0);
 
-                missile.Init(
-                    player,
-                    boss.GetRapidMissileSpeed(),
-                    boss.GetRapidMissileStartDelay(),
-                    curveTime,
-                    curveControlOffset,
-                    curveEndOffset,
-                    rotateSpeed
-                );
+                missile.Init(player, 
+                    boss.GetRapidMissileSpeed(), 
+                    boss.GetRapidMissileStartDelay(), 
+                    curveSpreadOffset);
             }
         }
     }

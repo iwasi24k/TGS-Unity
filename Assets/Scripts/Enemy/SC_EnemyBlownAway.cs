@@ -56,7 +56,12 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         //HPと吹き飛ばされる力を連動する、HPが高いほど吹き飛ばされる力が弱くなる
         float hpRatio = (float)Manager.GetHP() / Manager.GetMaxHP();
 
-        float adjustedPower = blownAwayPowerBase + blownAwayPower * (1f - hpRatio) * blownAwayPowerMultiplier;
+        //ダメージ計算あり
+        //float adjustedPower = blownAwayPowerBase + blownAwayPower * (1f - hpRatio) * blownAwayPowerMultiplier;
+
+        //ダメージ計算なし
+        float adjustedPower = blownAwayPowerBase + (1f - hpRatio) * blownAwayPowerMultiplier;
+
 
         Vector3 velocity;
 
