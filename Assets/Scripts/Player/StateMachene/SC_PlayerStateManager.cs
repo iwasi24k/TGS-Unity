@@ -88,19 +88,10 @@ public class SC_PlayerStateManager : MonoBehaviour
 
     private void Update()
     {
-        var targetSC = GetComponent<SC_PlayerTarget>();
         if (Time.time - _chargeFlagStartTime >= requiredAttackPressDuration && _chargeFlagStartTime > 0)
         {
             Debug.Log("_chargeFlagStartTime: " + _chargeFlagStartTime);
             animator.SetBool("bCharge", true);
-            if (!targetSC.GetCurrentTarget())
-            {
-                targetSC.SelectNearTarget();
-            }
-            if (targetSC.GetCurrentTarget())
-            {
-                transform.LookAt(targetSC.GetCurrentTarget().transform.position);
-            }
         }
         _currentState.UpdateState(this.gameObject, stateList);
     }

@@ -15,6 +15,18 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
         var attackManager = owner.GetComponent<SC_PlayerAttackManager>();
         animator.SetTrigger("tStraight");
         once = false;
+
+        var targetSC = owner.GetComponent<SC_PlayerTarget>();
+        if (!targetSC.GetCurrentTarget())
+        {
+            targetSC.SelectNearTarget();
+        }
+        if (targetSC.GetCurrentTarget())
+        {
+            owner.transform.LookAt(targetSC.GetCurrentTarget().transform.position);
+        }
+
+
         Debug.Log("Enter Strong Attack State");
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
