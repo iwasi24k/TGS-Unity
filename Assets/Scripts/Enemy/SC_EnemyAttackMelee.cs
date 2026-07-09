@@ -92,7 +92,7 @@ public class SC_EnemyAttackMelee : SC_EnemyBaceState
 
             if (playerHP != null)
             {
-                playerHP.TakeDamage(damage);
+                playerHP.TakeDamage(damage, Owner.transform.position);
                 return; // 1‰ñ‚¾‚¯ƒ_ƒ[ƒW
             }
         }
