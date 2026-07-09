@@ -2,6 +2,7 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public struct PlayerState
 {
@@ -92,6 +93,11 @@ public class SC_PlayerStateManager : MonoBehaviour
         {
             Debug.Log("_chargeFlagStartTime: " + _chargeFlagStartTime);
             animator.SetBool("bCharge", true);
+            var targetSC = GetComponent<SC_PlayerTarget>();
+            if (!targetSC.GetCurrentTarget())
+            {
+                targetSC.SelectNearTarget();
+            }
         }
         _currentState.UpdateState(this.gameObject, stateList);
     }
