@@ -23,8 +23,8 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
     [Tooltip("最終的に外側へ広がる半径")]
     [SerializeField] private float spreadRadius = 3.0f;
 
-    [Tooltip("曲線中の回転速度")]
-    [SerializeField] private float rotateSpeed = 720.0f;
+    [Tooltip("ミサイルが進行方向へ向く速度")]
+    [SerializeField] private float turnSpeed = 720.0f;
 
     private float timer;
     private bool fired;
@@ -134,7 +134,7 @@ public class SC_BossHomingMissileState : SC_EnemyBaceState
                     curveTime,   
                     curveControlOffset,    
                     curveEndOffset,
-                    rotateSpeed);
+                    turnSpeed);
 
             }
         }
