@@ -16,13 +16,13 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
         var Manager = owner.GetComponent<SC_PlayerStateManager>();
         var AttackManager = Manager.attackManager;
 
-        if(AttackManager.GetCurrentComboCount() == 0)
+        if(AttackManager.GetCurrentComboCount() % 2 == 0)
         {
-            Animator.SetTrigger("tWeakAttack_L");
+            Animator.SetTrigger("tWeakAttack_R");
         }
         else
         {
-            Animator.SetTrigger("tWeakAttack_R");
+            Animator.SetTrigger("tWeakAttack_L");
         }
         once = false;
     }

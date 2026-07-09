@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03adac929b12e1d47a598ecad6417c4c, type: 3}
   m_Name: SO_WeakAttack
   m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerWeakAttackState
-  Duration: 0.2
+  Duration: 0.1
