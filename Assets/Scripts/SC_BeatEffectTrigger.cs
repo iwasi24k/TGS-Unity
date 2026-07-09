@@ -26,9 +26,9 @@ public class SC_BeatEffectTrigger : MonoBehaviour
     private void TriggerSlow()
     {
         if (SC_DisplaySlow.Instance == null) return;
-        if (SC_AudioManager.Instance == null) return;
+        if (SC_GameSceneAudio.Instance == null) return;
 
-        float duration = (float)(SC_AudioManager.Instance.BeatDuration * 2.0);
+        float duration = 1.0f; // ÉXÉçÅ[éûä‘
 
         SC_DisplaySlow.Instance.Enter(duration);
     }
