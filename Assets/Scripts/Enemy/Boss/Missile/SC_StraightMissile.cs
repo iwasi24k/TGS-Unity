@@ -84,6 +84,7 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
 
         if (other.CompareTag("Player"))
         {
+
             SC_PlayerHP playerHP = other.GetComponent<SC_PlayerHP>();
 
             if (playerHP == null)
@@ -102,6 +103,12 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
         }
 
         if (other.CompareTag("Wall"))
+        {
+            ReturnToPool();
+            return;
+        }
+
+        if (other.CompareTag("Field"))
         {
             ReturnToPool();
             return;

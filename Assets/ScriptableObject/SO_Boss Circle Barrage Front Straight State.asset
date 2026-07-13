@@ -16,6 +16,8 @@ MonoBehaviour:
   shotCountMax: 3
   shotInterval: 0.3
   missileSpeed: 8
+  downwardPower: 0.35
+  missileGroundY: 0.3
   endDelay: 0.5
   firePointRangeList:
   - startFirePointNumber: 12

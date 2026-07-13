@@ -1197,8 +1197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4a16120eb3478b48a0d8c7992fbe4a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttackPoolProvider
-  bulletMultiPool: {fileID: 0}
-  bulletMultiPoolObjectName: PF_ReflectableMissile Pool
+  bulletMultiPoolType: 9
 --- !u!4 &2421892717064628887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400066, guid: 860793eb3324391468f1c120a75ec049, type: 3}

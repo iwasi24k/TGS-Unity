@@ -33,15 +33,19 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
     [Tooltip("発射時に下向きへどれくらい傾けるか")]
     [SerializeField] private float downwardPower = 0.35f;
 
-    [Tooltip("このY座標以下になったら、ミサイルのY方向移動を止める")]
-    [SerializeField] private float missileGroundY = 0.3f;
-
     [Tooltip("攻撃終了後の待ち時間"), SerializeField]
     private float endDelay = 0.5f;
+
+    private float missileGroundY = 1.0f;
+
+    private const int CircleFirePointMaxCount = 12;
 
     [System.Serializable]
     public class BossBarrageFirePointRange
     {
+        private const int MinFirePointNumber = 1;
+        private const int MaxCircleFirePointNumber = 12;
+
         [Tooltip("何番目のFirePointから使うか。1ならFirePoint1")]
         [SerializeField] private int startFirePointNumber = 1;
 
@@ -53,12 +57,24 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         public int GetStartIndex()
         {
-            return Mathf.Max(0, startFirePointNumber - 1);
+            int number = Mathf.Clamp(
+                startFirePointNumber,
+                MinFirePointNumber,
+                MaxCircleFirePointNumber
+                );
+
+            return number - 1;
         }
 
         public int GetEndIndex()
         {
-            return Mathf.Max(0, endFirePointNumber - 1);
+            int number = Mathf.Clamp(
+                endFirePointNumber,  
+                MinFirePointNumber,
+                MaxCircleFirePointNumber
+                );
+
+            return number - 1;
         }
 
         public bool GetUseRange()
@@ -229,16 +245,19 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         bool fired = false;
 
-        // 範囲指定がない場合は全部発射
+        int circleFirePointCount = Mathf.Min(CircleFirePointMaxCount, firePointList.Length);
+        int maxCircleIndex = circleFirePointCount - 1;
+
+        // 範囲指定がない場合は円形用FirePointだけ全部発射
         if (firePointRangeList == null || firePointRangeList.Length == 0)
         {
-            for (int i = 0; i < firePointList.Length; i++)
+            for (int i = 0; i < circleFirePointCount; i++)
             {
                 Transform firePoint = firePointList[i];
 
                 if (firePoint == null)
                 {
-                    Debug.LogWarning("FirePointList[" + i + "] が null です");
+                    Debug.LogWarning("Circle FirePoint[" + (i + 1) + "] が null です");
                     continue;
                 }
 
@@ -274,13 +293,13 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
             int startIndex = Mathf.Clamp(
                 range.GetStartIndex(),
                 0,
-                firePointList.Length - 1
+                maxCircleIndex
             );
 
             int endIndex = Mathf.Clamp(
                 range.GetEndIndex(),
                 0,
-                firePointList.Length - 1
+                maxCircleIndex
             );
 
             Debug.Log(
@@ -296,7 +315,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
                     if (firePoint == null)
                     {
-                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        Debug.LogWarning("Circle FirePoint[" + (i + 1) + "] が null です");
                         continue;
                     }
 
@@ -312,13 +331,16 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
             }
             else
             {
-                for (int i = startIndex; i < firePointList.Length; i++)
+                // 例: 12 → 2 の場合
+                // 12 → 1 → 2 として扱う
+
+                for (int i = startIndex; i <= maxCircleIndex; i++)
                 {
                     Transform firePoint = firePointList[i];
 
                     if (firePoint == null)
                     {
-                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        Debug.LogWarning("Circle FirePoint[" + (i + 1) + "] が null です");
                         continue;
                     }
 
@@ -338,7 +360,7 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
                     if (firePoint == null)
                     {
-                        Debug.LogWarning("FirePointList[" + i + "] が null です");
+                        Debug.LogWarning("Circle FirePoint[" + (i + 1) + "] が null です");
                         continue;
                     }
 
@@ -394,6 +416,12 @@ public class SC_BossCircleBarrageState : SC_EnemyBaceState
 
         Vector3 spawnPos = firePoint.position;
 
+        // 発射エフェクト
+        if (SC_EffectManager.Instance != null)
+        {
+            Vector3 effectPoint = firePoint.position;
+            SC_EffectManager.Instance.PlayEffect("LaunchFire", effectPoint, Quaternion.LookRotation(dir));
+        }
 
         GameObject missileObj = pool.GetObject(
             spawnPos,

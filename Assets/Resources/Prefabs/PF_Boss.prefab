@@ -654,6 +654,8 @@ MonoBehaviour:
   currentBossShield: 50
   downWhenShieldBreak: 1
   shieldLightningEffect: {fileID: 0}
+  bossDefeatDamageToEnemies: 9999
+  bossDefeatBlowAwayPower: 50
   useStartLock: 0
 --- !u!114 &5880420886448220101
 MonoBehaviour:
@@ -693,26 +695,8 @@ MonoBehaviour:
   splitChildMissileCount: 10
   splitChildMissileSpeed: 10
   maxEnemyCount: 10
-  homingMissilePool: {fileID: 0}
-  fallingMissilePool: {fileID: 0}
-  splitFallingMissilePool: {fileID: 0}
-  rapidMissilePool: {fileID: 0}
-  straightMissilePool: {fileID: 0}
-  reflectableMissilePool: {fileID: 0}
-  warningCirclePool: {fileID: 0}
-  warningSectorPool: {fileID: 0}
-  warningRectanglePool: {fileID: 0}
-  homingMissilePoolObjectName: PF_HomingMissile Pool
-  fallingMissilePoolObjectName: PF_FallingMissile Pool
-  splitFallingMissilePoolObjectName: PF_SplitFallingMissile Pool
-  rapidMissilePoolObjectName: PF_RapidMissile Pool
-  straightMissilePoolObjectName: PF_StraightMissile Pool
-  reflectableMissilePoolObjectName: PF_ReflectableMissile Pool
-  warningCirclePoolObjectName: PF_WarningCircle Pool
-  warningSectorPoolObjectName: PF_WarningSector Pool
-  warningRectanglePoolObjectName: PF_WarningRectangle Pool
   attackPatternList:
-  - usePattern: 0
+  - usePattern: 1
     patternName: Full
     stateList: 0500000003000000040000001700000006000000070000000800000009000000110000000b000000190000001a000000140000000f0000001b000000180000000c000000
   - usePattern: 0
@@ -724,7 +708,7 @@ MonoBehaviour:
   - usePattern: 0
     patternName: Summon
     stateList: 170000001800000019000000
-  - usePattern: 1
+  - usePattern: 0
     patternName: test
     stateList: 03000000
 --- !u!1 &9168442487182502983

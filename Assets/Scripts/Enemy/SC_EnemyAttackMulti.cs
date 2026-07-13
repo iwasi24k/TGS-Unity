@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 [CreateAssetMenu(menuName = "Enemy/AttackMulti State")]
 public class SC_EnemyAttackMulti : SC_EnemyBaceState
@@ -133,6 +132,12 @@ public class SC_EnemyAttackMulti : SC_EnemyBaceState
                     Owner.transform.forward * spawnForwardOffset +
                     Owner.transform.up * spawnUpOffset +
                     Owner.transform.right * spawnRightOffset;
+            }
+
+            // 発射エフェクト
+            if (SC_EffectManager.Instance != null)
+            {
+                SC_EffectManager.Instance.PlayEffect("LaunchFire", spawnPos, rot);
             }
 
             GameObject bulletObj = bulletPool.GetObject(spawnPos, rot);

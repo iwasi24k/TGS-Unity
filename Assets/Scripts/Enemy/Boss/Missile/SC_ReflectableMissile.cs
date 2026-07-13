@@ -166,6 +166,18 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
             {
                 return;
             }
+
+            if (other.CompareTag("Wall"))
+            {
+                ReturnToPool();
+                return;
+            }
+
+            if (other.CompareTag("Field"))
+            {
+                ReturnToPool();
+                return;
+            }
         }
 
         // îΩåÇèÛë‘ÅFEnemy / BossÇ…ìñÇΩÇÈ
@@ -213,6 +225,19 @@ public class SC_ReflectableMissile : MonoBehaviour, SC_IPoolObject
 
             if (other.CompareTag("Player"))
             {
+                return;
+            }
+
+
+            if (other.CompareTag("Wall"))
+            {
+                ReturnToPool();
+                return;
+            }
+
+            if (other.CompareTag("Field"))
+            {
+                ReturnToPool();
                 return;
             }
         }
