@@ -44,62 +44,6 @@ public class SC_BossAttackController : MonoBehaviour
     [Header("Summon Limit")]
     [SerializeField] private int maxEnemyCount = 10;
 
-    [Header("Missile Pool")]
-    [Tooltip("追従型ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool homingMissilePool;
-
-    [Tooltip("落下型ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool fallingMissilePool;
-
-    [Tooltip("増殖ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool splitFallingMissilePool;
-
-    [Tooltip("快速ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool rapidMissilePool;
-
-    [Tooltip("直進ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool straightMissilePool;
-
-    [Tooltip("反射ミサイル用Pool"), SerializeField]
-    private SC_ObjectPool reflectableMissilePool;
-
-    [Header("Warning Pool")]
-    [Tooltip("円形警告用Pool"), SerializeField]
-    private SC_ObjectPool warningCirclePool;
-
-    [Tooltip("扇形警告用Pool"), SerializeField]
-    private SC_ObjectPool warningSectorPool;
-
-    [Tooltip("四角形警告用Pool"), SerializeField]
-    private SC_ObjectPool warningRectanglePool;
-
-    [Header("Pool Object Name")]
-    [Tooltip("追従型ミサイルPoolのScene上の名前"), SerializeField]
-    private string homingMissilePoolObjectName = "PF_HomingMissile Pool";
-
-    [Tooltip("落下型ミサイルPoolのScene上の名前"), SerializeField]
-    private string fallingMissilePoolObjectName = "PF_FallingMissile Pool";
-
-    [Tooltip("増殖ミサイルPoolのScene上の名前"), SerializeField]
-    private string splitFallingMissilePoolObjectName = "PF_SplitFallingMissile Pool";
-
-    [Tooltip("快速ミサイルPoolのScene上の名前"), SerializeField]
-    private string rapidMissilePoolObjectName = "PF_RapidMissile Pool";
-
-    [Tooltip("直進ミサイルPoolのScene上の名前"), SerializeField]
-    private string straightMissilePoolObjectName = "PF_StraightMissile Pool";
-
-    [Tooltip("反射ミサイルPoolのScene上の名前"), SerializeField]
-    private string reflectableMissilePoolObjectName = "PF_ReflectableMissile Pool";
-
-    [Tooltip("円形Warning PoolのScene上の名前"), SerializeField]
-    private string warningCirclePoolObjectName = "PF_WarningCircle Pool";
-
-    [Tooltip("扇形Warning PoolのScene上の名前"), SerializeField]
-    private string warningSectorPoolObjectName = "PF_WarningSector Pool";
-
-    [Tooltip("四角形Warning PoolのScene上の名前"), SerializeField]
-    private string warningRectanglePoolObjectName = "PF_WarningRectangle Pool";
     [Header("Attack Pattern")]
     [Tooltip("ボスが使用する攻撃パターンリスト"), SerializeField] private BossAttackPattern[] attackPatternList;
     
@@ -247,7 +191,6 @@ public class SC_BossAttackController : MonoBehaviour
     private void Awake()
     {
         AutoFindPlayer();
-        AutoFindPools();
     }
 
     private void AutoFindPlayer()
@@ -265,123 +208,70 @@ public class SC_BossAttackController : MonoBehaviour
         player = playerObj.transform;
     }
 
-    private void AutoFindPools()
+    private SC_ObjectPool GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType poolType)
     {
-        if (homingMissilePool == null)
+        if (SC_EnemyObjectPoolManager.Instance == null)
         {
-            homingMissilePool = FindPool(homingMissilePoolObjectName);
-        }
-
-        if (fallingMissilePool == null)
-        {
-            fallingMissilePool = FindPool(fallingMissilePoolObjectName);
-        }
-
-        if (splitFallingMissilePool == null)
-        {
-            splitFallingMissilePool = FindPool(splitFallingMissilePoolObjectName);
-        }
-
-        if (rapidMissilePool == null)
-        {
-            rapidMissilePool = FindPool(rapidMissilePoolObjectName);
-        }
-
-        if (straightMissilePool == null)
-        {
-            straightMissilePool = FindPool(straightMissilePoolObjectName);
-        }
-
-        if(reflectableMissilePool== null)
-        {
-            reflectableMissilePool = FindPool(reflectableMissilePoolObjectName);
-        }
-
-        if (warningCirclePool == null)
-        {
-            warningCirclePool = FindPool(warningCirclePoolObjectName);
-        }
-
-        if (warningSectorPool == null)
-        {
-            warningSectorPool = FindPool(warningSectorPoolObjectName);
-        }
-
-        if (warningRectanglePool == null)
-        {
-            warningRectanglePool = FindPool(warningRectanglePoolObjectName);
-        }
-    }
-
-    private SC_ObjectPool FindPool(string poolObjectName)
-    {
-        if (string.IsNullOrEmpty(poolObjectName))
-        {
+            Debug.LogWarning("SC_EnemyObjectPoolManager がSceneにありません。");
             return null;
         }
 
-        GameObject poolObj = GameObject.Find(poolObjectName);
-
-        if (poolObj == null)
-        {
-            Debug.LogWarning("Poolが見つかりません : " + poolObjectName);
-            return null;
-        }
-
-        SC_ObjectPool pool = poolObj.GetComponent<SC_ObjectPool>();
-
-        if (pool == null)
-        {
-            Debug.LogWarning("見つけたObjectにSC_ObjectPoolが付いていません : " + poolObjectName);
-            return null;
-        }
-
-        return pool;
+        return SC_EnemyObjectPoolManager.Instance.GetPool(poolType);
     }
 
     public SC_ObjectPool GetHomingMissilePool()
     {
-        return homingMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.HomingMissile);
     }
 
     public SC_ObjectPool GetFallingMissilePool()
     {
-        return fallingMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.FallingMissile);
     }
 
     public SC_ObjectPool GetSplitFallingMissilePool()
     {
-        return splitFallingMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.SplitFallingMissile);
     }
 
     public SC_ObjectPool GetRapidMissilePool()
     {
-        return rapidMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.RapidMissile);
     }
 
     public SC_ObjectPool GetStraightMissilePool()
     {
-        return straightMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.StraightMissile);
     }
 
     public SC_ObjectPool GetReflectableMissilePool()
     {
-        return reflectableMissilePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.ReflectableMissile);
+    }
+
+    public SC_ObjectPool GetLaunchVisualFallingMissilePool()
+    {
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.LaunchVisualFallingMissile);
+    }
+
+    public SC_ObjectPool GetLaunchVisualSplitFallingMissilePool()
+    {
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.LaunchVisualSplitFallingMissile);
     }
 
     public SC_ObjectPool GetWarningCirclePool()
     {
-        return warningCirclePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.WarningCircle);
     }
 
     public SC_ObjectPool GetWarningSectorPool()
     {
-        return warningSectorPool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.WarningSector);
     }
 
     public SC_ObjectPool GetWarningRectanglePool()
     {
-        return warningRectanglePool;
+        return GetEnemyPool(SC_EnemyObjectPoolManager.EnemyPoolType.WarningRectangle);
     }
 
     public BossAttackPattern[] GetAttackPatternList()

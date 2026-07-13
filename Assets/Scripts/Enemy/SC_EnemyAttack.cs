@@ -127,6 +127,12 @@ public class SC_EnemyAttack : SC_EnemyBaceState
                 Owner.transform.right * spawnRightOffset;
         }
 
+        // 発射エフェクト
+        if (SC_EffectManager.Instance != null)
+        {
+            SC_EffectManager.Instance.PlayEffect("LaunchFire", spawnPos, rot);
+        }
+
         GameObject bulletObj = bulletPool.GetObject(spawnPos, rot);
 
         if (bulletObj == null) return;

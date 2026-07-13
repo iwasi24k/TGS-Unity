@@ -9,6 +9,8 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
     [Tooltip("ミサイルを生成する高さ"), SerializeField]
     private float spawnHeight = 1.5f;
 
+    private const int CircleFirePointMaxCount = 12;
+
     private float timer;
     private float fireTimer;
     private int firedCount;
@@ -109,6 +111,13 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
 
         dir.Normalize();
 
+        // 発射エフェクト
+        if (SC_EffectManager.Instance != null)
+        {
+            Vector3 effectPoint = firePoint.position;
+            SC_EffectManager.Instance.PlayEffect("LaunchFire", effectPoint, Quaternion.LookRotation(dir));
+        }
+
         GameObject missileObj = pool.GetObject(
             spawnPos,
             Quaternion.LookRotation(dir)
@@ -153,10 +162,12 @@ public class SC_BossMachineGunState : SC_EnemyBaceState
             return null;
         }
 
+        int usableFirePointCount = Mathf.Min(CircleFirePointMaxCount, firePointList.Length);
+
         Transform nearestFirePoint = null;
         float nearestDistanceSqr = Mathf.Infinity;
 
-        for (int i = 0; i < firePointList.Length; i++)
+        for (int i = 0; i < usableFirePointCount; i++)
         {
             Transform firePoint = firePointList[i];
 

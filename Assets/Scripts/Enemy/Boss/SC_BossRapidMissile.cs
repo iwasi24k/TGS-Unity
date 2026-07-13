@@ -95,6 +95,14 @@ public class SC_BossRapidMissileState : SC_EnemyBaceState
 
             Vector3 curveSpreadOffset = radialDir * spreadRadius;
 
+            // 発射エフェクト
+            if (SC_EffectManager.Instance != null)
+            {
+                Vector3 effectPoint = firePoint.position;
+                Quaternion launchRotation = Quaternion.LookRotation(Vector3.up);
+                SC_EffectManager.Instance.PlayEffect("LaunchFire", effectPoint, launchRotation);
+            }
+
             GameObject missileObj = pool.GetObject(
                 spawnPos,
                 spawnRot
