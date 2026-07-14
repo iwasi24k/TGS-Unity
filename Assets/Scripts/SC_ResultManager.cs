@@ -40,7 +40,7 @@ public class SC_ResultManager : MonoBehaviour
     void Start()
     {
         // 起動時に最初のボタン（タイトルへ）を選択状態にする
-        ApplySelection();
+        //ApplySelection();
     }
 
     // --- 入力イベント ---
@@ -58,7 +58,7 @@ public class SC_ResultManager : MonoBehaviour
         {
             int max = menuButtons.Length;
             currentIndex = (currentIndex + move + max) % max;
-            ApplySelection();
+            //ApplySelection();
         }
     }
 
