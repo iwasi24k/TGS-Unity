@@ -112,8 +112,17 @@ public class SC_PlayerAttackManager : MonoBehaviour
         //Collision‚©‚çGameObject‚Ö‚Ì•ÏŠ·
         if (closestTarget != null)
         {
+            if(closestTarget.gameObject.GetComponent<SC_EnemyStatusManager>() != null)
+            {
+                if(closestTarget.gameObject.GetComponent<SC_EnemyStatusManager>().UseBossShield() == true)
+                {
+                    return null;
+                }
+            }
+
             return closestTarget.gameObject;
         }
+
         return null;
     }
 
