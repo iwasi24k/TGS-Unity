@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a9213bee3425d54e8aa232814a1d06a, type: 3}
   m_Name: SO_Enemy Attack Melee
   m_EditorClassIdentifier: Assembly-CSharp::SC_EnemyAttackMelee
-  attackStartDelay: 0.7
+  attackStartDelay: 0.1
   attackEndDelay: 0.8
   AttackAreaSize: {x: 2, y: 2, z: 2}
   attackForwardOffset: 0.1
   attackHeightOffset: 0.2
   damage: 1
-  playerTag: Player
