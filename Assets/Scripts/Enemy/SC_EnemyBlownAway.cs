@@ -1,6 +1,5 @@
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.GridLayoutGroup;
+
 
 [CreateAssetMenu(menuName = "Enemy/BlownAway State")]
 public class SC_EnemyBlownAway : SC_EnemyBaceState
@@ -10,8 +9,9 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     [Tooltip("受け取った吹き飛ばし力に掛ける倍率"), SerializeField] private float blownAwayPowerMultiplier = 5.0f;
     [Tooltip("吹き飛ばされる方向"), SerializeField] private Vector3 blownAwayDirection = new Vector3(0, 0, 0);
     [Tooltip("この速度以下で終了"), SerializeField] private float endSpeed = 0.1f;
-    [Tooltip("力の減衰速度"), SerializeField] private float decaySpeed = 5f;
+    [Tooltip("力の減衰速度"), SerializeField] private float decaySpeed = 5.0f;
     [Tooltip("最低でもBlownAway状態を維持する時間"), SerializeField] private float minBlownAwayTime = 0.3f;
+    [Tooltip("BlownAway状態を維持できる最大時間"), SerializeField] private float maxBlownAwayTime = 5.0f;
 
     [Header("Bounce Settings")]
     [Tooltip("壁反射時の速度倍率"), SerializeField] private float wallBounceMultiplier = 1.3f;
@@ -38,6 +38,10 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
     public override void Enter(GameObject Owner, SC_EnemyStatusManager Manager)
     {
         timer = 0f;
+        wallBounceCooldownTimer = 0f;
+
+        effectAccumulator = 0f;
+        effectLastPos = Owner.transform.position;
 
         if (ComboManager.Instance != null)
         {
@@ -100,6 +104,20 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         Rigidbody rb = Owner.GetComponent<Rigidbody>();
         if (rb == null) return;
 
+        // BlownAway中は常に時間を進める
+        timer += Time.deltaTime;
+
+        // 最大時間を超えたら強制終了
+        if (timer >= maxBlownAwayTime)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+
+            isRotateMove = false;
+            Manager.ReturnFromBlownAway();
+            return;
+        }
+
         Vector3 v = rb.linearVelocity;
 
         if (isRotateMove)
@@ -122,8 +140,6 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
         {
             rb.linearVelocity = Vector3.zero;
         }
-
-        timer += Time.deltaTime;
 
         if (timer < minBlownAwayTime)
         {
