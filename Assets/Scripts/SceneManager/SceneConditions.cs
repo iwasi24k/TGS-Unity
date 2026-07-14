@@ -6,6 +6,8 @@ public class SceneConditions : MonoBehaviour
 {
     [SerializeField] private SceneMap sceneMap;
 
+    private string currentScene;
+
     private void Awake()
     {
         if (sceneMap == null)
@@ -19,8 +21,18 @@ public class SceneConditions : MonoBehaviour
         yield return FadeManager.FadeOut();
 
         SceneChanger.Instance.GoTo(sceneName);
-
+        currentScene = SceneChanger.Instance.GetCurrentScene();
+        Debug.Log(currentScene);
         yield return FadeManager.FadeIn();
+    }
+
+    public void Update()
+    {
+        Debug.Log(currentScene);
+        if (currentScene == sceneMap.sceneNames[2] && GameData.Result.IsGameEnd)
+        {
+            GoResult();
+        }
     }
 
     // タイトルへ
@@ -39,6 +51,8 @@ public class SceneConditions : MonoBehaviour
     public void GoGame()
     {
         StartCoroutine(ChangeScene(sceneMap.sceneNames[2]));
+        Debug.Log(sceneMap.sceneNames[2]);
+
     }
 
     // リザルトへ
