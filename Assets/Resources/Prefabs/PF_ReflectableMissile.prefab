@@ -134,7 +134,7 @@ MonoBehaviour:
   searchHeightOffset: 1
   targetAimHeight: 1
   playerDamage: 1
-  enemyDamage: 5
+  enemyDamage: 10
   targetRenderer: {fileID: 0}
   normalBaseColor: {r: 0, g: 0.9794071, b: 1, a: 0.39215687}
   normalLightningColor: {r: 1, g: 1, b: 1, a: 1}
