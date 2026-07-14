@@ -61,7 +61,7 @@ public class SC_TitleManager : MonoBehaviour
     void Start()
     {
         // 起動時に最初のボタンを「選択状態」にする
-        ApplySelection();
+        //ApplySelection();
     }
 
     // --- 入力イベントの処理 ---
@@ -85,7 +85,7 @@ public class SC_TitleManager : MonoBehaviour
             currentIndex = (currentIndex + move + max) % max;
 
             // 見た目を更新
-            ApplySelection();
+            //ApplySelection();
         }
     }
 
@@ -133,7 +133,7 @@ public class SC_TitleManager : MonoBehaviour
         isPopupActive = true;
         currentIndex = 0; // ポップアップの最初の項目を選択
         tutorialPopup.SetActive(true);
-        ApplySelection();
+        //ApplySelection();
     }
 
     // ポップアップを閉じ、メインメニューに操作を戻す
@@ -143,7 +143,7 @@ public class SC_TitleManager : MonoBehaviour
         isPopupActive = false;
         currentIndex = 0;
         tutorialPopup.SetActive(false);
-        ApplySelection();
+        //ApplySelection();
     }
 
     // シーン遷移の共通処理

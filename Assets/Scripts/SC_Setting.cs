@@ -78,13 +78,13 @@ public class SC_Setting : MonoBehaviour
         if (direction.x < -0.5f && !isCloseButtonSelected)
         {
             isCloseButtonSelected = true;
-            ApplySelection();
+            //ApplySelection();
         }
         // 閉じるボタンにいる時に右(0.5以上)を押したら「メインエリア」へ戻る
         else if (direction.x > 0.5f && isCloseButtonSelected)
         {
             isCloseButtonSelected = false;
-            ApplySelection();
+            //ApplySelection();
         }
 
         // --- 上下入力：メイン項目内での移動 ---
@@ -99,7 +99,7 @@ public class SC_Setting : MonoBehaviour
                 int max = mainSettingButtons.Length;
                 // インデックスをループさせる計算 (2の次は0, 0の次は2)
                 currentIndex = (currentIndex + move + max) % max;
-                ApplySelection();
+                //ApplySelection();
             }
         }
     }
@@ -132,7 +132,7 @@ public class SC_Setting : MonoBehaviour
     public void ReturnTitle()
     {
         Time.timeScale = 1f; // 遷移前に時間を必ず戻す
-        SceneManager.LoadScene("Scene_Title");
+        SceneManager.LoadScene("Scene Title");
     }
 
     public void ReturnTutorial()
@@ -165,7 +165,7 @@ public class SC_Setting : MonoBehaviour
         // 開いた直後の初期フォーカス設定：中央エリアの先頭
         isCloseButtonSelected = false;
         currentIndex = 0;
-        ApplySelection();
+        //ApplySelection();
     }
 
     // --- 内部ロジック：設定画面を閉じる ---
