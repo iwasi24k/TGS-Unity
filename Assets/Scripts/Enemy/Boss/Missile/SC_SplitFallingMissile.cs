@@ -324,7 +324,7 @@ public class SC_SplitFallingMissile : MonoBehaviour, SC_IPoolObject
 
     public void ReturnToPool()
     {
-        SC_EffectManager.Instance.PlayEffect("Explosion", this.transform.position);
+        SC_EffectManager.Instance.PlayEffect("SmallExplosion", this.transform.position);
 
         initialized = false;
 
