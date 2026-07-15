@@ -99,6 +99,8 @@ public class SC_Field : MonoBehaviour
         goal.Setup(this);
 
         GenerateStage(currentStage);
+
+        ResetPlayer();
     }
 
     void Update()
