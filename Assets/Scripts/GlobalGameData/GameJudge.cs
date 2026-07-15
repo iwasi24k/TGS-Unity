@@ -12,11 +12,9 @@ public class GameJudge : MonoBehaviour
     [SerializeField]
     private GameObject player = null;
 
-    private bool isGameEnd = false;
-
     public void Start()
     {
-        isGameEnd = false;
+        
     }
 
     public void Update()
@@ -37,11 +35,6 @@ public class GameJudge : MonoBehaviour
 
     }
 
-    public bool GetGameEnd()
-    {
-        return isGameEnd;
-    }
-
     public void GameClear()
     {
         SaveResult(true);
@@ -54,10 +47,12 @@ public class GameJudge : MonoBehaviour
 
     private void SaveResult(bool isCleared)
     {
-        isGameEnd = true;
+        GameData.Result.IsGameEnd = true;
 
         GameData.Result.Time = gameTimer.CurrentTime;
         GameData.Result.MaxCombo = ComboManager.Instance.GetMaxComboCount();
         GameData.Result.IsCleared = isCleared;
+
+        Debug.Log($"Game End! Cleared: {isCleared}, Time: {GameData.Result.Time}, Max Combo: {GameData.Result.MaxCombo}");
     }
 }
