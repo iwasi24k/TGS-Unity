@@ -23,8 +23,8 @@ public class ResultUIController : MonoBehaviour
         float time = GameData.Result.Time;
 
 
-        rankText.text = $"{rank} Rank";
+        rankText.text = $"{rank}";
 
-        timeText.text = $"Time : {time:F1}s";
+        timeText.text = $"{time:F1}s";
     }
 }
