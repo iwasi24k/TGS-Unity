@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,6 +6,7 @@ using UnityEngine.InputSystem;
 public class SceneConditions : MonoBehaviour
 {
     [SerializeField] private SceneMap sceneMap;
+    private bool resultStarted;
 
     private void Awake()
     {
@@ -44,8 +46,9 @@ public class SceneConditions : MonoBehaviour
                 {
                     GoResult();
                 }
-                if(GameData.Result.IsGameEnd)
+                if (GameData.Result.IsGameEnd && !resultStarted)
                 {
+                    resultStarted = true;
                     GoResult();
                 }
                 break;
@@ -63,6 +66,7 @@ public class SceneConditions : MonoBehaviour
     {
         StartCoroutine(ChangeScene(sceneMap.sceneNames[0]));
         GameData.Result.Reset();
+        resultStarted = false;
         Debug.Log("GameData.Result Reset");
     }
 
