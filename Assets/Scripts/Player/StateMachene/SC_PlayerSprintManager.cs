@@ -59,6 +59,9 @@ public class SC_PlayerSprintManager : MonoBehaviour
             _currentSprintSpeedMultiplier = boostSpeedMultiplier; // Set to boost speed
             _currentBoostCoolTime = boostCoolTime; // Reset the cooldown
             wasPressed = true;
+
+            SC_SEManager.Instance.PlaySE("Step");
+
             return true;
         }
         _currentSprintSpeedMultiplier = sprintSpeedMultiplier;

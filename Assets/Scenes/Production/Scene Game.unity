@@ -817,20 +817,12 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5689904749747280062, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1220867113}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
 --- !u!4 &600069950 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3961306158954794115, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
   m_PrefabInstance: {fileID: 600069949}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &738036323 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7537827601064430345, guid: 7e709fca06bd01d40a7ad71d94bdbb5a, type: 3}
-  m_PrefabInstance: {fileID: 321038108}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &919497478
 GameObject:
@@ -1273,23 +1265,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
---- !u!1 &1220867108 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5689904749747280062, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
-  m_PrefabInstance: {fileID: 600069949}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1220867113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220867108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2efe852d636fa046a8f88d5223c106b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SC_Goal
 --- !u!224 &1271079349 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6324802904549442158, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
@@ -1411,7 +1386,7 @@ PrefabInstance:
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: goal
       value: 
-      objectReference: {fileID: 1220867113}
+      objectReference: {fileID: 0}
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: bossCamera
       value: 
