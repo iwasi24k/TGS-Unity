@@ -63,6 +63,7 @@ public class SceneConditions : MonoBehaviour
     {
         StartCoroutine(ChangeScene(sceneMap.sceneNames[0]));
         GameData.Result.Reset();
+        Debug.Log("GameData.Result Reset");
     }
 
     // チュートリアルへ

@@ -52,6 +52,7 @@ public class GameJudge : MonoBehaviour
         GameData.Result.Time = gameTimer.CurrentTime;
         GameData.Result.MaxCombo = ComboManager.Instance.GetMaxComboCount();
         GameData.Result.IsCleared = isCleared;
-        Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        Debug.Log($"Game End! Cleared: {isCleared}, Time: {GameData.Result.Time}, Max Combo: {GameData.Result.MaxCombo}");
     }
 }
