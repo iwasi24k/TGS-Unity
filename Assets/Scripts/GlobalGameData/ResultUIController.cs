@@ -1,13 +1,18 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ResultUIController : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Text rankText;
 
     [SerializeField]
-    private TMP_Text timeText;
+    private TimeImageDisplay timeDisplay;
+
+    [SerializeField]
+    private Image rankImage;
+
+    [SerializeField]
+    private Sprite[] rankSprites;
 
 
     private void Start()
@@ -19,12 +24,21 @@ public class ResultUIController : MonoBehaviour
     private void DisplayResult()
     {
         Rank rank = ResultEvaluator.Evaluate();
+        rankImage.sprite = GetRankSprite(rank);
 
-        float time = GameData.Result.Time;
+        timeDisplay.SetTime(GameData.Result.Time);
+    }
 
-
-        rankText.text = $"{rank}";
-
-        timeText.text = $"{time:F1}s";
+    private Sprite GetRankSprite(Rank rank)
+    {
+        return rank switch
+        {
+            Rank.S => rankSprites[0],
+            Rank.A => rankSprites[1],
+            Rank.B => rankSprites[2],
+            Rank.C => rankSprites[3],
+            Rank.D => rankSprites[4],
+            _ => rankSprites[4]
+        };
     }
 }
