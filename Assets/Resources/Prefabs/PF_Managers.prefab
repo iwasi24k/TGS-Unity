@@ -279,8 +279,8 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     spatialBlend: 1
-    defaultCapacity: 50
-    maxCapacity: 100
+    defaultCapacity: 2
+    maxCapacity: 3
   - seKey: Boss_BreakOne
     audioClip: {fileID: 8300000, guid: d822e540c92c4e44a8454e3a169997bb, type: 3}
     volume: 1
@@ -330,6 +330,13 @@ MonoBehaviour:
     spatialBlend: 1
     defaultCapacity: 50
     maxCapacity: 100
+  - seKey: charge attack
+    audioClip: {fileID: 8300000, guid: f239810dff029fe4190b13f3bb2226a8, type: 3}
+    volume: 0.5
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
 --- !u!1 &8286613217406669650
 GameObject:
   m_ObjectHideFlags: 0
