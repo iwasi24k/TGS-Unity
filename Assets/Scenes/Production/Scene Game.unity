@@ -342,6 +342,7 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   scTarget: {fileID: 0}
   iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  fieldCenter: {fileID: 0}
   TargetCameraOffset: {x: 0, y: 2, z: -2}
   CameraRotateSpeed: 8
   CameraHorizontalOffset: 0
@@ -350,11 +351,6 @@ MonoBehaviour:
   nonTargetDistance: 7
   nonTargetHeightOffset: 0
   yawFollowSpeed: 3
-  velSmoothSpeed: 8
-  backwardGuard: 1
-  awareEnemyBlend: 0.5
-  awareEnemyAngle: 120
-  awareEnemyDistance: 10
   cameraShakeDecay: 5
   normalFOV: 60
   targetFOV: 65
@@ -821,10 +817,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5689904749747280062, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1220867113}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
 --- !u!4 &600069950 stripped
 Transform:
@@ -863,55 +856,61 @@ MonoBehaviour:
   arenaCamera: {fileID: 1072009974}
   bossStatus: {fileID: 3505882211090475744, guid: 2dd29e12cd8ed504aa1c6a2516aafa8f, type: 3}
   rules:
-  - states: 05000000
+  - states: 03000000040000000600000008000000
     profile:
-      name: Others
+      name: Missile
       yawOffset: 0
-      distanceMul: 1
-      heightOffset: -1.5
-      fovOffset: -20
+      distanceMul: 0
+      heightOffset: 0
+      fovOffset: 0
       focusWeight: -1
       blendTime: 0
-    startDelay: 0.5
-    duration: 1.5
-    impactDelay: 1.2
-    impactTrauma: 1
+    impactDelay: 0
+    impactTrauma: 0
     impactFovPunch: 0
   - states: 090000000a0000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001a0000001b000000
     profile:
       name: Circle
       yawOffset: 0
-      distanceMul: 1.2
-      heightOffset: -0.5
-      fovOffset: 10
+      distanceMul: 0
+      heightOffset: 0
+      fovOffset: 0
       focusWeight: -1
-      blendTime: 0.5
-    startDelay: 0
-    duration: 1
+      blendTime: 0
     impactDelay: 0
     impactTrauma: 0
     impactFovPunch: 0
-  - states: 03000000040000000600000008000000
+  - states: 170000001800000019000000
     profile:
-      name: Missile
+      name: Summon
       yawOffset: 0
-      distanceMul: 1
-      heightOffset: -2
-      fovOffset: 10
+      distanceMul: 0
+      heightOffset: 0
+      fovOffset: 0
       focusWeight: -1
       blendTime: 0
-    startDelay: 0.5
-    duration: 1.2
-    impactDelay: 2
-    impactTrauma: 1
+    impactDelay: 0
+    impactTrauma: 0
+    impactFovPunch: 0
+  - states: 0500000007000000
+    profile:
+      name: Others
+      yawOffset: 0
+      distanceMul: 0
+      heightOffset: 0
+      fovOffset: 0
+      focusWeight: -1
+      blendTime: 0
+    impactDelay: 0
+    impactTrauma: 0
     impactFovPunch: 0
   downProfile:
     name: Down
     yawOffset: 0
-    distanceMul: 1
-    heightOffset: -1.5
-    fovOffset: -15
-    focusWeight: -1
+    distanceMul: 0.7
+    heightOffset: -1
+    fovOffset: -6
+    focusWeight: 0.05
     blendTime: 0.6
 --- !u!4 &919497480
 Transform:
@@ -1002,6 +1001,7 @@ GameObject:
   - component: {fileID: 1072009979}
   - component: {fileID: 1072009978}
   - component: {fileID: 1072009977}
+  - component: {fileID: 1072009976}
   - component: {fileID: 1072009975}
   - component: {fileID: 1072009974}
   m_Layer: 0
@@ -1026,26 +1026,25 @@ MonoBehaviour:
   boss: {fileID: 5808079244715204392, guid: 2dd29e12cd8ed504aa1c6a2516aafa8f, type: 3}
   player: {fileID: 1041113508}
   targetCamera: {fileID: 1072009979}
-  focusWeight: 0.3
-  baseDistance: 8
-  separationFactor: 0.5
-  baseHeight: 1.5
-  lookHeight: 0.5
-  baseFov: 60
+  focusWeight: 0.25
+  baseDistance: 7
+  separationFactor: 0.7
+  baseHeight: 2.5
+  lookHeight: 1.5
+  baseFov: 70
   yawDamp: 0.35
   distanceDamp: 0.1
   heightDamp: 0.4
   fovDamp: 0.2
   returnBlend: 0.4
-  keepPlayerInFrame: 1
-  frameSafeRatio: 0.75
+  avoidObstacles: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  cameraRadius: 0.3
+  minDistance: 2.5
   shakeMax: 0.6
   traumaDecay: 1.4
-  scTarget: {fileID: 0}
-  lockOnOffset: {x: 0, y: 2, z: -3}
-  lockOnLookHeight: 1.5
-  lockOnBlendSpeed: 5
-  lockOnFovOffset: 5
 --- !u!114 &1072009975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,6 +1057,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ba20859f1b400945a0265bb0213f911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraWallFade
+--- !u!114 &1072009976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072009973}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64abec90cb684264d99ef92e76942263, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_PlayerCamera
+  playerTransform: {fileID: 0}
+  scTarget: {fileID: 0}
+  iaMove: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  fieldCenter: {fileID: 0}
+  TargetCameraOffset: {x: 0, y: 2, z: -2}
+  CameraRotateSpeed: 8
+  CameraHorizontalOffset: 0
+  targetBlendSpeed: 5
+  cameraPitch: 30
+  nonTargetDistance: 7
+  nonTargetHeightOffset: 0
+  yawFollowSpeed: 3
+  cameraShakeDecay: 5
+  normalFOV: 60
+  targetFOV: 65
+  dashFOV: 70
+  fovSpeed: 1
+  enemyManager: {fileID: 0}
+  zoomOutDistance: 3
+  zoomTriggerDistance: 8
+  zoomSpeed: 2
 --- !u!114 &1072009977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1176,23 +1208,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
---- !u!1 &1220867108 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5689904749747280062, guid: 016642d2240b1ba4daaa8d9ed9f1ebac, type: 3}
-  m_PrefabInstance: {fileID: 600069949}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1220867113
-MonoBehaviour:
+--- !u!1001 &1141792956
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220867108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2efe852d636fa046a8f88d5223c106b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SC_Goal
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.19097331
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.1889113
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 406473728431405078, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7509381504904671978, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
+      propertyPath: m_Name
+      value: PF_Door
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3b359ce73d8248d4c94956d8aafa1d4e, type: 3}
 --- !u!224 &1271079349 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6324802904549442158, guid: fcdf40eed96d9324ca4a5612b9b99a72, type: 3}
@@ -1314,7 +1386,7 @@ PrefabInstance:
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: goal
       value: 
-      objectReference: {fileID: 1220867113}
+      objectReference: {fileID: 0}
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: bossCamera
       value: 
@@ -1397,7 +1469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: stages.Array.data[0].playerStartPosition.z
-      value: -20
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: stages.Array.data[1].playerStartPosition.z
@@ -1422,7 +1494,7 @@ PrefabInstance:
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: stages.Array.data[0].objects.Array.data[0].prefab
       value: 
-      objectReference: {fileID: 4642499408674868148, guid: 7facaa62c81b35741a02aa6078bd7c16, type: 3}
+      objectReference: {fileID: 4642499408674868148, guid: aa9e572f4a1c3e6408724b078c5f2cf5, type: 3}
     - target: {fileID: 5578165729323895983, guid: 14a18b56f7afef5479f873fe7d8a8a01, type: 3}
       propertyPath: stages.Array.data[0].objects.Array.data[1].prefab
       value: 
@@ -2542,3 +2614,4 @@ SceneRoots:
   - {fileID: 131885598}
   - {fileID: 1332377893}
   - {fileID: 1491802020}
+  - {fileID: 1141792956}

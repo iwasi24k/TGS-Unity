@@ -12,7 +12,7 @@ TagManager:
   - ComboManager
   - Wall
   - Door
-  - Boss
+  - TutorialTarget
   layers:
   - Default
   - TransparentFX

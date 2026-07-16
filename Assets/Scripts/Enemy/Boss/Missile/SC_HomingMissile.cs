@@ -427,6 +427,8 @@ public class SC_HomingMissile : MonoBehaviour, SC_IPoolObject
     {
         SC_EffectManager.Instance.PlayEffect("SmallExplosion", this.transform.position);
 
+        SC_SEManager.Instance.PlaySE("Explo_N1", this.transform.position);
+
         ReturnWarningMark();
 
         if (fireParticles != null)

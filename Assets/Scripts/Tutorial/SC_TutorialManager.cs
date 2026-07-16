@@ -12,6 +12,12 @@ public class SC_TutorialManager : MonoBehaviour
     // チャージ攻撃取得用
     private SC_PlayerChargeAttack chargeAttack;
 
+    // =========================================
+    // Tutorial Target Object
+    // =========================================
+    [SerializeField]
+    private GameObject tutorialTargetObject;
+
     // =================================================
     // ■チュートリアル種別
     // =================================================
@@ -82,6 +88,7 @@ public class SC_TutorialManager : MonoBehaviour
 
     private int lastCombo = 0;
     private bool weakComboStarted = false;
+    private bool targetLocked = false;
 
     // =================================================
     // ■UI
@@ -237,10 +244,15 @@ public class SC_TutorialManager : MonoBehaviour
 
             weakComboStarted = false;
 
+            targetLocked = false;
+
             isFailing = false;
 
             UpdateTutorialText();
             UpdateTutorialUI(stage);
+
+            tutorialTargetObject =
+                GameObject.FindWithTag("TutorialTarget");
 
             Debug.Log(
                 "Stage Change : " +
@@ -280,7 +292,7 @@ public class SC_TutorialManager : MonoBehaviour
             case TutorialType.Move:
 
                 if (!stageCleared &&
-                    field.GetObjectCount() <= 0)
+                    tutorialTargetObject == null)
                 {
                     stageCleared = true;
                     TryNextStage();
@@ -294,7 +306,7 @@ public class SC_TutorialManager : MonoBehaviour
             case TutorialType.Dash:
 
                 if (!stageCleared &&
-                    field.GetObjectCount() <= 0)
+                    tutorialTargetObject == null)
                 {
                     stageCleared = true;
                     TryNextStage();
@@ -346,6 +358,7 @@ public class SC_TutorialManager : MonoBehaviour
             // =========================================
             case TutorialType.ChargeAttack:
 
+                // 弱攻撃を当てたら失敗
                 if (!stageCleared &&
                     combo > lastCombo)
                 {
@@ -358,11 +371,11 @@ public class SC_TutorialManager : MonoBehaviour
                     return;
                 }
 
+                // DoorがEnemyに当たった
                 if (!stageCleared &&
-                    chargeAttack != null &&
-                    chargeAttack.GetWasHit())
+                    SC_EnemyStartGate.IsOpened)
                 {
-                    Debug.Log("Charge Attack Success");
+                    Debug.Log("Charge Tutorial Success");
 
                     stageCleared = true;
                     TryNextStage();
@@ -370,11 +383,12 @@ public class SC_TutorialManager : MonoBehaviour
                     return;
                 }
 
-
+                // Doorが消えてしまった（壁など）
                 if (!stageCleared &&
-                    field.GetEnemyCount() <= 0)
+                    field.GetObjectCount() <= 0 &&
+                    !SC_EnemyStartGate.IsOpened)
                 {
-                    Debug.Log("Charge Attack Failed");
+                    Debug.Log("Charge Tutorial Failed");
 
                     FailStage(
                         stages[currentDisplayStage]
@@ -390,12 +404,31 @@ public class SC_TutorialManager : MonoBehaviour
             // =========================================
             case TutorialType.Target:
 
-                if (!stageCleared &&
-                    playerTarget != null &&
+                // 一度でもターゲットしたら記録
+                if (playerTarget != null &&
                     playerTarget.GetCurrentTarget() != null)
+                {
+                    targetLocked = true;
+                }
+
+                // ターゲット成功
+                if (!stageCleared &&
+                    targetLocked)
                 {
                     stageCleared = true;
                     TryNextStage();
+                    return;
+                }
+
+                // ターゲットせず敵を倒した
+                if (!stageCleared &&
+                    !targetLocked &&
+                    field.GetEnemyCount() <= 0)
+                {
+                    FailStage(
+                        stages[currentDisplayStage].failMessage);
+
+                    return;
                 }
 
                 break;
@@ -405,12 +438,32 @@ public class SC_TutorialManager : MonoBehaviour
             // =========================================
             case TutorialType.Combo:
 
+                // コンボ成功
                 if (!stageCleared &&
                     ComboManager.Instance != null &&
                     ComboManager.Instance.GetComboCount() >= 2)
                 {
+                    Debug.Log("Combo Success");
+
                     stageCleared = true;
                     TryNextStage();
+
+                    return;
+                }
+
+                // コンボを発生させず敵を全滅
+                if (!stageCleared &&
+                    ComboManager.Instance != null &&
+                    ComboManager.Instance.GetComboCount() < 2 &&
+                    field.GetEnemyCount() <= 0)
+                {
+                    Debug.Log("Combo Failed");
+
+                    FailStage(
+                        stages[currentDisplayStage]
+                        .failMessage);
+
+                    return;
                 }
 
                 break;

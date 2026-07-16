@@ -65,6 +65,149 @@ MonoBehaviour:
     effectPrefab: {fileID: 1121192042590650, guid: a31baaa80180c0c47bcd7858c68d5af6, type: 3}
     defaultCapacity: 10
     maxCapacity: 30
+--- !u!1 &6630595254389724952
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5543778255433922082}
+  - component: {fileID: 327140358394300786}
+  m_Layer: 0
+  m_Name: SC_SEManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5543778255433922082
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630595254389724952}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.16189, y: 0, z: 1.07205}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7127669392970454083}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &327140358394300786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630595254389724952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 254a91f2c35b7284292efdfdc15269cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_SEManager
+  _seConfigs:
+  - seKey: Step
+    audioClip: {fileID: 8300000, guid: d0341310da02a0740991bf920ba0cde4, type: 3}
+    volume: 0.5
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 1
+    maxCapacity: 1
+  - seKey: Explo_N1
+    audioClip: {fileID: 8300000, guid: 624b92bce1e192448861dee6f1e37221, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Explo_N2
+    audioClip: {fileID: 8300000, guid: da8a20247881a394788e4e7f268975ab, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_1
+    audioClip: {fileID: 8300000, guid: df254de3ef4ad234aa93ae783d6825ae, type: 3}
+    volume: 0.2
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_2
+    audioClip: {fileID: 8300000, guid: c87a401fea2a69b469ad0a2f35215736, type: 3}
+    volume: 0.2
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_3
+    audioClip: {fileID: 8300000, guid: 11495bf29a2c41c4ba33d64523eab1d2, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: Boss_BreakOne
+    audioClip: {fileID: 8300000, guid: 43111f4a0a928c24d8552b7178460177, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Boss_BreakTwo
+    audioClip: {fileID: 8300000, guid: 3763b4f46acdc8341a39006498914cd6, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Boss_BreakThree
+    audioClip: {fileID: 8300000, guid: 0e544ef8eb9bd1546a9fcff86f63dc35, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitOne
+    audioClip: {fileID: 8300000, guid: 85328a9bfb2bbe64196a8b7df9762b7e, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitTwo
+    audioClip: {fileID: 8300000, guid: 092f753fbe4544044a25bc1389699e7d, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitThree
+    audioClip: {fileID: 8300000, guid: 64e1bbee28c9c4047ad4b438d144e17d, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitFore
+    audioClip: {fileID: 8300000, guid: 36c3069c6d495454da8c456924293e8f, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: charge attack
+    audioClip: {fileID: 8300000, guid: 9262f76148bb23a4ab5cf7bf28a2bbb3, type: 3}
+    volume: 0.5
+    pitch: 1
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
 --- !u!1 &8286613217406669650
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,6 +239,7 @@ Transform:
   m_Children:
   - {fileID: 116282999504137587}
   - {fileID: 8856708849259689883}
+  - {fileID: 5543778255433922082}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1329379386041449618

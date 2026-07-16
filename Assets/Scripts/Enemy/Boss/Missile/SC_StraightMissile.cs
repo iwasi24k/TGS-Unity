@@ -118,6 +118,7 @@ public class SC_StraightMissile : MonoBehaviour, SC_IPoolObject
     public void ReturnToPool()
     {
         SC_EffectManager.Instance.PlayEffect("SmallExplosion", this.transform.position);
+        SC_SEManager.Instance.PlaySE("Explo_N1", this.transform.position);
 
         initialized = false;
 

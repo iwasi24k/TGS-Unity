@@ -93,3 +93,7 @@ MonoBehaviour:
     prefab: {fileID: 3450125112352545964, guid: c7625b5b03250014282e9890847d4bb2, type: 3}
     initialCount: 20
     canExpand: 1
+  - poolType: 12
+    prefab: {fileID: 7600647066138798695, guid: 158be13b55706344ba59dacf77efe3b4, type: 3}
+    initialCount: 2
+    canExpand: 1

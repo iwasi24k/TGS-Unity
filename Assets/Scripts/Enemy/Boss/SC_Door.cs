@@ -102,7 +102,7 @@ public class SC_Door : MonoBehaviour
         }
 
 
-        if (collision.gameObject.CompareTag("Wall")) 
+        if (collision.gameObject.CompareTag("Wall"))
         {
             Explode();
             return;
@@ -148,8 +148,8 @@ public class SC_Door : MonoBehaviour
         hasHitEnemy = false;
         hasExploded = false;
 
-        if (SC_GameSceneAudio.Instance != null)
-            SC_GameSceneAudio.Instance.StartBattleBgm();
+        if (SC_BgmManager.Instance != null)
+            SC_BgmManager.Instance.StartBattleBgm();
         if (SC_DisplaySlow.Instance != null)
             SC_DisplaySlow.Instance.Enter(4.0f);
     }
@@ -355,6 +355,11 @@ public class SC_Door : MonoBehaviour
                 explosionEffectKey,
                 transform.position
             );
+        }
+
+        if(SC_SEManager.Instance != null)
+        {
+            SC_SEManager.Instance.PlaySE("Explo_N2", transform.position,0.2f,-1f);
         }
 
         Destroy(gameObject);
