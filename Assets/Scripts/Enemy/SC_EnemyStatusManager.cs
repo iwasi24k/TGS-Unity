@@ -1199,7 +1199,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
         );
     }
 
-    private void PlayRandomEnemyCollisionSE(Vector3 position)
+    public void PlayRandomEnemyCollisionSE(Vector3 position)
     {
         if (SC_SEManager.Instance == null) return;
         if (enemyCollisionSEKeys == null || enemyCollisionSEKeys.Length == 0)

@@ -260,7 +260,11 @@ public class SC_EnemyBlownAway : SC_EnemyBaceState
             return;
         }
 
-        if(isRotateMove)
+        // •Ç‚Æ‚ÌÚGˆÊ’u‚ÅSE‚ğÄ¶
+        Vector3 hitPosition = collision.GetContact(0).point;
+        Manager.PlayRandomEnemyCollisionSE(hitPosition);
+
+        if (isRotateMove)
         {
             isRotateMove = false;
              Debug.Log("Rotate Move Canceled by Collision");
