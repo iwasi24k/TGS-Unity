@@ -869,9 +869,11 @@ MonoBehaviour:
       yawOffset: 0
       distanceMul: 1
       heightOffset: -1.5
-      fovOffset: -15
+      fovOffset: -20
       focusWeight: -1
-      blendTime: 0.5
+      blendTime: 0
+    startDelay: 0.5
+    duration: 1.5
     impactDelay: 1.2
     impactTrauma: 1
     impactFovPunch: 0
@@ -884,6 +886,8 @@ MonoBehaviour:
       fovOffset: 10
       focusWeight: -1
       blendTime: 0.5
+    startDelay: 0
+    duration: 1
     impactDelay: 0
     impactTrauma: 0
     impactFovPunch: 0
@@ -895,7 +899,9 @@ MonoBehaviour:
       heightOffset: -2
       fovOffset: 10
       focusWeight: -1
-      blendTime: 0.5
+      blendTime: 0
+    startDelay: 0.5
+    duration: 1.2
     impactDelay: 2
     impactTrauma: 1
     impactFovPunch: 0
