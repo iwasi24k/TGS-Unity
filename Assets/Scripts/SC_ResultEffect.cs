@@ -27,10 +27,6 @@ public class SC_ResultEffect : MonoBehaviour
         }
 
         ResUI.SetActive(false);
-
-        SC_EffectManager.Instance.PlayEffect("Explosion", BossTrans.position, Quaternion.identity);
-        BossAnim.SetBool("bShieldBreak", true);
-        PlayerAnim.SetBool("bWinPose", true);
     }
 
     // Update is called once per frame
@@ -43,5 +39,20 @@ public class SC_ResultEffect : MonoBehaviour
     public void OnEndAnimation()
     {
         ResUI.SetActive(true);
+    }
+
+    public void EventPlayerWinPose()
+    {
+        PlayerAnim.SetBool("bWinPose", true);
+    }
+
+    public void EventBossShieldBreak()
+    {
+        BossAnim.SetBool("bShieldBreak", true);
+    }
+
+    public void EventExplosionEffect()
+    {
+        SC_EffectManager.Instance.PlayEffect("Explosion", BossTrans.position, Quaternion.identity);
     }
 }
