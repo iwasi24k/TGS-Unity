@@ -357,6 +357,11 @@ public class SC_Door : MonoBehaviour
             );
         }
 
+        if(SC_SEManager.Instance != null)
+        {
+            SC_SEManager.Instance.PlaySE("Explo_N2", transform.position,0.2f,-1f);
+        }
+
         Destroy(gameObject);
     }
 }
