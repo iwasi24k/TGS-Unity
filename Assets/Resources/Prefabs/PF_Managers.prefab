@@ -257,24 +257,24 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: 9cbc2c201812c9c4cab46016c7f0d535, type: 3}
     volume: 1
     pitch: 1
-    spatialBlend: 1
-    defaultCapacity: 50
-    maxCapacity: 100
-  - seKey: right blow
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_1
     audioClip: {fileID: 8300000, guid: df254de3ef4ad234aa93ae783d6825ae, type: 3}
-    volume: 1
+    volume: 0.2
     pitch: 1
-    spatialBlend: 1
-    defaultCapacity: 50
-    maxCapacity: 100
-  - seKey: left blow
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_2
     audioClip: {fileID: 8300000, guid: c87a401fea2a69b469ad0a2f35215736, type: 3}
-    volume: 1
+    volume: 0.2
     pitch: 1
-    spatialBlend: 1
-    defaultCapacity: 50
-    maxCapacity: 100
-  - seKey: strong attack
+    spatialBlend: 0
+    defaultCapacity: 2
+    maxCapacity: 3
+  - seKey: blow_3
     audioClip: {fileID: 8300000, guid: 11495bf29a2c41c4ba33d64523eab1d2, type: 3}
     volume: 1
     pitch: 1
