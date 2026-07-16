@@ -260,7 +260,7 @@ MonoBehaviour:
     spatialBlend: 1
     defaultCapacity: 50
     maxCapacity: 100
-  - seKey: light blow
+  - seKey: right blow
     audioClip: {fileID: 8300000, guid: df254de3ef4ad234aa93ae783d6825ae, type: 3}
     volume: 1
     pitch: 1
