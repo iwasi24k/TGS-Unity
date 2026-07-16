@@ -260,6 +260,27 @@ MonoBehaviour:
     spatialBlend: 1
     defaultCapacity: 50
     maxCapacity: 100
+  - seKey: light blow
+    audioClip: {fileID: 8300000, guid: df254de3ef4ad234aa93ae783d6825ae, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: left blow
+    audioClip: {fileID: 8300000, guid: c87a401fea2a69b469ad0a2f35215736, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: strong attack
+    audioClip: {fileID: 8300000, guid: 11495bf29a2c41c4ba33d64523eab1d2, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
 --- !u!1 &8286613217406669650
 GameObject:
   m_ObjectHideFlags: 0
