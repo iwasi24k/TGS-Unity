@@ -281,6 +281,55 @@ MonoBehaviour:
     spatialBlend: 1
     defaultCapacity: 50
     maxCapacity: 100
+  - seKey: Boss_BreakOne
+    audioClip: {fileID: 8300000, guid: d822e540c92c4e44a8454e3a169997bb, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Boss_BreakTwo
+    audioClip: {fileID: 8300000, guid: fd0a73caa3ac8694292edc55dea35b5a, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Boss_BreakThree
+    audioClip: {fileID: 8300000, guid: 5578de2773fad1145b58253ab121a391, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitOne
+    audioClip: {fileID: 8300000, guid: 85328a9bfb2bbe64196a8b7df9762b7e, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitTwo
+    audioClip: {fileID: 8300000, guid: 092f753fbe4544044a25bc1389699e7d, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitThree
+    audioClip: {fileID: 8300000, guid: 64e1bbee28c9c4047ad4b438d144e17d, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
+  - seKey: Enemy_HitFore
+    audioClip: {fileID: 8300000, guid: 36c3069c6d495454da8c456924293e8f, type: 3}
+    volume: 1
+    pitch: 1
+    spatialBlend: 1
+    defaultCapacity: 50
+    maxCapacity: 100
 --- !u!1 &8286613217406669650
 GameObject:
   m_ObjectHideFlags: 0
