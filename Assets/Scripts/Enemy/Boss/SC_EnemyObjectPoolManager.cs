@@ -18,7 +18,8 @@ public class SC_EnemyObjectPoolManager : MonoBehaviour
         WarningSector,
         ReflectableMissile,
         LaunchVisualFallingMissile,
-        LaunchVisualSplitFallingMissile
+        LaunchVisualSplitFallingMissile,
+        ArrivalLight
     }
 
     [System.Serializable]

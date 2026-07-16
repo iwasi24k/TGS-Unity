@@ -173,6 +173,12 @@ public class SC_PlayerTarget : MonoBehaviour
     public void SelectNearTarget()
     {
         currentTarget = enemyManager.GetNearestEnemy();
+
+        if(currentTarget.GetComponent<SC_EnemyStatusManager>() != null && currentTarget.GetComponent<SC_EnemyStatusManager>().IsStartLocked())
+        {
+            currentTarget = null;
+        }
+
         isTargeting = currentTarget != null;
     }
 

@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,6 +6,7 @@ using UnityEngine.InputSystem;
 public class SceneConditions : MonoBehaviour
 {
     [SerializeField] private SceneMap sceneMap;
+    private bool resultStarted;
 
     private void Awake()
     {
@@ -23,10 +25,49 @@ public class SceneConditions : MonoBehaviour
         yield return FadeManager.FadeIn();
     }
 
+    public void Update()
+    {
+        switch(SceneChanger.Instance.GetCurrentScene())
+        {
+            case "Scene Title":
+                if (Keyboard.current.enterKey.wasPressedThisFrame)
+                {
+                    GoGame();
+                }
+                break;
+            case "Scene Tutorial":
+                if (Keyboard.current.enterKey.wasPressedThisFrame)
+                {
+                    GoTitle();
+                }
+                break;
+            case "Scene Game":
+                if (Keyboard.current.enterKey.wasPressedThisFrame)
+                {
+                    GoResult();
+                }
+                if (GameData.Result.IsGameEnd && !resultStarted)
+                {
+                    resultStarted = true;
+                    GoResult();
+                }
+                break;
+            case "Scene Result":
+                if (Keyboard.current.enterKey.wasPressedThisFrame)
+                {
+                    GoTitle();
+                }
+                break;
+        }
+    }
+
     // タイトルへ
     public void GoTitle()
     {
         StartCoroutine(ChangeScene(sceneMap.sceneNames[0]));
+        GameData.Result.Reset();
+        resultStarted = false;
+        Debug.Log("GameData.Result Reset");
     }
 
     // チュートリアルへ

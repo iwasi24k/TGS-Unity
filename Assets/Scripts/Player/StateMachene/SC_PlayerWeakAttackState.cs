@@ -24,6 +24,7 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
         {
             Animator.SetTrigger("tWeakAttack_L");
         }
+        SC_SEManager.Instance.PlaySE("blow_3");
         once = false;
     }
     public override void UpdateState(GameObject owner, PlayerState stateList)
@@ -92,6 +93,7 @@ public class SC_PlayerWeakAttackState : SC_PlayerBaseState
             if (isHit)
             {
                 AttackManager.IncrementCombo();
+                SC_SEManager.Instance.PlaySE("blow_1");
             }
             
             once = true;

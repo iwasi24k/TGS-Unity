@@ -14,7 +14,7 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("Ref")]
     [Tooltip("HPSlider")]
     [SerializeField]  private Slider hpSlider;
-
+    
     [Header("Enemy Status")]
     [SerializeField] private int HP = 100;
     private int MaxHP;
@@ -63,6 +63,14 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Header("BlowAway Follow Parts")]
     [SerializeField] private SC_PartFollowTarget[] blowAwayFollowParts;
 
+    private string[] enemyCollisionSEKeys =
+    {
+        "Enemy_HitOne",
+        "Enemy_HitTwo",
+        "Enemy_HitThree",
+        "Enemy_HitFore"
+    };
+
     //----------------------------------------------------------
     [Header("Boss / Special Setting")]
     [Tooltip("この敵が吹っ飛び状態になるかどうか"),SerializeField] private bool canBlownAway = true;
@@ -84,6 +92,8 @@ public class SC_EnemyStatusManager : MonoBehaviour
     [Tooltip("シールドの稲妻演出"), SerializeField]
     private SC_ShieldLightningEffect shieldLightningEffect;
     private bool bossDefeatNotified = false;
+
+    private int bossShieldBreakCount = 0;
 
     [Header("Boss Defeat")]
     [Tooltip("ボス死亡時に周囲の敵へ与えるダメージ")]
@@ -586,7 +596,12 @@ public class SC_EnemyStatusManager : MonoBehaviour
 
             RegisterEnemyCollision(otherEnemy);
             otherStatusManager.RegisterEnemyCollision(this.gameObject);
-         
+
+            // 敵同士の衝突SE
+            Vector3 collisionPosition =(transform.position + otherEnemy.transform.position) * 0.5f;
+
+            PlayRandomEnemyCollisionSE(collisionPosition);
+
             int myPower = (int)(mySpeed) + ComboManager.Instance.GetComboCount();
             
             int chainCount = ComboManager.Instance.GetComboCount();
@@ -885,6 +900,26 @@ public class SC_EnemyStatusManager : MonoBehaviour
     // Bossシールドが0になったときの処理
     private void OnBossShieldBreak()
     {
+        bossShieldBreakCount++;
+
+        switch (bossShieldBreakCount)
+        {
+            case 1:
+                Debug.Log("Boss Shield Break : 1回目");
+                SC_SEManager.Instance.PlaySE("Boss_BreakOne", transform.position);
+                break;
+
+            case 2:
+                Debug.Log("Boss Shield Break : 2回目");
+                SC_SEManager.Instance.PlaySE("Boss_BreakTwo", transform.position);
+                break;
+
+            case 3:
+                Debug.Log("Boss Shield Break : 3回目");
+                SC_SEManager.Instance.PlaySE("Boss_BreakThree", transform.position);
+                break;
+        }
+
         if (!downWhenShieldBreak) return;
 
         TriggerBossDown();
@@ -1162,5 +1197,19 @@ public class SC_EnemyStatusManager : MonoBehaviour
             0,
             true
         );
+    }
+
+    public void PlayRandomEnemyCollisionSE(Vector3 position)
+    {
+        if (SC_SEManager.Instance == null) return;
+        if (enemyCollisionSEKeys == null || enemyCollisionSEKeys.Length == 0)
+        {
+            return;
+        }
+
+        int randomIndex = Random.Range(0, enemyCollisionSEKeys.Length);
+        string seKey = enemyCollisionSEKeys[randomIndex];
+
+        SC_SEManager.Instance.PlaySE(seKey, position);
     }
 }

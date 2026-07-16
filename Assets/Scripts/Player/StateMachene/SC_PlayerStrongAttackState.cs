@@ -14,6 +14,7 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
         var animator = owner.GetComponent<Animator>();
         var attackManager = owner.GetComponent<SC_PlayerAttackManager>();
         animator.SetTrigger("tStraight");
+        SC_SEManager.Instance.PlaySE("blow_3");
         once = false;
 
         Debug.Log("Enter Strong Attack State");
@@ -35,6 +36,7 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
 
         if (!once)
         {
+            bool hit = false;
 
             GameObject[] gameObjects = AttackManager.GetInAreaObjectByTag("Enemy");
             {
@@ -51,6 +53,7 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
 
                         Debug.Log("Straight Attack");
                         Enemy.TakeDamage(AttackManager.GetStraightDamage(), owner.transform.position, true, AttackType.Strong);
+                        hit = true;
                     }
                 }
             }
@@ -73,6 +76,12 @@ public class SC_PlayerStrongAttackState : SC_PlayerBaseState
                     }
                 }
             }
+
+            if(hit)
+            {
+                SC_SEManager.Instance.PlaySE("blow_2");
+            }
+
             AttackManager.ResetCombo();
             once = true;
         }

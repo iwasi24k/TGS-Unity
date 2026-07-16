@@ -12,6 +12,7 @@ TagManager:
   - ComboManager
   - Wall
   - Door
+  - TutorialTarget
   layers:
   - Default
   - TransparentFX

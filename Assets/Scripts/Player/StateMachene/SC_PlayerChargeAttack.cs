@@ -21,6 +21,7 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
         var animator = owner.GetComponent<Animator>();
         animator.SetBool("bCharge", false);
         animator.SetBool("bStraight", true);
+        SC_SEManager.Instance.PlaySE("charge attack");
         var footPrinter = owner.GetComponent<SC_FootPrinter>();
         if (footPrinter)
         {
@@ -174,7 +175,15 @@ public class SC_PlayerChargeAttack : SC_PlayerBaseState
 
         }
 
-        
+        if(_wasHit)
+        {
+            SC_SEManager.Instance.PlaySE("blow_2");
+        }
+        else
+        {
+            SC_SEManager.Instance.PlaySE("blow_3");
+        }
+
 
         attackManager.ResetCombo();
     }
