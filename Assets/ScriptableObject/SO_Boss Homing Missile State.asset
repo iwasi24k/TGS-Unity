@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_Boss Homing Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossHomingMissileState
   fireDelay: 2.2
-  endDelay: 2
+  endDelay: 4
   firePointIndex: 12
   curveTime: 0.8
   curveUpHeight: 5

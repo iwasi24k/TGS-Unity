@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: SO_Boss Summon  Random State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossSummonState
   summonDelay: 0.5
-  endDelay: 1.5
+  endDelay: 3
   summonMode: 1
   summonElementIndex: 0
   summonEnemyList:
   - enemyPrefab: {fileID: 2421892717064337079, guid: 708cbfb691dad084aa3eb107cfdb7f90, type: 3}
     hp: 20
-    summonCount: 1
+    summonCount: 2
     summonRadius: 10
     spawnHeight: 0
     randomPosition: 1
@@ -27,7 +27,7 @@ MonoBehaviour:
     angleRange: 0
   - enemyPrefab: {fileID: 2421892717064337079, guid: 5e5e7d9e382d5ef46b5b535668ba61cc, type: 3}
     hp: 20
-    summonCount: 1
+    summonCount: 2
     summonRadius: 10
     spawnHeight: 0
     randomPosition: 1

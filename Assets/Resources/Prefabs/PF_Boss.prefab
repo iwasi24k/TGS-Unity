@@ -184,7 +184,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.4, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5808079244715204392}
@@ -498,7 +498,7 @@ GameObject:
   - component: {fileID: 5880420886448220101}
   m_Layer: 7
   m_Name: PF_Boss
-  m_TagString: Enemy
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -672,27 +672,27 @@ MonoBehaviour:
   player: {fileID: 0}
   playerTag: Player
   meleeWavePrefab: {fileID: 15538130619336969, guid: a3ab2d0ba1cafc2449592a4e030514a6, type: 3}
-  meleeWaveRadius: 10
-  meleeKnockBackPower: 10
+  meleeWaveRadius: 13
+  meleeKnockBackPower: 15
   homingMissileCount: 6
   homingTime: 2
   homingMissileSpeed: 8
-  fallingMissileCount: 10
+  fallingMissileCount: 15
   fallingTime: 1
   fallingInterval: 0.1
-  stageRadius: 10
-  fallingMissileMinRadius: 5
+  stageRadius: 25
+  fallingMissileMinRadius: 7
   rapidMissileCount: 5
   rapidMissileStartDelay: 0.5
   rapidMissileSpeed: 18
-  machineGunBulletCount: 20
+  machineGunBulletCount: 12
   machineGunInterval: 0.08
   machineGunMissileSpeed: 12
-  machineGunRandomAngle: 45
-  splitFallingMissileCount: 3
+  machineGunRandomAngle: 30
+  splitFallingMissileCount: 4
   splitFallingTime: 1.5
   splitFallingInterval: 0.3
-  splitChildMissileCount: 10
+  splitChildMissileCount: 6
   splitChildMissileSpeed: 10
   maxEnemyCount: 4
   attackPatternList:
@@ -713,10 +713,10 @@ MonoBehaviour:
     stateList: 0500000007000000
   - usePattern: 0
     patternName: test
-    stateList: 08000000
+    stateList: 0500000003000000040000000600000008000000
   - usePattern: 1
     patternName: In Game
-    stateList: 0500000017000000030000000700000005000000060000000c0000000f000000100000001b0000000500000008000000180000000400000007000000
+    stateList: 050000001700000003000000070000000500000006000000090000001a0000000900000013000000160000001b0000000500000008000000180000000400000007000000
 --- !u!1 &9168442487182502983
 GameObject:
   m_ObjectHideFlags: 0

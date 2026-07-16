@@ -23,12 +23,15 @@ public class SC_PlayerTarget : MonoBehaviour
     private GameObject[] enemys = new GameObject[0];
     private int targetIndex = 0;
 
+    // ボスカメラ（演出中はターゲット禁止の判定に使用）
+    private BossArenaCamera bossArenaCamera;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (currentTarget != null) currentTarget = null;
         if (goMainCamera == null) goMainCamera = Camera.main;
-        if(enemyManager == null)
+        if (enemyManager == null)
         {
             enemyManager = FindFirstObjectByType<SC_EnemyManager>();
         }
@@ -46,6 +49,18 @@ public class SC_PlayerTarget : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ボスの演出カメラ中はターゲット操作を受け付けず、既存ロックも解除する
+        if (IsTargetingBlocked())
+        {
+            if (isTargeting || currentTarget != null)
+            {
+                isTargeting = false;
+                currentTarget = null;
+                targetIndex = 0;
+            }
+            return;
+        }
+
         var targetInput = iaTarget.action.WasPressedThisFrame();
 
         if (targetInput)
@@ -172,14 +187,25 @@ public class SC_PlayerTarget : MonoBehaviour
 
     public void SelectNearTarget()
     {
-        currentTarget = enemyManager.GetNearestEnemy();
+        // ボスの演出カメラ中はターゲット不可
+        if (IsTargetingBlocked())
+            return;
 
-        if(currentTarget.GetComponent<SC_EnemyStatusManager>() != null && currentTarget.GetComponent<SC_EnemyStatusManager>().IsStartLocked())
+        currentTarget = enemyManager.GetNearestEnemy();
+        isTargeting = currentTarget != null;
+    }
+
+    // ボスの演出プロファイル適用中ならtrue（ボスカメラ非使用時は常にfalse）
+    public bool IsTargetingBlocked()
+    {
+        if (bossArenaCamera == null)
         {
-            currentTarget = null;
+            bossArenaCamera = FindFirstObjectByType<BossArenaCamera>(FindObjectsInactive.Include);
+            if (bossArenaCamera == null)
+                return false;
         }
 
-        isTargeting = currentTarget != null;
+        return bossArenaCamera.isActiveAndEnabled && bossArenaCamera.IsDirecting;
     }
 
     //カメラに映っている敵を取得する関数
@@ -189,6 +215,12 @@ public class SC_PlayerTarget : MonoBehaviour
 
         if (enemys == null || enemys.Length == 0)
             return inView;
+
+        // 通常カメラ⇔ボスカメラの切替に追従：キャッシュが無効なら現在のMainCameraを取り直す
+        if (goMainCamera == null || !goMainCamera.isActiveAndEnabled)
+        {
+            goMainCamera = Camera.main;
+        }
 
         Camera cam = goMainCamera != null ? goMainCamera : Camera.main;
         Plane[] planes = cam != null ? GeometryUtility.CalculateFrustumPlanes(cam) : null;
