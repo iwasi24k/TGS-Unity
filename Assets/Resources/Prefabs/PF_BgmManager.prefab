@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8394865711351495758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4878253185713627587}
+  - component: {fileID: 5980665821040367101}
+  m_Layer: 0
+  m_Name: PF_BgmManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4878253185713627587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8394865711351495758}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5980665821040367101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8394865711351495758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46d5f146440a85b46b5eb0bdb90e4268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_BgmManager
+  tracks:
+  - id: Title
+    introClip: {fileID: 8300000, guid: c66248824d482bc4cbdd2bb683e5167c, type: 3}
+    loopClip: {fileID: 8300000, guid: b74ea8e078139204097ea9c396658328, type: 3}
+    loop: 1
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  - id: BattleBefore
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 02449f164b884f34a86b27a55bd73497, type: 3}
+    loop: 1
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  - id: Battle
+    introClip: {fileID: 8300000, guid: 3aa5dd2b0258ab24fbb4e8aa9ccd3594, type: 3}
+    loopClip: {fileID: 8300000, guid: 2c994d4aad9bc1e4f94ce1e58750969b, type: 3}
+    loop: 1
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  - id: Boss
+    introClip: {fileID: 8300000, guid: c59f1a4d622179f438adf80db2ef3823, type: 3}
+    loopClip: {fileID: 8300000, guid: c08df9df57bc7374f9b2d239881b22f0, type: 3}
+    loop: 1
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  - id: ResultWin
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 9cd770462118f9e43845a2bb39eb61a6, type: 3}
+    loop: 0
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  - id: ResultLose
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: a77e4be7224a4bb44b5ab6c0fad04202, type: 3}
+    loop: 0
+    volume: 1
+    introToLoopOffset: 0
+    fadeInTime: 0
+    fadeOutTime: 0
+  sceneTracks:
+  - sceneName: Scene Title
+    trackId: Title
+    trackIdOnCleared: 
+    startDelay: 0
+  - sceneName: Scene Game
+    trackId: BattleBefore
+    trackIdOnCleared: 
+    startDelay: 0
+  - sceneName: Scene Result
+    trackId: ResultLose
+    trackIdOnCleared: ResultWin
+    startDelay: 0
+  - sceneName: 
+    trackId: 
+    trackIdOnCleared: 
+    startDelay: 0
+  stopIfSceneNotMapped: 1
+  beforeBattleTrackId: BattleBefore
+  battleTrackId: Battle
+  battleStartDelay: 0
+  beforeFadeOutTime: 0
+  autoDetectBoss: 1
+  bossTrackId: Boss
+  bossTag: Boss
+  bossCheckInterval: 0.25
+  bossStartDelay: 0
+  fadeOutOnBossDefeat: 1
+  bossDefeatFadeTime: 1.5
+  masterVolume: 0.7
+  saveVolumeToPrefs: 1
+  volumePrefsKey: BGM_Volume
+  mixerGroup: {fileID: 0}
+  scheduleLeadTime: 0.1
+  restartOnSameTrack: 0
+  debugLog: 0
