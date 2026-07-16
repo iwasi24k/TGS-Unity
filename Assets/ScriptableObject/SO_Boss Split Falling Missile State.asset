@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: SO_Boss Split Falling Missile State
   m_EditorClassIdentifier: Assembly-CSharp::SC_BossSplitFallingMissileState
   startDelay: 2.2
-  endDelay: 2
+  fireDelay: 0.5
+  endDelay: 1.2
   fallHeight: 15
+  firePointIndex: 12
